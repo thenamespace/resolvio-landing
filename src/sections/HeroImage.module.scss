@@ -1,0 +1,75 @@
+.outer {
+  width: 100%;
+  overflow: hidden;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 1280px;
+  margin: auto;
+  padding: 80px 25px 40px;
+
+  &:last-child {
+    padding: 40px 25px 80px;
+    margin-top: -50px;
+  }
+}
+
+// ─── Badge ────────────────────────────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: 1px solid $border;
+  border-radius: 9999px;
+  background-color: $background;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 32px;
+
+  svg {
+    color: $primary;
+    flex-shrink: 0;
+  }
+}
+
+// ─── Heading ──────────────────────────────────────────────────────────────────
+.heading {
+  font-size: clamp(2.4rem, 7vw, 5.4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #0a0a0a;
+  margin-bottom: 24px;
+}
+
+// ─── Subtitle ─────────────────────────────────────────────────────────────────
+.subtitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 40px;
+}
+
+// ─── Banner image ─────────────────────────────────────────────────────────────
+.banner {
+  width: calc(100% + 42px);
+  height: auto;
+  margin-top: -150px;
+  margin-bottom: -40px;
+}
+
+// ─── Buttons ──────────────────────────────────────────────────────────────────
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
