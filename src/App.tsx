@@ -1,6 +1,7 @@
 import { TopNavigation } from "./sections/TopNavigation";
 import { HeroImage } from "./sections/HeroImage";
 import { StatsBar } from "./sections/StatsBar";
+import { TryItNow } from "./sections/TryItNow";
 
 export default function App() {
   return (
@@ -8,6 +9,7 @@ export default function App() {
       <TopNavigation />
       <HeroImage />
       <StatsBar />
+      <TryItNow />
     </div>
   )
 }
