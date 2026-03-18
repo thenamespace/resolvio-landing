@@ -10,7 +10,7 @@
   flex-direction: column;
   margin: auto;
   width: 100%;
-  max-width: 1280px;
+  max-width: $section_width;
   background-color: $border; // shows as 1px dividers between cards
   gap: 1px;                  // exposes $border background as divider
   border-left: 1px solid $border;
