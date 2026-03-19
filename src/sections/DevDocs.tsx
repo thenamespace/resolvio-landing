@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Copy, Terminal, Rocket, BookOpen } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import styles from './DevDocs.module.scss'
+import { RESOLVIO_API } from '../constants/api'
 
 const QUICK_STEPS = [
   {
@@ -24,28 +25,38 @@ const QUICK_STEPS = [
   },
 ]
 
-const CURL_COMMAND = 'curl https://staging.global-resolver.namespace.ninja/api/v1/resolve/ens/name/vitalik.eth/profile'
+const CURL_COMMAND = `curl ${RESOLVIO_API}/ens/v2/profile/vitalik.eth`
 
 const ENDPOINTS = [
   {
-    label: 'Get complete ENS profile',
+    label: 'Resolve full ENS profile',
     method: 'GET',
-    path: '/api/v1/resolve/ens/name/:name/profile',
+    path: '/ens/v2/profile/:name',
   },
   {
-    label: 'Get cryptocurrency addresses',
+    label: 'Text records',
     method: 'GET',
-    path: '/api/v1/resolve/ens/name/:name/addresses',
+    path: '/ens/v2/profile/:name?texts=avatar,com.twitter',
   },
   {
-    label: 'Get complete ENS profile',
+    label: 'Address records',
     method: 'GET',
-    path: '/api/v1/resolve/ens/name/:name/profile',
+    path: '/ens/v2/profile/:name?addresses=eth,base',
   },
   {
-    label: 'Get cryptocurrency addresses',
+    label: 'Content hash',
     method: 'GET',
-    path: '/api/v1/resolve/ens/name/:name/addresses',
+    path: '/ens/v2/profile/:name?contenthash=true',
+  },
+  {
+    label: 'Reverse resolve',
+    method: 'GET',
+    path: '/ens/v2/reverse/:address',
+  },
+  {
+    label: 'Bulk reverse resolve',
+    method: 'GET',
+    path: '/ens/v2/reverse/bulk?addresses=0x…,0x…',
   },
 ]
 
@@ -128,7 +139,7 @@ export const DevDocs = () => {
                   <BookOpen size={15} />
                 </div>
                 <h3 className={styles.sectionTitle}>API Endpoints</h3>
-                <Button size="sm" className={styles.docsBtn}>View Full API Documentation</Button>
+                <a href={`${RESOLVIO_API}/api-docs`} target="_blank" rel="noreferrer"><Button size="sm" className={styles.docsBtn}>View Full API Documentation</Button></a>
               </div>
 
               {/* Endpoint cards grid */}

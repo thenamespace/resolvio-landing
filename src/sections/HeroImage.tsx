@@ -27,8 +27,8 @@ export const HeroImage = () => {
       {/* Constrained buttons */}
       <div className={styles.inner}>
         <div className={styles.actions}>
-          <Button size="lg">Try Playground</Button>
-          <Button size="lg" variant="secondary">View AI Docs</Button>
+          <a href="#playground"><Button size="lg">Try Playground</Button></a>
+          <a href="#docs"><Button size="lg" variant="secondary">View AI Docs</Button></a>
         </div>
       </div>
 

@@ -22,7 +22,7 @@ export const TopNavigation = ({ className, innerClassName }: Props) => {
               <a href="#docs" className={styles.navLink}>Docs</a>
               <a href="#faq" className={styles.navLink}>FAQ</a>
             </div>
-            <Button size="sm">Try Playground</Button>
+            <a href="#playground"><Button size="sm">Try Playground</Button></a>
           </div>
         </div>
       </div>

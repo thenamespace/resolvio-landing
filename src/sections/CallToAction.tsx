@@ -14,8 +14,8 @@ export const CallToAction = () => (
             <h2 className={styles.heading}>Ready to get started?</h2>
             <p className={styles.subtitle}>Join developers building the future of Web3 with Resolvio</p>
             <div className={styles.actions}>
-              <Button size="sm">Try Now</Button>
-              <Button size="sm" variant="secondary">Read the Docs</Button>
+              <a href="#playground"><Button size="sm">Try Now</Button></a>
+              <a href="#docs"><Button size="sm" variant="secondary">Read the Docs</Button></a>
             </div>
           </div>
         </div>
