@@ -55,6 +55,10 @@
   border-left: 1px solid $border;
   border-right: 1px solid $border;
   border-bottom: 1px solid $border;
+
+  @media (max-width: $mobile) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .cell {
@@ -157,14 +161,15 @@
   font-family: inherit;
   border: 1px solid $border;
   border-radius: 9999px;
-  background: $background;
+  background: #fff;
   color: #555;
   cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition: border-color 0.2s ease, color 0.2s ease, font-weight 0s;
 
   &:hover {
     border-color: $primary;
     color: $primary;
+    font-weight: 700;
   }
 }
 
@@ -177,6 +182,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  background: #fff;
 }
 
 .checkboxGroupTitle {

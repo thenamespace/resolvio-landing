@@ -43,6 +43,10 @@
   border-left: 1px solid $border;
   border-right: 1px solid $border;
   border-bottom: 1px solid $border;
+
+  @media (max-width: $mobile) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .cell {
