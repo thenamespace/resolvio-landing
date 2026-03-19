@@ -1,0 +1,118 @@
+.outer {
+  width: 100%;
+  border-bottom: 1px solid $border;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: $section_width;
+  margin: auto;
+  padding: 64px 24px 40px;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #999;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.heading {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0a0a0a;
+  letter-spacing: -0.02em;
+}
+
+// ─── Grid ─────────────────────────────────────────────────────────────────────
+.gridOuter {
+  width: 100%;
+  border-top: 1px solid $border;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin: auto;
+  width: 100%;
+  max-width: $section_width;
+  background-color: $border;
+  gap: 1px;
+  border-left: 1px solid $border;
+  border-right: 1px solid $border;
+  border-bottom: 1px solid $border;
+}
+
+.cell {
+  min-width: 0;
+}
+
+// ─── Accordion items ──────────────────────────────────────────────────────────
+.item {
+  background-color: $background;
+  border-radius: 10px;
+  transition: background-color 0.2s ease, border-radius 0.4s ease;
+
+  &:hover {
+    background-color: #fff;
+    border-radius: 0;
+  }
+}
+
+.question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 28px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #000;
+  }
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: #aaa;
+  transition: transform 0.25s ease, color 0.15s ease;
+
+  &.chevronOpen {
+    transform: rotate(180deg);
+    color: $primary;
+  }
+}
+
+.answerWrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.answer {
+  padding: 0 28px 24px;
+
+  p {
+    background: #fff;
+    border: 1px solid $border;
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-size: 0.9375rem;
+    color: #444;
+    line-height: 1.65;
+  }
+}

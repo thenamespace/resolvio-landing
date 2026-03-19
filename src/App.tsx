@@ -5,6 +5,8 @@ import { TryItNow } from "./sections/TryItNow";
 import { DevDocs } from "./sections/DevDocs";
 import { WhyResolvio } from "./sections/WhyResolvio";
 import { CallToAction } from "./sections/CallToAction";
+import { FAQ } from "./sections/FAQ";
+import { Footer } from "./sections/Footer";
 
 export default function App() {
   return (
@@ -16,6 +18,8 @@ export default function App() {
       <DevDocs />
       <WhyResolvio />
       <CallToAction />
+      <FAQ />
+      <Footer />
     </div>
   )
 }

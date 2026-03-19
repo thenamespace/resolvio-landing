@@ -90,6 +90,11 @@
   align-items: flex-end;
   justify-content: center;
   overflow: hidden;
+  transition: border-radius 0.4s ease;
+
+  &:hover {
+    border-radius: 0;
+  }
 }
 
 .graphic {
