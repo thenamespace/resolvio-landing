@@ -52,7 +52,7 @@ export const FAQ = () => {
   const [open, setOpen] = useState<number>(0)
 
   return (
-    <section className={styles.outer}>
+    <section id="faq" className={styles.outer}>
       <div className={styles.header}>
         <span className={styles.label}>FAQ</span>
         <h2 className={styles.heading}>Frequently Asked Questions</h2>

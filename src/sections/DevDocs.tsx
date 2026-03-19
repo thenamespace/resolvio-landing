@@ -66,7 +66,7 @@ export const DevDocs = () => {
   }
 
   return (
-    <section className={styles.outer}>
+    <section id="docs" className={styles.outer}>
       {/* Header */}
       <div className={styles.header}>
         <span className={styles.label}>Docs</span>

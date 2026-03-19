@@ -16,7 +16,14 @@ export const TopNavigation = ({ className, innerClassName }: Props) => {
           <a href="/" className={styles.logo}>
             <img src={logo} alt="Resolvio" height={28} />
           </a>
-          <Button size="sm">Try Playground</Button>
+          <div className={styles.right}>
+            <div className={styles.navLinks}>
+              <a href="#playground" className={styles.navLink}>Playground</a>
+              <a href="#docs" className={styles.navLink}>Docs</a>
+              <a href="#faq" className={styles.navLink}>FAQ</a>
+            </div>
+            <Button size="sm">Try Playground</Button>
+          </div>
         </div>
       </div>
     </nav>

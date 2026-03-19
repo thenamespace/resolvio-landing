@@ -38,3 +38,34 @@
   text-decoration: none;
   flex-shrink: 0;
 }
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  @media (max-width: $mobile) {
+    display: none;
+  }
+}
+
+.navLink {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #555;
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: $border;
+    color: #0a0a0a;
+  }
+}

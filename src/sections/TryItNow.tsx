@@ -57,7 +57,7 @@ export const TryItNow = () => {
   }
 
   return (
-    <section className={styles.outer}>
+    <section id="playground" className={styles.outer}>
 
       {/* Header text */}
       <div className={styles.header}>

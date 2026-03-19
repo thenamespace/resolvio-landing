@@ -54,7 +54,6 @@
   gap: 1px;
   border-left: 1px solid $border;
   border-right: 1px solid $border;
-  border-bottom: 1px solid $border;
 
   @media (max-width: $mobile) {
     grid-template-columns: 1fr;
@@ -164,12 +163,18 @@
   background: #fff;
   color: #555;
   cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease, font-weight 0s;
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
 
   &:hover {
     border-color: $primary;
     color: $primary;
-    font-weight: 700;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 128, 188, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
   }
 }
 
