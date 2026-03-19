@@ -3,6 +3,8 @@ import { HeroImage } from "./sections/HeroImage";
 import { StatsBar } from "./sections/StatsBar";
 import { TryItNow } from "./sections/TryItNow";
 import { DevDocs } from "./sections/DevDocs";
+import { WhyResolvio } from "./sections/WhyResolvio";
+import { CallToAction } from "./sections/CallToAction";
 
 export default function App() {
   return (
@@ -12,6 +14,8 @@ export default function App() {
       <StatsBar />
       <TryItNow />
       <DevDocs />
+      <WhyResolvio />
+      <CallToAction />
     </div>
   )
 }
