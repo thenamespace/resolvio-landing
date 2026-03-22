@@ -1,13 +1,11 @@
 import { Network } from 'lucide-react'
 import { Button } from '../components/ui/Button'
-import bannerImage from '../assets/banner-image.svg'
 import styles from './HeroImage.module.scss'
 
 export const HeroImage = () => {
   return (
     <section className={styles.outer}>
 
-      {/* Constrained text content */}
       <div className={styles.inner}>
         <div className={styles.badge}>
           <span>Universal Web3 Name Resolution</span>
@@ -19,13 +17,7 @@ export const HeroImage = () => {
         </h1>
 
         <p className={styles.subtitle}>Resolvio provides a complete identity resolution service through a single API. Built for every chain, wallet, app, and AI agent.</p>
-      </div>
 
-      {/* Full-width banner */}
-      <img src={bannerImage} alt="" aria-hidden="true" className={styles.banner} />
-
-      {/* Constrained buttons */}
-      <div className={styles.inner}>
         <div className={styles.actions}>
           <a href="#playground"><Button size="lg">Start Resolving</Button></a>
           <a href="#docs"><Button size="lg" variant="secondary">View Docs</Button></a>

@@ -11,12 +11,7 @@
   width: 100%;
   max-width: $section_width;
   margin: auto;
-  padding: 80px 25px 40px;
-
-  &:last-child {
-    padding: 40px 25px 80px;
-    margin-top: -50px;
-  }
+  padding: 80px 25px 80px;
 }
 
 // ─── Badge ────────────────────────────────────────────────────────────────────
@@ -57,14 +52,6 @@
   line-height: 1.7;
   max-width: 480px;
   margin-bottom: 40px;
-}
-
-// ─── Banner image ─────────────────────────────────────────────────────────────
-.banner {
-  width: calc(100% + 42px);
-  height: auto;
-  margin-top: -150px;
-  margin-bottom: -40px;
 }
 
 // ─── Buttons ──────────────────────────────────────────────────────────────────

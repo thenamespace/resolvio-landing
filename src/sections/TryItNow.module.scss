@@ -88,6 +88,9 @@
 }
 
 .tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 20px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -740,4 +743,87 @@
   .toggleOn & {
     transform: translateX(18px);
   }
+}
+
+// ─── Forward bulk mode ────────────────────────────────────────────────────────
+.modeTabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.modeTab {
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #888;
+  background: none;
+  border: 1px solid $border;
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+
+  &:hover {
+    color: #333;
+    background: rgba(0,0,0,0.03);
+  }
+}
+
+.modeTabActive {
+  color: $primary;
+  background: rgba(0, 128, 188, 0.08);
+  border-color: $primary;
+}
+
+.chipActive {
+  background: rgba(0, 128, 188, 0.1);
+  color: $primary;
+  border-color: $primary;
+}
+
+.bulkNamesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.bulkNameTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+  background: rgba(0, 128, 188, 0.08);
+  color: $primary;
+  border: 1px solid rgba(0, 128, 188, 0.25);
+  border-radius: 9999px;
+  padding: 3px 10px 3px 12px;
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.6;
+
+    &:hover { opacity: 1; }
+  }
+}
+
+.bulkProfileCard {
+  padding: 12px 0;
+  border-bottom: 1px solid $border;
+
+  &:last-child { border-bottom: none; }
+}
+
+.bulkProfileName {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
 }

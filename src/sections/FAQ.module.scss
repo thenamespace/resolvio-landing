@@ -104,14 +104,88 @@
 
 .answer {
   padding: 0 28px 24px;
+  font-size: 0.9375rem;
+  color: #444;
+  line-height: 1.65;
 
   p {
-    background: #fff;
-    border: 1px solid $border;
-    border-radius: 12px;
-    padding: 20px 24px;
-    font-size: 0.9375rem;
-    color: #444;
-    line-height: 1.65;
+    margin-bottom: 12px;
+
+    &:last-child { margin-bottom: 0; }
+  }
+
+  ul {
+    padding-left: 18px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    li {
+      line-height: 1.6;
+    }
+  }
+
+  code {
+    font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+    font-size: 0.85em;
+    background: rgba(0,0,0,0.05);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #333;
+  }
+}
+
+// ─── Code block ───────────────────────────────────────────────────────────────
+.codeBlock {
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 10px 0;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+.tabCell {
+  background-color: $background;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 0;
+}
+
+.tab {
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #888;
+  background: none;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+
+  &:hover {
+    color: #333;
+    background: rgba(0,0,0,0.04);
+  }
+}
+
+.tabActive {
+  color: $primary;
+  background: rgba(0, 128, 188, 0.08);
+
+  &:hover {
+    color: $primary;
+    background: rgba(0, 128, 188, 0.12);
   }
 }

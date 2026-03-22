@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Copy, Info, Terminal } from 'lucide-react'
+import { Copy, Info, Terminal, ArrowRight, RotateCcw } from 'lucide-react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { githubGist } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { Button } from '../components/ui/Button'
@@ -9,6 +9,7 @@ import { cx } from '../utils/cx'
 import { RESOLVIO_API } from '../constants/api'
 
 type Tab = 'forward' | 'reverse'
+type ForwardMode = 'single' | 'bulk'
 
 const FORWARD_EXAMPLES = ['artii.eth', 'thecap.eth', 'happy.rsk.eth', 'vitalik.eth']
 const REVERSE_EXAMPLES_SINGLE = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
@@ -17,7 +18,7 @@ const REVERSE_EXAMPLES_BULK = [
   '0x225f137127d9067788314bc7fcc1f36746a3c3B5',
 ]
 
-const DEFAULT_TEXT_KEYS = ['avatar', 'description', 'com.twitter', 'com.github', 'url', 'email', 'org.telegram', 'com.discord']
+const DEFAULT_TEXT_KEYS = ['avatar', 'header', 'email', 'description']
 
 const TEXT_PRESETS: PickerItem[] = [
   { id: 'avatar',          label: 'Avatar',        sublabel: 'avatar',          group: 'Profile' },
@@ -60,6 +61,8 @@ interface BulkReverseResult {
   addresses: ReverseResult[]
 }
 
+// Bulk forward returns ForwardResult[] directly
+
 const RecordBadge = ({ label, value }: { label: string; value: string }) => {
   const [copied, setCopied] = useState(false)
   const copy = () => {
@@ -93,8 +96,14 @@ export const TryItNow = () => {
   const [copied, setCopied]               = useState(false)
   const [responseMs, setResponseMs]       = useState<number | null>(null)
 
+  // Forward bulk mode
+  const [forwardMode, setForwardMode]             = useState<ForwardMode>('single')
+  const [bulkInput, setBulkInput]                 = useState('')
+  const [bulkNames, setBulkNames]                 = useState<Set<string>>(new Set())
+  const [bulkForwardResult, setBulkForwardResult] = useState<ForwardResult[] | null>(null)
+
   // Include toggles
-  const [useDefault, setUseDefault]       = useState(false)
+  const [useDefault, setUseDefault]       = useState(true)
   const [inclAddresses, setInclAddresses] = useState(true)
   const [inclTexts, setInclTexts]         = useState(true)
   const [inclContent, setInclContent]     = useState(true)
@@ -127,8 +136,7 @@ export const TryItNow = () => {
       .then(r => r.json())
       .then((data: Chain[]) => {
         setChains(data)
-        // Default select first 7 chains
-        setSelectedChains(new Set(data.slice(0, 7).map(c => c.name)))
+        setSelectedChains(new Set(['eth', 'btc', 'base']))
       })
       .catch(() => {
         // Fallback to hardcoded defaults
@@ -142,7 +150,7 @@ export const TryItNow = () => {
           { coin: 2147483785, name: 'matic', label: 'Polygon'  },
         ]
         setChains(fallback)
-        setSelectedChains(new Set(fallback.map(c => c.name)))
+        setSelectedChains(new Set(['eth', 'btc', 'base']))
       })
   }, [])
 
@@ -199,6 +207,40 @@ export const TryItNow = () => {
     }
   }
 
+  const resolveBulkForward = async () => {
+    if (bulkNames.size === 0) return
+    setResolving(true)
+    setBulkForwardResult(null)
+    setError(null)
+    setRawJson('')
+    setResponseMs(null)
+
+    const qs = buildParams().join('&')
+    const t0 = performance.now()
+    try {
+      const res  = await fetch(`${RESOLVIO_API}/ens/v2/profile/bulk?names=${[...bulkNames].join(',')}${qs ? '&' + qs : ''}`)
+      const data = await res.json()
+      setResponseMs(Math.round(performance.now() - t0))
+      if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
+      setBulkForwardResult(data)
+      setRawJson(JSON.stringify(data, null, 2))
+    } catch (e) {
+      setResponseMs(Math.round(performance.now() - t0))
+      setError(e instanceof Error ? e.message : 'Request failed')
+    } finally {
+      setResolving(false)
+    }
+  }
+
+  const toggleBulkName = (name: string) => {
+    setBulkNames(prev => {
+      const next = new Set(prev)
+      if (next.has(name)) next.delete(name)
+      else next.add(name)
+      return next
+    })
+  }
+
   const resolveReverse = async (prefill?: string) => {
     const addrs = parseAddresses(prefill ?? reverseInput)
     if (!addrs.length) return
@@ -234,7 +276,7 @@ export const TryItNow = () => {
     }
   }
 
-  const hasResult = forwardResult !== null || reverseResult !== null || bulkResult !== null
+  const hasResult = forwardResult !== null || reverseResult !== null || bulkResult !== null || bulkForwardResult !== null
 
   const isValidDomain = (name: string) => {
     const dotIdx = name.lastIndexOf('.')
@@ -252,6 +294,11 @@ export const TryItNow = () => {
       if (addrs.length > 1)
         return `curl ${RESOLVIO_API}/ens/v2/reverse/bulk?addresses=${addrs.join(',')}`
       return `curl ${RESOLVIO_API}/ens/v2/reverse/${addrs[0] || '<address>'}`
+    }
+    if (tab === 'forward' && forwardMode === 'bulk') {
+      if (bulkNames.size === 0) return null
+      const qs = buildParams().join('&')
+      return `curl "${RESOLVIO_API}/ens/v2/profile/bulk?names=${[...bulkNames].join(',')}${qs ? '&' + qs : ''}"`
     }
     if (!trimmedInput) return null
     const qs = buildParams().join('&')
@@ -285,15 +332,15 @@ export const TryItNow = () => {
             <div className={styles.tabs}>
               <button
                 className={cx(styles.tab, tab === 'forward' && styles.tabActive)}
-                onClick={() => { setTab('forward'); setForwardResult(null); setReverseResult(null); setBulkResult(null); setInput(''); setError(null); setRawJson(''); lastResolvedName.current = null }}
+                onClick={() => { setTab('forward'); setForwardResult(null); setReverseResult(null); setBulkResult(null); setBulkForwardResult(null); setInput(''); setError(null); setRawJson(''); lastResolvedName.current = null }}
               >
-                Forward Resolution
+                <ArrowRight size={14} />{' '}Forward Resolution
               </button>
               <button
                 className={cx(styles.tab, tab === 'reverse' && styles.tabActive)}
-                onClick={() => { setTab('reverse'); setForwardResult(null); setReverseResult(null); setBulkResult(null); setError(null); setRawJson('') }}
+                onClick={() => { setTab('reverse'); setForwardResult(null); setReverseResult(null); setBulkResult(null); setBulkForwardResult(null); setError(null); setRawJson('') }}
               >
-                Reverse Resolution
+                <RotateCcw size={14} />{' '}Reverse Resolution
               </button>
             </div>
           </div>
@@ -305,22 +352,92 @@ export const TryItNow = () => {
             {tab === 'forward' ? (
               <>
                 <h3 className={styles.cardTitle}>Resolution Request</h3>
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && resolveForward()}
-                  placeholder="vitalik.eth"
-                  className={styles.textInput}
-                />
-                <p className={styles.examplesLabel}>or try these examples</p>
+
+                {/* Single: text input */}
+                {forwardMode === 'single' && (
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && resolveForward()}
+                    placeholder="vitalik.eth"
+                    className={styles.textInput}
+                  />
+                )}
+
+                {/* Bulk: text input + selected name tags */}
+                {forwardMode === 'bulk' && (
+                  <>
+                    <input
+                      type="text"
+                      value={bulkInput}
+                      onChange={(e) => setBulkInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          const v = bulkInput.trim()
+                          if (v) { toggleBulkName(v); setBulkInput('') }
+                        }
+                      }}
+                      placeholder="type name and press Enter"
+                      className={styles.textInput}
+                    />
+                    {bulkNames.size > 0 && (
+                      <div className={styles.bulkNamesList}>
+                        {[...bulkNames].map(n => (
+                          <span key={n} className={styles.bulkNameTag}>
+                            {n}
+                            <button onClick={() => toggleBulkName(n)}>×</button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                <p className={styles.examplesLabel}>
+                  {forwardMode === 'bulk' ? 'or click to add examples' : 'or try these examples'}
+                </p>
                 <div className={styles.chips}>
                   {FORWARD_EXAMPLES.map((ex) => (
-                    <button key={ex} className={styles.chip} onClick={() => resolveForward(ex)}>{ex}</button>
+                    forwardMode === 'bulk'
+                      ? <button key={ex} className={cx(styles.chip, bulkNames.has(ex) && styles.chipActive)} onClick={() => toggleBulkName(ex)}>{ex}</button>
+                      : <button key={ex} className={styles.chip} onClick={() => resolveForward(ex)}>{ex}</button>
                   ))}
                 </div>
 
                 <div className={styles.checkboxGroup}>
+
+                  {/* Bulk checkbox */}
+                  <label className={styles.checkboxRow}>
+                    <div className={styles.checkboxLabelWrap}>
+                      <p className={styles.checkboxLabel}>Bulk Forward Resolve</p>
+                      <div className={styles.infoWrap}>
+                        <Info size={13} className={styles.infoIcon} />
+                        <div className={styles.tooltip}>
+                          <p>Resolve multiple ENS names in a single request. Type a name and press Enter, or click examples to add them to the list.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (forwardMode === 'bulk') {
+                          setForwardMode('single')
+                          setBulkNames(new Set())
+                          setBulkInput('')
+                          setBulkForwardResult(null)
+                          setRawJson('')
+                          lastResolvedName.current = null
+                        } else {
+                          setForwardMode('bulk')
+                          setForwardResult(null)
+                          setRawJson('')
+                        }
+                      }}
+                      className={cx(styles.checkbox, forwardMode === 'bulk' && styles.checkboxChecked)}
+                    >
+                      {forwardMode === 'bulk' && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>}
+                    </button>
+                  </label>
 
                   {/* Use Default */}
                   <label className={styles.checkboxRow}>
@@ -361,9 +478,7 @@ export const TryItNow = () => {
                           </p>
                         </div>
                         {inclAddresses && !useDefault && (
-                          <button className={styles.editBtn} onClick={() => setChainsModalOpen(true)}>
-                            Edit
-                          </button>
+                          <button className={styles.editBtn} onClick={() => setChainsModalOpen(true)}>Edit</button>
                         )}
                       </div>
                     </div>
@@ -384,9 +499,7 @@ export const TryItNow = () => {
                           </p>
                         </div>
                         {inclTexts && !useDefault && (
-                          <button className={styles.editBtn} onClick={() => setTextsModalOpen(true)}>
-                            Edit
-                          </button>
+                          <button className={styles.editBtn} onClick={() => setTextsModalOpen(true)}>Edit</button>
                         )}
                       </div>
                     </div>
@@ -427,9 +540,15 @@ export const TryItNow = () => {
                   allowCustom
                 />
 
-                <Button className={styles.resolveBtn} onClick={() => resolveForward()} disabled={resolving || !input.trim()}>
-                  {resolving ? 'Resolving...' : 'Resolve ENS'}
-                </Button>
+                {forwardMode === 'single' ? (
+                  <Button className={styles.resolveBtn} onClick={() => resolveForward()} disabled={resolving || !input.trim()}>
+                    {resolving ? 'Resolving...' : 'Resolve ENS'}
+                  </Button>
+                ) : (
+                  <Button className={styles.resolveBtn} onClick={resolveBulkForward} disabled={resolving || bulkNames.size === 0}>
+                    {resolving ? 'Resolving...' : `Resolve${bulkNames.size > 0 ? ` (${bulkNames.size})` : ''}`}
+                  </Button>
+                )}
               </>
             ) : (
               <>
@@ -574,6 +693,32 @@ export const TryItNow = () => {
                   </div>
                 )
               })()}
+
+              {/* Forward bulk result */}
+              {bulkForwardResult && (
+                <div className={styles.resultGroups}>
+                  {bulkForwardResult.map((profile, i) => {
+                    const addrs   = profile.addresses?.filter(a => a.exists) ?? []
+                    const texts   = profile.texts?.filter(t => t.exists) ?? []
+                    const content = profile.contenthash?.exists ? profile.contenthash : null
+                    const isEmpty = addrs.length === 0 && texts.length === 0 && !content
+                    return (
+                      <div key={i} className={styles.bulkProfileCard}>
+                        <p className={styles.bulkProfileName}>{profile.name ?? `Result ${i + 1}`}</p>
+                        {isEmpty ? (
+                          <p className={styles.noRecord}>No records found</p>
+                        ) : (
+                          <>
+                            {addrs.length > 0 && <div className={styles.recordBadges}>{addrs.map(a => <RecordBadge key={`${a.chain}-${a.coin}`} label={a.chain?.toUpperCase() ?? String(a.coin)} value={a.value!} />)}</div>}
+                            {texts.length > 0 && <div className={styles.recordBadges}>{texts.map(t => <RecordBadge key={t.key} label={t.key} value={t.value!} />)}</div>}
+                            {content && <div className={styles.recordBadges}><RecordBadge label="contenthash" value={content.value!} /></div>}
+                          </>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
 
               {/* Reverse — single */}
               {reverseResult && (

@@ -104,3 +104,93 @@
   color: #555;
   line-height: 1.6;
 }
+
+// ─── Capabilities table ───────────────────────────────────────────────────────
+.cellFull {
+  grid-column: 1 / -1;
+  min-width: 0;
+
+  .inner {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.capHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 0 32px;
+}
+
+.capHeading {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0a0a0a;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.capSubtitle {
+  font-size: 0.9375rem;
+  color: #666;
+}
+
+.capTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #999;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0 32px 12px;
+    border-bottom: 1px solid $border;
+  }
+
+  td {
+    padding: 14px 32px;
+    border-bottom: 1px solid $border;
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+}
+
+.capName {
+  font-weight: 600;
+  color: #0a0a0a;
+  white-space: nowrap;
+  width: 200px;
+}
+
+.capDesc {
+  color: #555;
+  line-height: 1.5;
+}
+
+.badgeLive {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+  border-radius: 9999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.badgeBeta {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 9999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}

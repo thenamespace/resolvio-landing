@@ -54,7 +54,7 @@ const ENDPOINTS = [
     path: '/ens/v2/reverse/:address',
   },
   {
-    label: 'Bulk reverse resolve',
+    label: 'Bulk reverse resolution',
     method: 'GET',
     path: '/ens/v2/reverse/bulk?addresses=0x…,0x…',
   },
