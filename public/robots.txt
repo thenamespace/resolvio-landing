@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+
+# AI agents and LLM crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# AI discovery files
+Sitemap: https://resolvio.xyz/sitemap.xml
+
+# LLM-friendly content
+# Full API description for AI agents: https://resolvio.xyz/llms.txt
+# AI plugin manifest: https://resolvio.xyz/.well-known/ai-plugin.json
+# OpenAPI spec: https://api.resolvio.xyz/api-docs.json

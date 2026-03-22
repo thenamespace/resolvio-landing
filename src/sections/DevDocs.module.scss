@@ -38,6 +38,48 @@
   max-width: 480px;
 }
 
+// ─── Audience tabs ────────────────────────────────────────────────────────────
+.audienceTabs {
+  display: flex;
+  gap: 4px;
+  margin-top: 24px;
+  background: #f5f5f5;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.audienceTab,
+.audienceTabActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  padding: 7px 18px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.audienceTab {
+  background: transparent;
+  color: #666;
+
+  &:hover {
+    color: #111;
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.audienceTabActive {
+  background: #fff;
+  color: #0a0a0a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 // ─── Grid — same border system ────────────────────────────────────────────────
 .gridOuter {
   width: 100%;
@@ -122,33 +164,19 @@
   border: 1px solid $border;
   border-radius: 12px;
   padding: 16px;
-  background: #f7f7f7;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: #fff;
-  }
-
-  &.stepCardActive {
-    background: #fff;
-  }
+  background: #fff;
 }
 
 .stepNum {
   display: inline-block;
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #888;
-  background: #f0f0f0;
+  color: #fff;
+  background: #0a0a0a;
   border-radius: 6px;
   padding: 2px 7px;
   margin-bottom: 12px;
   letter-spacing: 0.02em;
-
-  &.stepNumActive {
-    background: #0a0a0a;
-    color: #fff;
-  }
 }
 
 .stepTitle {
@@ -295,4 +323,120 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// ─── Agent tab — intro text ────────────────────────────────────────────────────
+.agentIntro {
+  font-size: 0.875rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+// ─── Agent tab — discovery resources ──────────────────────────────────────────
+.resourceList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.resourceRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #fff;
+
+  @media (max-width: $mobile) {
+    flex-direction: column;
+  }
+}
+
+.resourceLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.resourceLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0a0a0a;
+
+  svg {
+    flex-shrink: 0;
+    color: $primary;
+  }
+}
+
+.resourceDesc {
+  font-size: 0.8125rem;
+  color: #888;
+}
+
+.resourceRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+
+  @media (max-width: $mobile) {
+    width: 100%;
+  }
+}
+
+.resourceUrl {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.75rem;
+  color: $primary;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ─── Agent tab — Skill.md block ────────────────────────────────────────────────
+.skillBlock {
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.skillBody {
+  padding: 0;
+  background: #fff;
+  max-height: 380px;
+  overflow-y: auto;
+
+  pre {
+    margin: 0;
+    padding: 16px;
+  }
+
+  code {
+    font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+    font-size: 0.775rem;
+    color: #333;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}
+
+.skillLoading {
+  display: block;
+  padding: 16px;
+  font-size: 0.8125rem;
+  color: #aaa;
 }

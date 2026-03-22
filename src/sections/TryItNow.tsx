@@ -292,17 +292,23 @@ export const TryItNow = () => {
     if (tab === 'reverse') {
       const addrs = parseAddresses(reverseInput)
       if (addrs.length > 1)
-        return `curl ${RESOLVIO_API}/ens/v2/reverse/bulk?addresses=${addrs.join(',')}`
-      return `curl ${RESOLVIO_API}/ens/v2/reverse/${addrs[0] || '<address>'}`
+        return `curl "${RESOLVIO_API}/ens/v2/reverse/bulk?addresses=${addrs.map(encodeURIComponent).join(',')}"`
+      return `curl "${RESOLVIO_API}/ens/v2/reverse/${encodeURIComponent(addrs[0] || '<address>')}"`
     }
     if (tab === 'forward' && forwardMode === 'bulk') {
       if (bulkNames.size === 0) return null
-      const qs = buildParams().join('&')
-      return `curl "${RESOLVIO_API}/ens/v2/profile/bulk?names=${[...bulkNames].join(',')}${qs ? '&' + qs : ''}"`
+      const qs = buildParams().map(p => {
+        const [k, v] = p.split('=')
+        return `${k}=${encodeURIComponent(v)}`
+      }).join('&')
+      return `curl "${RESOLVIO_API}/ens/v2/profile/bulk?names=${[...bulkNames].map(encodeURIComponent).join(',')}${qs ? '&' + qs : ''}"`
     }
     if (!trimmedInput) return null
-    const qs = buildParams().join('&')
-    return `curl ${RESOLVIO_API}/ens/v2/profile/${trimmedInput}${qs ? '?' + qs : ''}`
+    const qs = buildParams().map(p => {
+      const [k, v] = p.split('=')
+      return `${k}=${encodeURIComponent(v)}`
+    }).join('&')
+    return `curl "${RESOLVIO_API}/ens/v2/profile/${encodeURIComponent(trimmedInput)}${qs ? '?' + qs : ''}"`
   })()
 
   const copyToClipboard = (text: string) => {

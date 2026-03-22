@@ -1,0 +1,110 @@
+# Resolvio
+
+> Resolvio is a high-performance Web3 name resolution API. It resolves ENS names to addresses, text records, content hashes, and reverse-resolves Ethereum addresses back to ENS names, all in a single REST call.
+
+Resolvio is part of the Namespace ENS infrastructure suite. It is the unified resolution layer for names, addresses, and identities across Web3.
+
+## Base URL
+
+https://api.resolvio.xyz
+
+## Authentication
+
+No API key required. All endpoints are publicly accessible.
+
+## Capabilities
+
+- Resolve full profile (addresses + texts + contenthash) for any ENS name
+- Resolve individual text records (avatar, email, description, socials, and custom keys)
+- Resolve cryptocurrency addresses for 100+ chains (ENSIP-9)
+- Resolve IPFS, IPNS, Arweave, and Swarm content hashes
+- Reverse resolve an Ethereum address to its primary ENS name
+- Bulk forward resolution:resolve multiple ENS names in a single call
+- Bulk reverse resolution:resolve multiple Ethereum addresses in a single call
+- List all supported chains with names and coinType values
+- Cache control:per-name invalidation and forced fresh resolution
+
+## Key Endpoints
+
+### Resolve full profile
+GET /ens/v2/profile/{name}
+
+Returns addresses, text records, and contenthash for an ENS name.
+
+Query parameters:
+- `texts`:comma-separated text keys to fetch (e.g. `avatar,email,description`)
+- `chains`:comma-separated chain slugs to fetch addresses for (e.g. `eth,btc,base`)
+- `useDefault`:set to `true` to use sensible defaults for texts and chains
+- `noCache`:set to `true` to bypass cache and force fresh resolution
+
+Example:
+```
+GET https://api.resolvio.xyz/ens/v2/profile/vitalik.eth?useDefault=true
+```
+
+### Resolve text records only
+GET /ens/v2/texts/{name}
+
+### Resolve addresses only
+GET /ens/v2/addresses/{name}
+
+### Resolve content hash only
+GET /ens/v2/contenthash/{name}
+
+### Reverse resolve (address → name)
+GET /ens/v2/reverse/{address}
+
+Returns the primary ENS name for an Ethereum address.
+
+Example:
+```
+GET https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+```
+
+### Bulk forward resolution
+GET /ens/v2/profile/bulk?names={name1},{name2},...
+
+Resolves multiple ENS names in a single request. Returns an array of profile results.
+
+Example:
+```
+GET https://api.resolvio.xyz/ens/v2/profile/bulk?names=vitalik.eth,nick.eth
+```
+
+### Bulk reverse resolution
+GET /ens/v2/reverse/bulk?addresses={addr1},{addr2},...
+
+Resolves multiple Ethereum addresses to ENS names in a single request.
+
+### List supported chains
+GET /ens/v2/chains
+
+Returns all supported blockchain networks with their names and ENSIP-9 coinType values.
+
+### Invalidate cache
+DELETE /ens/v2/cache/{name}
+
+Invalidates the cached resolution for a specific ENS name.
+
+## Response format
+
+All endpoints return JSON. Profile responses include:
+```json
+{
+  "name": "vitalik.eth",
+  "addresses": {
+    "eth": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+  },
+  "texts": {
+    "avatar": "https://...",
+    "email": "...",
+    "description": "..."
+  },
+  "contenthash": "ipfs://..."
+}
+```
+
+## Full API Reference
+
+OpenAPI spec: https://api.resolvio.xyz/api-docs.json
+Interactive docs: https://api.resolvio.xyz/api-docs

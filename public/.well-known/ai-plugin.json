@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Resolvio",
+  "name_for_model": "resolvio",
+  "description_for_human": "Resolve ENS names to addresses, text records, and content hashes. Reverse-resolve Ethereum addresses to ENS names. Supports bulk resolution for multiple names or addresses in a single call.",
+  "description_for_model": "Resolvio resolves ENS (Ethereum Name Service) names to cryptocurrency addresses, text records (avatar, email, description, socials), and content hashes (IPFS, IPNS, Arweave). It also reverse-resolves Ethereum addresses back to their primary ENS name. Use this plugin when a user wants to look up a Web3 identity, find the wallet address for an ENS name, or find the ENS name for an Ethereum address. Supports bulk resolution for multiple names or addresses at once.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://api.resolvio.xyz/api-docs.json"
+  },
+  "logo_url": "https://resolvio.xyz/icon.svg",
+  "contact_email": "support@namespace.ninja",
+  "legal_info_url": "https://resolvio.xyz"
+}

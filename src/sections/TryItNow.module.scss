@@ -499,6 +499,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  margin-bottom: 10px;
+
+  &:last-child { margin-bottom: 0; }
 }
 
 .recordBadge {
@@ -506,7 +509,7 @@
   align-items: center;
   gap: 6px;
   border: 1px solid $border;
-  border-radius: 9999px;
+  border-radius: 10px;
   background: #fff;
   cursor: pointer;
   overflow: hidden;

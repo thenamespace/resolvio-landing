@@ -10,6 +10,7 @@ const CAPABILITIES = [
   { operation: 'Bulk forward resolution', desc: 'Resolve multiple ENS names concurrently in a single API call',          status: 'Live' },
   { operation: 'Bulk reverse resolution', desc: 'Resolve multiple addresses to ENS names in a single batched RPC call',  status: 'Live' },
   { operation: 'Supported chains',     desc: 'List all supported chains with names and coinType values',          status: 'Live' },
+  { operation: 'Cache control',        desc: 'Per-name cache invalidation via DELETE. Force fresh resolution with noCache to bypass the cache on any request.', status: 'Live' },
 ]
 
 const FEATURES = [
@@ -46,7 +47,7 @@ const FEATURES = [
 ]
 
 export const WhyResolvio = () => (
-  <section className={styles.outer}>
+  <section id="benefits" className={styles.outer}>
     <div className={styles.header}>
       <span className={styles.label}>Benefits</span>
       <h2 className={styles.heading}>Why Resolvio?</h2>
@@ -72,7 +73,7 @@ export const WhyResolvio = () => (
       <div className={styles.grid}>
         <div className={styles.cellFull}>
           <div className={styles.inner}>
-            <div className={styles.capHeader}>
+            <div id="capabilities" className={styles.capHeader}>
               <span className={styles.label}>Capabilities</span>
               <h3 className={styles.capHeading}>What Resolvio resolves.</h3>
               <p className={styles.capSubtitle}>A precise breakdown of supported operations and outputs.</p>
