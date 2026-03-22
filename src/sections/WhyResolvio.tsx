@@ -1,4 +1,4 @@
-import { Zap, Shield, Globe, Code2, Layers, ArrowUpRight } from 'lucide-react'
+import { Zap, Shield, Globe, Code2, Layers, BrainCircuit } from 'lucide-react'
 import styles from './WhyResolvio.module.scss'
 
 const FEATURES = [
@@ -28,15 +28,16 @@ const FEATURES = [
     desc: 'Fetch exactly what you need – addresses, text records, content hashes, or everything.',
   },
   {
-    icon: <ArrowUpRight size={18} />,
-    title: 'Always Growing',
-    desc: 'Continuously adding support for new naming systems and blockchain protocols.',
+    icon: <BrainCircuit size={18} />,
+    title: 'AI-Friendly',
+    desc: 'Built for the agentic stack – for use by AI agents that need to resolve Web3 identities.',
   },
 ]
 
 export const WhyResolvio = () => (
   <section className={styles.outer}>
     <div className={styles.header}>
+      <span className={styles.label}>Benefits</span>
       <h2 className={styles.heading}>Why Resolvio?</h2>
       <p className={styles.subtitle}>The most powerful and developer-friendly Web3 name resolution service</p>
     </div>

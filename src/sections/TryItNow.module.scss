@@ -112,6 +112,26 @@
 }
 
 // ─── Card content ─────────────────────────────────────────────────────────────
+.responseHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+
+  .cardTitle {
+    margin-bottom: 0;
+  }
+}
+
+.responseMs {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: 9999px;
+  padding: 2px 8px;
+}
+
 .cardTitle {
   font-size: 1.125rem;
   font-weight: 700;
@@ -593,6 +613,13 @@
 .requestPreviewBody {
   padding: 12px 14px;
   background: #fff;
+}
+
+.curlPlaceholder {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.775rem;
+  color: #aaa;
+  display: block;
 }
 
 .curlCode {

@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resolvio — Universal Web3 Name Resolution</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --surface: #111114;
+      --border: #1e1e24;
+      --border-soft: #17171d;
+      --text: #e8e8ec;
+      --text-muted: #6b6b7a;
+      --text-dim: #3d3d4d;
+      --accent: #c8f542;
+      --accent-dim: rgba(200,245,66,0.08);
+      --accent-mid: rgba(200,245,66,0.15);
+      --blue: #4a9eff;
+      --blue-dim: rgba(74,158,255,0.08);
+      --red: #ff6b6b;
+      --font-mono: 'DM Mono', monospace;
+      --font-serif: 'Fraunces', Georgia, serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── GRID OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border-soft) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ── LAYOUT ── */
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,11,0.88);
+      backdrop-filter: blur(12px);
+    }
+    .nav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-dot { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--accent);
+      color: #0a0a0b;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-weight: 500;
+      font-size: 13px;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 96px 0 72px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-label {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-label::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: clamp(36px, 6vw, 60px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 28px;
+      max-width: 640px;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.75;
+      margin-bottom: 40px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #0a0a0b;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 13px;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-ghost {
+      color: var(--text-muted);
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-ghost:hover { border-color: var(--text-dim); color: var(--text); }
+
+    /* ── DEMO BLOCK ── */
+    .demo-block {
+      margin-top: 56px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .demo-bar {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .demo-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .demo-dot:first-child { background: #ff6b6b; }
+    .demo-dot:nth-child(2) { background: #ffc84a; }
+    .demo-dot:nth-child(3) { background: var(--accent); }
+    .demo-title {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-left: 4px;
+    }
+    .demo-code {
+      padding: 24px 20px;
+      font-size: 13px;
+      line-height: 1.9;
+      overflow-x: auto;
+    }
+    .demo-code pre { white-space: pre-wrap; }
+    .c-comment { color: var(--text-dim); }
+    .c-keyword { color: #c792ea; }
+    .c-fn { color: var(--blue); }
+    .c-string { color: #c3e88d; }
+    .c-val { color: var(--accent); }
+    .c-type { color: #ffcb6b; }
+
+    /* ── SECTION SHARED ── */
+    section {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+    }
+    h2 {
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: clamp(26px, 4vw, 36px);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      color: var(--text-muted);
+      max-width: 500px;
+      margin-bottom: 48px;
+      font-size: 14px;
+    }
+
+    /* ── WHAT IS IT ── */
+    .what-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .what-card {
+      background: var(--surface);
+      padding: 28px 24px;
+    }
+    .what-card h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .what-card p {
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.75;
+    }
+    .what-card code {
+      color: var(--text);
+      background: var(--border);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+
+    /* ── CAPABILITIES ── */
+    .cap-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .cap-table th {
+      text-align: left;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dim);
+      font-weight: 400;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .cap-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-soft);
+      vertical-align: top;
+    }
+    .cap-table tr:last-child td { border-bottom: none; }
+    .cap-table tr:hover td { background: var(--surface); }
+    .cap-name {
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .cap-desc { color: var(--text-muted); }
+    .cap-example {
+      font-family: var(--font-mono);
+      color: var(--blue);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+    .badge-green { background: var(--accent-dim); color: var(--accent); }
+    .badge-blue { background: var(--blue-dim); color: var(--blue); }
+
+    /* ── SNIPPET TABS ── */
+    .tabs { margin-bottom: 0; }
+    .tab-bar {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      padding: 0 4px;
+    }
+    .tab {
+      font-size: 12px;
+      padding: 10px 16px;
+      color: var(--text-dim);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+    .tab.active { color: var(--accent); border-color: var(--accent); }
+    .tab:hover:not(.active) { color: var(--text-muted); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .snippet {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+    }
+    .snippet pre {
+      padding: 24px 20px;
+      font-size: 13px;
+      line-height: 1.9;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .step {
+      background: var(--surface);
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    .step-num {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      padding-top: 2px;
+    }
+    .step h3 {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .step p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .step code {
+      color: var(--accent);
+      font-size: 12px;
+    }
+
+    /* ── AI-FRIENDLY SECTION ── */
+    .ai-block {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .ai-header {
+      background: var(--surface);
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ai-icon {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(200,245,66,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .ai-header-text h3 {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .ai-header-text p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .ai-body { padding: 24px; }
+    .ai-fact-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .ai-fact {
+      display: grid;
+      grid-template-columns: 16px 1fr;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+    .ai-fact::before {
+      content: '→';
+      color: var(--accent);
+      margin-top: 1px;
+    }
+    .ai-fact strong { color: var(--text); font-weight: 500; }
+    .ai-fact code {
+      color: var(--blue);
+      font-size: 12px;
+      background: var(--blue-dim);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    /* ── NAMESPACE CALLOUT ── */
+    .namespace-callout {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 28px 24px;
+      background: var(--surface);
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .ns-badge {
+      flex-shrink: 0;
+      background: var(--accent-dim);
+      border: 1px solid rgba(200,245,66,0.18);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .ns-text h3 {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .ns-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .ns-text a { color: var(--accent); text-decoration: none; }
+    .ns-text a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 40px 0;
+      position: relative;
+      z-index: 1;
+    }
+    .footer-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-left { color: var(--text-dim); font-size: 12px; }
+    .footer-right {
+      display: flex;
+      gap: 20px;
+    }
+    .footer-right a {
+      color: var(--text-dim);
+      font-size: 12px;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-right a:hover { color: var(--text-muted); }
+
+    /* ── MISC ── */
+    .divider { height: 1px; background: var(--border); margin: 0; }
+
+    /* ── ANIMATION ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero > * {
+      animation: fadeUp 0.5s ease both;
+    }
+    .hero .hero-label { animation-delay: 0.0s; }
+    .hero h1 { animation-delay: 0.08s; }
+    .hero .hero-sub { animation-delay: 0.15s; }
+    .hero .hero-actions { animation-delay: 0.22s; }
+    .hero .demo-block { animation-delay: 0.3s; }
+
+    @media (max-width: 640px) {
+      .what-grid { grid-template-columns: 1fr; }
+      .cap-table th:nth-child(3), .cap-table td:nth-child(3) { display: none; }
+      .namespace-callout { flex-direction: column; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">resolvio<span class="logo-dot">.</span></a>
+    <ul class="nav-links">
+      <li><a href="#capabilities">Capabilities</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#ai-context">For AI agents</a></li>
+      <li><a href="https://docs.namespace.ninja" target="_blank">Docs ↗</a></li>
+    </ul>
+    <a href="#get-started" class="nav-cta">Get started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="wrap">
+  <section class="hero">
+    <div class="hero-label">Universal Web3 Name Resolution</div>
+    <h1>Resolve any Web3 name.<br><em>One API.</em> Every namespace.</h1>
+    <p class="hero-sub">
+      Resolvio normalizes ENS, UD, Lens, Farcaster, and other Web3 naming systems into a single consistent resolution layer — so you don't have to maintain five integrations, write custom fallback logic, or care which namespace your user registered on.
+    </p>
+    <div class="hero-actions">
+      <a href="#get-started" class="btn-primary">Read the docs</a>
+      <a href="#capabilities" class="btn-ghost">View capabilities</a>
+    </div>
+
+    <!-- DEMO BLOCK -->
+    <div class="demo-block">
+      <div class="demo-bar">
+        <div class="demo-dot"></div>
+        <div class="demo-dot"></div>
+        <div class="demo-dot"></div>
+        <span class="demo-title">resolve.ts</span>
+      </div>
+      <div class="demo-code">
+        <pre><span class="c-comment">// resolve any Web3 name to an address — namespace-agnostic</span>
+<span class="c-keyword">import</span> { <span class="c-fn">resolve</span> } <span class="c-keyword">from</span> <span class="c-string">'@namespace/resolvio'</span>
+
+<span class="c-keyword">const</span> addr = <span class="c-keyword">await</span> <span class="c-fn">resolve</span>(<span class="c-string">'vitalik.eth'</span>)
+<span class="c-comment">// → '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'</span>
+
+<span class="c-keyword">const</span> addr2 = <span class="c-keyword">await</span> <span class="c-fn">resolve</span>(<span class="c-string">'nick.lens'</span>)
+<span class="c-comment">// → '0x…'  same interface, different namespace</span>
+
+<span class="c-keyword">const</span> profile = <span class="c-keyword">await</span> <span class="c-fn">resolveProfile</span>(<span class="c-string">'vitalik.eth'</span>)
+<span class="c-comment">// → { address, avatar, bio, socials, contenthash }</span></pre>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- WHAT IS IT -->
+<div class="wrap">
+  <section id="what">
+    <div class="section-label">// What it is</div>
+    <h2>One resolver.<br>Every namespace.</h2>
+    <p class="section-sub">Web3 naming is fragmented. ENS, Unstoppable Domains, Lens, Farcaster, and others each have their own resolution logic, RPC requirements, and record schemas. Resolvio abstracts that away.</p>
+
+    <div class="what-grid">
+      <div class="what-card">
+        <h3>Input</h3>
+        <p>Any Web3 name — <code>name.eth</code>, <code>name.lens</code>, <code>name.crypto</code>, Farcaster usernames, or raw <code>0x…</code> addresses for reverse lookup. If it's a Web3 identity string, Resolvio handles it.</p>
+      </div>
+      <div class="what-card">
+        <h3>Output</h3>
+        <p>A normalized <code>ResolvedProfile</code> object: address, chain-specific addresses (BTC, SOL, etc.), avatar, bio, linked socials, contenthash, and raw records. Consistent shape regardless of source namespace.</p>
+      </div>
+      <div class="what-card">
+        <h3>Routing</h3>
+        <p>Resolvio detects the namespace from the TLD or format, routes to the correct resolver under the hood, and applies fallback logic. You never write <code>if .eth … else if .lens …</code> again.</p>
+      </div>
+      <div class="what-card">
+        <h3>Caching</h3>
+        <p>Resolution results are cached with configurable TTL. On-chain lookups are batched where possible via <code>multicall</code>. Cold path is fast. Warm path is very fast.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- CAPABILITIES -->
+<div class="wrap">
+  <section id="capabilities">
+    <div class="section-label">// Capabilities</div>
+    <h2>What Resolvio resolves.</h2>
+    <p class="section-sub">A precise breakdown of supported operations, inputs, and outputs.</p>
+
+    <table class="cap-table">
+      <thead>
+        <tr>
+          <th>Operation</th>
+          <th>Description</th>
+          <th>Example</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cap-name">Forward resolution</td>
+          <td class="cap-desc">Name → primary address (ETH by default)</td>
+          <td class="cap-example">resolve('vitalik.eth')</td>
+          <td><span class="badge badge-green">Live</span></td>
+        </tr>
+        <tr>
+          <td class="cap-name">Reverse resolution</td>
+          <td class="cap-desc">Address → primary name</td>
+          <td class="cap-example">reverseLookup('0xd8dA…')</td>
+          <td><span class="badge badge-green">Live</span></td>
+        </tr>
+        <tr>
+          <td class="cap-name">Profile resolution</td>
+          <td class="cap-desc">Full profile — avatar, bio, socials, records</td>
+          <td class="cap-example">resolveProfile('nick.eth')</td>
+          <td><span class="badge badge-green">Live</span></td>
+        </tr>
+        <tr>
+          <td class="cap-name">Multichain address</td>
+          <td class="cap-desc">Resolve BTC, SOL, LTC, and 100+ chain addresses per ENSIP-9</td>
+          <td class="cap-example">resolve('vitalik.eth', 'BTC')</td>
+          <td><span class="badge badge-green">Live</span></td>
+        </tr>
+        <tr>
+          <td class="cap-name">Text records</td>
+          <td class="cap-desc">Arbitrary key-value records (email, url, twitter, etc.)</td>
+          <td class="cap-example">getText('vitalik.eth', 'url')</td>
+          <td><span class="badge badge-green">Live</span></td>
+        </tr>
+        <tr>
+          <td class="cap-name">Contenthash</td>
+          <td class="cap-desc">IPFS, IPNS, Arweave, and Swarm content pointers</td>
+          <td class="cap-example">getContenthash('vitalik.eth')</td>
+          <td><span class="badge badge-green">Live</span></td>
+        </tr>
+        <tr>
+          <td class="cap-name">Batch resolution</td>
+          <td class="cap-desc">Resolve multiple names in a single call</td>
+          <td class="cap-example">resolveMany(['a.eth','b.lens'])</td>
+          <td><span class="badge badge-green">Live</span></td>
+        </tr>
+        <tr>
+          <td class="cap-name">Flexible caching</td>
+          <td class="cap-desc">Custom cache adapter (Redis, KV, in-memory). TTL from on-chain ttl(). Stale-while-revalidate supported.</td>
+          <td class="cap-example">createResolver({ cache: { get, set } })</td>
+          <td><span class="badge badge-green">Live</span></td>
+        </tr>
+        <tr>
+          <td class="cap-name">Cross-namespace search</td>
+          <td class="cap-desc">Find all names registered to an address across namespaces</td>
+          <td class="cap-example">namesForAddress('0xd8dA…')</td>
+          <td><span class="badge badge-blue">Beta</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<!-- CODE SNIPPETS -->
+<div class="wrap">
+  <section id="code">
+    <div class="section-label">// Integration</div>
+    <h2>Plug it in.</h2>
+    <p class="section-sub">Works wherever JavaScript runs. First-class TypeScript support.</p>
+
+    <div class="tabs">
+      <div class="tab-bar">
+        <div class="tab active" onclick="switchTab(this, 'ts')">TypeScript</div>
+        <div class="tab" onclick="switchTab(this, 'viem')">viem</div>
+        <div class="tab" onclick="switchTab(this, 'rest')">REST</div>
+        <div class="tab" onclick="switchTab(this, 'agent')">AI agent</div>
+      </div>
+
+      <div class="snippet">
+        <div id="tab-ts" class="tab-content active">
+          <pre><span class="c-keyword">import</span> { <span class="c-fn">resolve</span>, <span class="c-fn">resolveProfile</span>, <span class="c-fn">reverseLookup</span> } <span class="c-keyword">from</span> <span class="c-string">'@namespace/resolvio'</span>
+
+<span class="c-comment">// Forward resolution</span>
+<span class="c-keyword">const</span> address = <span class="c-keyword">await</span> <span class="c-fn">resolve</span>(<span class="c-string">'vitalik.eth'</span>)
+
+<span class="c-comment">// Full profile</span>
+<span class="c-keyword">const</span> profile = <span class="c-keyword">await</span> <span class="c-fn">resolveProfile</span>(<span class="c-string">'vitalik.eth'</span>)
+<span class="c-comment">// {</span>
+<span class="c-comment">//   name: 'vitalik.eth',</span>
+<span class="c-comment">//   address: '0xd8dA…',</span>
+<span class="c-comment">//   avatar: 'https://…',</span>
+<span class="c-comment">//   socials: { twitter: '@VitalikButerin', … },</span>
+<span class="c-comment">//   namespace: 'ens'</span>
+<span class="c-comment">// }</span>
+
+<span class="c-comment">// Reverse</span>
+<span class="c-keyword">const</span> name = <span class="c-keyword">await</span> <span class="c-fn">reverseLookup</span>(<span class="c-string">'0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'</span>)
+<span class="c-comment">// → 'vitalik.eth'</span></pre>
+        </div>
+
+        <div id="tab-viem" class="tab-content">
+          <pre><span class="c-comment">// Drop-in viem integration — uses Resolvio as the resolution transport</span>
+<span class="c-keyword">import</span> { <span class="c-fn">createPublicClient</span>, <span class="c-fn">http</span> } <span class="c-keyword">from</span> <span class="c-string">'viem'</span>
+<span class="c-keyword">import</span> { <span class="c-fn">resolvioTransport</span> } <span class="c-keyword">from</span> <span class="c-string">'@namespace/resolvio/viem'</span>
+<span class="c-keyword">import</span> { mainnet } <span class="c-keyword">from</span> <span class="c-string">'viem/chains'</span>
+
+<span class="c-keyword">const</span> client = <span class="c-fn">createPublicClient</span>({
+  chain: mainnet,
+  transport: <span class="c-fn">resolvioTransport</span>(),
+})
+
+<span class="c-comment">// Works exactly like standard viem ENS resolution,</span>
+<span class="c-comment">// but with multi-namespace support under the hood</span>
+<span class="c-keyword">const</span> address = <span class="c-keyword">await</span> client.ens.<span class="c-fn">getAddress</span>({ name: <span class="c-string">'nick.lens'</span> })</pre>
+        </div>
+
+        <div id="tab-rest" class="tab-content">
+          <pre><span class="c-comment"># Forward resolution</span>
+GET https://api.resolvio.xyz/resolve?name=vitalik.eth
+
+<span class="c-comment"># Profile</span>
+GET https://api.resolvio.xyz/profile?name=vitalik.eth
+
+<span class="c-comment"># Reverse lookup</span>
+GET https://api.resolvio.xyz/reverse?address=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+
+<span class="c-comment"># Response (JSON)</span>
+{
+  <span class="c-string">"name"</span>: <span class="c-string">"vitalik.eth"</span>,
+  <span class="c-string">"address"</span>: <span class="c-string">"0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"</span>,
+  <span class="c-string">"namespace"</span>: <span class="c-string">"ens"</span>,
+  <span class="c-string">"avatar"</span>: <span class="c-string">"https://…"</span>,
+  <span class="c-string">"ttl"</span>: <span class="c-val">86400</span>
+}</pre>
+        </div>
+
+        <div id="tab-agent" class="tab-content">
+          <pre><span class="c-comment">// AI agents: use Resolvio MCP server for tool-based resolution</span>
+<span class="c-comment">// Compatible with Claude, GPT-4, and any MCP-capable agent runtime</span>
+
+<span class="c-comment">// Tool: resolve_web3_name</span>
+<span class="c-comment">// Input:  { name: string }  or  { address: string }</span>
+<span class="c-comment">// Output: ResolvedProfile — structured JSON, LLM-safe</span>
+
+<span class="c-comment">// MCP server config (claude_desktop_config.json)</span>
+{
+  <span class="c-string">"mcpServers"</span>: {
+    <span class="c-string">"resolvio"</span>: {
+      <span class="c-string">"command"</span>: <span class="c-string">"npx"</span>,
+      <span class="c-string">"args"</span>: [<span class="c-string">"@namespace/resolvio-mcp"</span>]
+    }
+  }
+}
+
+<span class="c-comment">// The agent can now call: resolve_web3_name({ name: "vitalik.eth" })</span>
+<span class="c-comment">// No API key required for public resolution.</span></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="wrap">
+  <section id="how-it-works">
+    <div class="section-label">// Under the hood</div>
+    <h2>How resolution works.</h2>
+    <p class="section-sub">No magic. Just routing, caching, and normalization done once — so you don't have to.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div>
+          <h3>Namespace detection</h3>
+          <p>Resolvio parses the TLD or input format to identify the namespace. <code>.eth</code> → ENS. <code>.lens</code> → Lens Protocol. <code>.crypto</code> / <code>.nft</code> / <code>.x</code> → Unstoppable Domains. Farcaster FIDs and raw addresses also handled.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div>
+          <h3>Resolver lookup</h3>
+          <p>For ENS: namehash the input, query the Registry for the resolver contract, then call <code>addr()</code>, <code>text()</code>, or <code>contenthash()</code> on the resolver. For other namespaces: equivalent on-chain or indexed queries via the appropriate contracts.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div>
+          <h3>Normalization</h3>
+          <p>Records are coerced into a typed <code>ResolvedProfile</code> schema. Cross-chain addresses decoded via ENSIP-9 (SLIP-44 coin types). Avatar URIs resolved to canonical HTTPS URLs. Social handles extracted from standard text record keys.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div>
+          <h3>Cache + TTL</h3>
+          <p>Results cached in-memory by default. Pass a custom cache adapter (Redis, KV, etc.) for edge or server deployments. TTL respects on-chain <code>ttl()</code> values where available. Stale-while-revalidate supported.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- AI-FRIENDLY SECTION -->
+<div class="wrap">
+  <section id="ai-context">
+    <div class="section-label">// For AI agents and LLM tooling</div>
+    <h2>Built for the agentic stack.</h2>
+    <p class="section-sub">Resolvio ships an MCP server and structured outputs designed for use by AI agents that need to resolve Web3 identities at runtime.</p>
+
+    <div class="ai-block">
+      <div class="ai-header">
+        <div class="ai-icon">⚙</div>
+        <div class="ai-header-text">
+          <h3>Machine-readable context</h3>
+          <p>What an LLM or agent needs to know about Resolvio</p>
+        </div>
+      </div>
+      <div class="ai-body">
+        <ul class="ai-fact-list">
+          <li class="ai-fact"><strong>What it does:</strong> Resolves Web3 name identifiers (ENS names, Lens handles, Unstoppable Domains, Farcaster usernames) to structured profiles including Ethereum addresses, multichain addresses, avatars, and social records.</li>
+          <li class="ai-fact"><strong>Input formats:</strong> <code>name.eth</code>, <code>name.lens</code>, <code>name.crypto</code>, raw <code>0x…</code> hex addresses (for reverse lookup), or Farcaster username strings.</li>
+          <li class="ai-fact"><strong>Output schema:</strong> <code>{ name, address, namespace, avatar, bio, socials, addresses, contenthash, ttl }</code> — all fields optional, never null (omitted if unavailable).</li>
+          <li class="ai-fact"><strong>MCP tool names:</strong> <code>resolve_web3_name</code>, <code>reverse_lookup</code>, <code>get_profile</code>, <code>get_text_record</code>, <code>batch_resolve</code>.</li>
+          <li class="ai-fact"><strong>Error handling:</strong> Returns typed errors — <code>NOT_FOUND</code>, <code>INVALID_NAME</code>, <code>RESOLUTION_FAILED</code> — never throws silently. Safe to call without try/catch.</li>
+          <li class="ai-fact"><strong>No wallet required:</strong> All resolution operations are read-only. No signing, no private keys, no gas.</li>
+          <li class="ai-fact"><strong>Namespace authority:</strong> ENS is the canonical namespace for <code>.eth</code> names. Resolvio does not fabricate records; if a field is missing on-chain, it is absent in the response.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- NAMESPACE CALLOUT -->
+<div class="wrap">
+  <section id="get-started">
+    <div class="section-label">// Built by Namespace</div>
+
+    <div class="namespace-callout">
+      <div class="ns-badge">namespace.ninja</div>
+      <div class="ns-text">
+        <h3>Resolvio is part of the Namespace ENS infrastructure suite.</h3>
+        <p>
+          Namespace builds ENS identity and tooling — subname infrastructure, ENS Components (React UI kit), ENS MCP server, and Namera (agent wallet infrastructure). Resolvio is the resolution layer that ties it together.
+          <br/><br/>
+          <a href="https://namespace.ninja" target="_blank">namespace.ninja ↗</a>&nbsp;&nbsp;·&nbsp;&nbsp;
+          <a href="https://docs.namespace.ninja" target="_blank">Documentation ↗</a>&nbsp;&nbsp;·&nbsp;&nbsp;
+          <a href="https://github.com/namespace-ens" target="_blank">GitHub ↗</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-left">© 2025 Namespace. MIT licensed where applicable.</div>
+    <div class="footer-right">
+      <a href="https://docs.namespace.ninja" target="_blank">Docs</a>
+      <a href="https://github.com/namespace-ens" target="_blank">GitHub</a>
+      <a href="https://x.com/thecaphimself" target="_blank">X / Twitter</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function switchTab(el, id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
+  }
+</script>
+
+</body>
+</html>

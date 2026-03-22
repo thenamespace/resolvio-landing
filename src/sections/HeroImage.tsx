@@ -1,4 +1,4 @@
-import { ShieldCheck } from 'lucide-react'
+import { Network } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import bannerImage from '../assets/banner-image.svg'
 import styles from './HeroImage.module.scss'
@@ -11,14 +11,14 @@ export const HeroImage = () => {
       <div className={styles.inner}>
         <div className={styles.badge}>
           <span>Universal Web3 Name Resolution</span>
-          <ShieldCheck size={16} strokeWidth={2.5} />
+          <Network size={16} strokeWidth={2.5} />
         </div>
 
         <h1 className={styles.heading}>
-          Resolve any Web3<br />name identity
+          Resolve Web3 Identities.<br />One API. Every namespace.
         </h1>
 
-        <p className={styles.subtitle}>One API for ENS, DNS and beyond.</p>
+        <p className={styles.subtitle}>Resolvio provides a complete identity resolution service through a single API. Built for every chain, wallet, app, and AI agent.</p>
       </div>
 
       {/* Full-width banner */}
@@ -27,8 +27,8 @@ export const HeroImage = () => {
       {/* Constrained buttons */}
       <div className={styles.inner}>
         <div className={styles.actions}>
-          <a href="#playground"><Button size="lg">Try Playground</Button></a>
-          <a href="#docs"><Button size="lg" variant="secondary">View AI Docs</Button></a>
+          <a href="#playground"><Button size="lg">Start Resolving</Button></a>
+          <a href="#docs"><Button size="lg" variant="secondary">View Docs</Button></a>
         </div>
       </div>
 

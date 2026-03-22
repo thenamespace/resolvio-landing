@@ -91,6 +91,7 @@ export const TryItNow = () => {
   const [showJson, setShowJson]           = useState(false)
   const [error, setError]                 = useState<string | null>(null)
   const [copied, setCopied]               = useState(false)
+  const [responseMs, setResponseMs]       = useState<number | null>(null)
 
   // Include toggles
   const [useDefault, setUseDefault]       = useState(false)
@@ -109,6 +110,9 @@ export const TryItNow = () => {
   // Modal open state
   const [chainsModalOpen, setChainsModalOpen] = useState(false)
   const [textsModalOpen, setTextsModalOpen]   = useState(false)
+
+  // Track last resolved name to avoid duplicate requests
+  const lastResolvedName = useRef<string | null>(null)
 
   // Derived: chain items for modal (populated after fetch)
   const chainPickerItems: PickerItem[] = chains.map(c => ({
@@ -165,18 +169,30 @@ export const TryItNow = () => {
     const q = (name ?? input).trim()
     if (!q) return
     setInput(q)
+    if (!isValidDomain(q)) {
+      setError('Invalid name — expected format: name.tld (e.g. vitalik.eth)')
+      setForwardResult(null)
+      setRawJson('')
+      return
+    }
+    if (lastResolvedName.current === q && forwardResult !== null) return
     setResolving(true)
     setForwardResult(null)
     setError(null)
+    setResponseMs(null)
 
     const qs = buildParams().join('&')
+    const t0 = performance.now()
     try {
       const res  = await fetch(`${RESOLVIO_API}/ens/v2/profile/${q}${qs ? '?' + qs : ''}`)
       const data = await res.json()
+      setResponseMs(Math.round(performance.now() - t0))
       if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
       setForwardResult(data)
       setRawJson(JSON.stringify(data, null, 2))
+      lastResolvedName.current = q
     } catch (e) {
+      setResponseMs(Math.round(performance.now() - t0))
       setError(e instanceof Error ? e.message : 'Request failed')
     } finally {
       setResolving(false)
@@ -191,22 +207,27 @@ export const TryItNow = () => {
     setReverseResult(null)
     setBulkResult(null)
     setError(null)
+    setResponseMs(null)
 
+    const t0 = performance.now()
     try {
       if (addrs.length === 1) {
         const res  = await fetch(`${RESOLVIO_API}/ens/v2/reverse/${addrs[0]}`)
         const data = await res.json()
+        setResponseMs(Math.round(performance.now() - t0))
         if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
         setReverseResult(data)
         setRawJson(JSON.stringify(data, null, 2))
       } else {
         const res  = await fetch(`${RESOLVIO_API}/ens/v2/reverse/bulk?addresses=${addrs.join(',')}`)
         const data = await res.json()
+        setResponseMs(Math.round(performance.now() - t0))
         if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
         setBulkResult(data)
         setRawJson(JSON.stringify(data, null, 2))
       }
     } catch (e) {
+      setResponseMs(Math.round(performance.now() - t0))
       setError(e instanceof Error ? e.message : 'Request failed')
     } finally {
       setResolving(false)
@@ -215,7 +236,16 @@ export const TryItNow = () => {
 
   const hasResult = forwardResult !== null || reverseResult !== null || bulkResult !== null
 
+  const isValidDomain = (name: string) => {
+    const dotIdx = name.lastIndexOf('.')
+    if (dotIdx < 1) return false
+    const tld  = name.slice(dotIdx + 1)
+    const body = name.slice(0, dotIdx)
+    return body.length >= 1 && body.length <= 255 && tld.length >= 1 && tld.length <= 5
+  }
+
   // curl command for the request preview
+  const trimmedInput = input.trim()
   const curlCmd = (() => {
     if (tab === 'reverse') {
       const addrs = parseAddresses(reverseInput)
@@ -223,9 +253,9 @@ export const TryItNow = () => {
         return `curl ${RESOLVIO_API}/ens/v2/reverse/bulk?addresses=${addrs.join(',')}`
       return `curl ${RESOLVIO_API}/ens/v2/reverse/${addrs[0] || '<address>'}`
     }
-    const q  = input.trim() || '<ens_name>'
+    if (!trimmedInput) return null
     const qs = buildParams().join('&')
-    return `curl ${RESOLVIO_API}/ens/v2/profile/${q}${qs ? '?' + qs : ''}`
+    return `curl ${RESOLVIO_API}/ens/v2/profile/${trimmedInput}${qs ? '?' + qs : ''}`
   })()
 
   const copyToClipboard = (text: string) => {
@@ -239,7 +269,7 @@ export const TryItNow = () => {
     <section id="playground" className={styles.outer}>
 
       <div className={styles.header}>
-        <span className={styles.label}>Demo</span>
+        <span className={styles.label}>Playground</span>
         <h2 className={styles.heading}>Try It Now</h2>
         <p className={styles.subtitle}>
           Test ENS resolution with real-time results. Enter any .eth name and see the magic happen.
@@ -255,7 +285,7 @@ export const TryItNow = () => {
             <div className={styles.tabs}>
               <button
                 className={cx(styles.tab, tab === 'forward' && styles.tabActive)}
-                onClick={() => { setTab('forward'); setForwardResult(null); setReverseResult(null); setBulkResult(null); setInput(''); setError(null); setRawJson('') }}
+                onClick={() => { setTab('forward'); setForwardResult(null); setReverseResult(null); setBulkResult(null); setInput(''); setError(null); setRawJson(''); lastResolvedName.current = null }}
               >
                 Forward Resolution
               </button>
@@ -437,12 +467,17 @@ export const TryItNow = () => {
             <div className={styles.requestPreview}>
               <div className={styles.requestPreviewBar}>
                 <span className={styles.terminalTitle}><Terminal size={13} />Terminal</span>
-                <button className={styles.terminalCopy} onClick={() => copyToClipboard(curlCmd)}>
-                  <Copy size={12} />{copied ? 'Copied!' : 'Copy'}
-                </button>
+                {curlCmd && (
+                  <button className={styles.terminalCopy} onClick={() => copyToClipboard(curlCmd)}>
+                    <Copy size={12} />{copied ? 'Copied!' : 'Copy'}
+                  </button>
+                )}
               </div>
               <div className={styles.requestPreviewBody}>
-                <code className={styles.curlCode}>{curlCmd}</code>
+                {curlCmd
+                  ? <code className={styles.curlCode}>{curlCmd}</code>
+                  : <span className={styles.curlPlaceholder}>Type a name to start...</span>
+                }
               </div>
             </div>
           </div>
@@ -451,7 +486,12 @@ export const TryItNow = () => {
         {/* Card 3 — response */}
         <div className={styles.cell}>
           <div className={styles.inner}>
-            <h3 className={styles.cardTitle}>Response</h3>
+            <div className={styles.responseHeader}>
+              <h3 className={styles.cardTitle}>Response</h3>
+              {responseMs !== null && (
+                <span className={styles.responseMs}>{responseMs} ms</span>
+              )}
+            </div>
             <div className={styles.responseBox}>
               {!hasResult && !resolving && !error && (
                 <div className={styles.emptyState}>
