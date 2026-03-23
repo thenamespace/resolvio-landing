@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Copy, Terminal, Rocket, BookOpen, Bot, FileJson, Puzzle, FileText, User } from 'lucide-react'
+import { Copy, Terminal, Rocket, BookOpen, Bot, FileJson, Puzzle, FileText, User, Server } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import styles from './DevDocs.module.scss'
 import { RESOLVIO_API } from '../constants/api'
@@ -58,8 +58,41 @@ const AGENT_RESOURCES = [
 // Skill.md fetched at runtime so the copy always reflects the live file
 const SKILL_URL = '/Skill.md'
 
+const SELF_HOST_STEPS = [
+  {
+    heading: 'Clone & run',
+    icon: <Terminal size={15} />,
+    commands: [
+      'git clone https://github.com/thenamespace/resolvio',
+      'cd resolvio',
+      'cp .env.example .env   # add your RPC_URL',
+      'npm install',
+      'npm run start:dev',
+    ],
+    note: 'API runs at http://localhost:3000',
+  },
+  {
+    heading: 'Docker',
+    icon: <Server size={15} />,
+    commands: [
+      'docker build -t resolvio .',
+      'docker run -p 3000:3000 --env-file .env resolvio',
+    ],
+    note: 'API runs at http://localhost:3000',
+  },
+]
+
+const ENV_VARS = [
+  { name: 'RPC_URL', desc: 'Ethereum mainnet RPC endpoint', required: true },
+  { name: 'FORWARD_RESOLVE_CACHE_EXPIRY', desc: 'Forward cache TTL in seconds. 0 disables caching.', required: false },
+  { name: 'REVERSE_RESOLVE_CACHE_EXPIRY', desc: 'Reverse cache TTL in seconds. 0 disables caching.', required: false },
+  { name: 'MAX_BULK_REVERSE_REQUEST', desc: 'Max addresses per bulk reverse request', required: false },
+  { name: 'MAX_BULK_PROFILE_REQUEST', desc: 'Max names per bulk profile request', required: false },
+  { name: 'ENABLE_DOCS', desc: 'Expose Swagger UI at /api-docs', required: false },
+]
+
 export const DevDocs = () => {
-  const [tab, setTab] = useState<'humans' | 'agents'>('humans')
+  const [tab, setTab] = useState<'humans' | 'agents' | 'self'>('humans')
   const [copied, setCopied] = useState(false)
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null)
   const [copiedResource, setCopiedResource] = useState<number | null>(null)
@@ -121,10 +154,17 @@ export const DevDocs = () => {
             <Bot size={14} />
             For Agents
           </button>
+          <button
+            className={tab === 'self' ? styles.audienceTabActive : styles.audienceTab}
+            onClick={() => setTab('self')}
+          >
+            <Server size={14} />
+            Run it yourself
+          </button>
         </div>
       </div>
 
-      {tab === 'humans' ? (
+      {tab === 'humans' && (
         <div className={styles.gridOuter}>
           <div className={styles.grid}>
 
@@ -191,7 +231,9 @@ export const DevDocs = () => {
 
           </div>
         </div>
-      ) : (
+      )}
+
+      {tab === 'agents' && (
         <div className={styles.gridOuter}>
           <div className={styles.grid}>
 
@@ -254,6 +296,64 @@ export const DevDocs = () => {
                       : <span className={styles.skillLoading}>Loading…</span>
                     }
                   </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {tab === 'self' && (
+        <div className={styles.gridOuter}>
+          <div className={styles.grid}>
+
+            {/* Setup steps */}
+            <div className={styles.cell}>
+              <div className={styles.inner}>
+                {SELF_HOST_STEPS.map((step) => (
+                  <div key={step.heading} className={styles.selfSection}>
+                    <div className={styles.sectionHead}>
+                      <div className={styles.iconCircle}>{step.icon}</div>
+                      <h3 className={styles.sectionTitle}>{step.heading}</h3>
+                    </div>
+                    <div className={styles.terminal}>
+                      <div className={styles.terminalBar}>
+                        <span className={styles.terminalLabel}><Terminal size={13} />Terminal</span>
+                      </div>
+                      <div className={styles.terminalBody}>
+                        {step.commands.map((cmd, i) => (
+                          <code key={i} className={styles.terminalLine}>{cmd}</code>
+                        ))}
+                      </div>
+                    </div>
+                    <p className={styles.selfNote}>{step.note}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Environment variables */}
+            <div className={styles.cell}>
+              <div className={styles.inner}>
+                <div className={styles.sectionHead}>
+                  <div className={styles.iconCircle}><FileText size={15} /></div>
+                  <h3 className={styles.sectionTitle}>Environment Variables</h3>
+                  <a href="https://github.com/thenamespace/resolvio" target="_blank" rel="noreferrer">
+                    <Button size="sm" className={styles.docsBtn}>View on GitHub</Button>
+                  </a>
+                </div>
+                <p className={styles.agentIntro}>Only <code>RPC_URL</code> is required. All other variables have sensible defaults.</p>
+                <div className={styles.envTable}>
+                  {ENV_VARS.map((v) => (
+                    <div key={v.name} className={styles.envRow}>
+                      <div className={styles.envName}>
+                        <code>{v.name}</code>
+                        {v.required && <span className={styles.envRequired}>required</span>}
+                      </div>
+                      <p className={styles.envDesc}>{v.desc}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

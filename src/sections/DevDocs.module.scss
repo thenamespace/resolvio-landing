@@ -440,3 +440,76 @@
   font-size: 0.8125rem;
   color: #aaa;
 }
+
+// ─── Self-host tab ─────────────────────────────────────────────────────────────
+.selfSection {
+  margin-bottom: 28px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.terminalLine {
+  display: block;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 0.8rem;
+  color: #e8e8e8;
+  line-height: 1.8;
+
+  &:before {
+    content: '$ ';
+    color: #666;
+  }
+}
+
+.selfNote {
+  margin-top: 8px;
+  font-size: 0.8125rem;
+  color: #888;
+}
+
+.envTable {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.envRow {
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 12px 16px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.envName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  code {
+    font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #0a0a0a;
+  }
+}
+
+.envRequired {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #fff;
+  background: $primary;
+  border-radius: 4px;
+  padding: 1px 6px;
+  letter-spacing: 0.02em;
+}
+
+.envDesc {
+  font-size: 0.8125rem;
+  color: #888;
+  margin: 0;
+}
