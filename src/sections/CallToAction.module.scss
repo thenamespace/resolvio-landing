@@ -1,6 +1,8 @@
 .outer {
   width: 100%;
+  border-top: 1px solid $border;
   border-bottom: 1px solid $border;
+  margin-top: 64px;
 }
 
 .gridOuter {

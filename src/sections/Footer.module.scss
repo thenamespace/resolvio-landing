@@ -1,6 +1,6 @@
 .outer {
   width: 100%;
-  margin-top: 200px;
+  margin-top: 64px;
   border-top: 1px solid $border;
 }
 
@@ -45,20 +45,70 @@
 // ─── Brand column ─────────────────────────────────────────────────────────────
 .logo {
   display: inline-flex;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
+}
+
+.oneliner {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+  max-width: 260px;
+  line-height: 1.6;
+}
+
+.onelinerGradient {
+  background: linear-gradient(90deg, #0080BC, #40c0e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .tagline {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  color: #999;
+  line-height: 1.6;
+  max-width: 260px;
+  margin-bottom: 16px;
+
+  a {
+    color: #777;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover { color: #333; }
+  }
+}
+
+.ensBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 12px 9px 10px;
+  border: 1px solid $border;
+  border-radius: 9999px;
+  background: $background;
+  font-size: 0.75rem;
+  font-weight: 500;
   color: #555;
-  line-height: 1.65;
-  max-width: 320px;
-  margin-bottom: 28px;
+  text-decoration: none;
+  margin-bottom: 16px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: #bbb;
+    background: #fff;
+  }
+}
+
+.ensBadgeCheck {
+  color: #5298FF;
+  flex-shrink: 0;
 }
 
 .socials {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .socialBtn {
@@ -70,7 +120,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #444;
+  color: #666;
   transition: border-color 0.2s ease, color 0.2s ease;
 
   &:hover {

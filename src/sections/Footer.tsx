@@ -1,4 +1,5 @@
-import { Github } from 'lucide-react'
+import { Github, BadgeCheck } from 'lucide-react'
+import ensMark from '../assets/ens-mark-Blue.svg'
 import logo from '../assets/logo.svg'
 import styles from './Footer.module.scss'
 
@@ -42,9 +43,15 @@ export const Footer = () => (
             <a href="/" className={styles.logo}>
               <img src={logo} alt="Resolvio" height={28} />
             </a>
+            <p className={styles.oneliner}>Resolve any Web3 identity.<br /><span className={styles.onelinerGradient}>One API, every chain.</span></p>
             <p className={styles.tagline}>
-              Resolvio is part of Namespace. Namespace builds ENS identity and tooling: subname infrastructure, ENS components (Reach UI kit), ENS MCP server, and custom solutions for chains, wallets, and apps. Resolvio is the unified resolution layer that ties it all together.
+              Part of <a href="https://namespace.ninja" target="_blank" rel="noreferrer">Namespace</a> — ENS subname infrastructure, components, and tooling for chains, wallets, and apps.
             </p>
+            <a href="https://namespace.ninja" target="_blank" rel="noreferrer" className={styles.ensBadge}>
+              <img src={ensMark} alt="ENS" height={18} />
+              <span>ENS Service Provider</span>
+              <BadgeCheck size={15} className={styles.ensBadgeCheck} />
+            </a>
             <div className={styles.socials}>
               <a href="https://github.com/thenamespace/resolvio" target="_blank" rel="noreferrer" className={styles.socialBtn} aria-label="GitHub"><Github size={16} /></a>
               <a href="https://x.com/namespace_eth" target="_blank" rel="noreferrer" className={styles.socialBtn} aria-label="X"><XIcon /></a>

@@ -148,18 +148,18 @@ export const DevDocs = () => {
             For Humans
           </button>
           <button
-            className={tab === 'agents' ? styles.audienceTabActive : styles.audienceTab}
+            className={`${tab === 'agents' ? styles.audienceTabActive : styles.audienceTab} ${styles.audienceTabAgents}`}
             onClick={handleAgentTab}
           >
             <Bot size={14} />
-            For Agents
+            <span className={styles.gradientAgents}>For Agents</span>
           </button>
           <button
-            className={tab === 'self' ? styles.audienceTabActive : styles.audienceTab}
+            className={`${tab === 'self' ? styles.audienceTabActive : styles.audienceTab} ${styles.audienceTabSelf}`}
             onClick={() => setTab('self')}
           >
             <Server size={14} />
-            Run it yourself
+            <span className={styles.gradientSelf}>Self-host Resolvio</span>
           </button>
         </div>
       </div>
