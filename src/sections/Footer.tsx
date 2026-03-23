@@ -3,17 +3,20 @@ import logo from '../assets/logo.svg'
 import styles from './Footer.module.scss'
 
 const PRODUCT_LINKS = [
-  { label: 'Playground', href: '#playground' },
-  { label: 'Docs',       href: '#docs'       },
-  { label: 'FAQ',        href: '#faq'        },
+  { label: 'Resolvio Playground',     href: '#playground' },
+  { label: 'Offchain Subnames',       href: 'https://docs.namespace.ninja/developer-guide/guide/create-offchain-subnames' },
+  { label: 'Onchain Subnames',        href: 'https://docs.namespace.ninja/developer-guide/guide/mint-l1-l2-subnames'     },
+  { label: 'ENS Resolver for Sheets', href: 'https://github.com/thenamespace/ens-sheets'                                 },
+  { label: 'ENS Widget',              href: 'https://docs.namespace.ninja/user-guide/ens-widget'                         },
+  { label: 'ENS MCP Server',          href: 'https://github.com/thenamespace/ens-mcp'                                    },
+  { label: 'Custom Solutions',        href: '#'                                                                           },
 ]
 
 const RESOURCE_LINKS = [
-  { label: 'Blog',           href: '#'                                    },
-  { label: 'Resolvio Docs',  href: 'https://docs.namespace.ninja'         },
-  { label: 'Resolvio Repo',  href: 'https://github.com/thenamespace/resolvio' },
-  { label: 'Subname Docs',   href: 'https://docs.namespace.ninja'         },
-  { label: 'Support',        href: 'https://t.me/+u2X1_QbR-CVmMGIy'      },
+  { label: 'Blog',           href: 'https://paragraph.com/@namespace'          },
+  { label: 'Resolvio Docs',  href: 'https://api.resolvio.xyz/api-docs'         },
+  { label: 'Resolvio Repo',  href: 'https://github.com/thenamespace/resolvio'  },
+  { label: 'Subname Docs',   href: 'https://docs.namespace.ninja'              },
 ]
 
 const XIcon = () => (
@@ -40,12 +43,12 @@ export const Footer = () => (
               <img src={logo} alt="Resolvio" height={28} />
             </a>
             <p className={styles.tagline}>
-              Resolvio is part of the Namespace ENS infrastructure suite — the unified resolution layer for names, addresses, and identities across Web3.
+              Resolvio is part of Namespace. Namespace builds ENS identity and tooling: subname infrastructure, ENS components (Reach UI kit), ENS MCP server, and custom solutions for chains, wallets, and apps. Resolvio is the unified resolution layer that ties it all together.
             </p>
             <div className={styles.socials}>
               <a href="https://github.com/thenamespace/resolvio" target="_blank" rel="noreferrer" className={styles.socialBtn} aria-label="GitHub"><Github size={16} /></a>
               <a href="https://x.com/namespace_eth" target="_blank" rel="noreferrer" className={styles.socialBtn} aria-label="X"><XIcon /></a>
-              <a href="https://t.me/+u2X1_QbR-CVmMGIy" target="_blank" rel="noreferrer" className={styles.socialBtn} aria-label="Telegram"><TelegramIcon /></a>
+              <a href="https://t.me/+u2X1_QbR-CVmMGIy" target="_blank" rel="noreferrer" className={styles.socialBtn} aria-label="Telegram (builders)"><TelegramIcon /></a>
             </div>
           </div>
         </div>
@@ -53,7 +56,7 @@ export const Footer = () => (
         {/* Product cell */}
         <div className={styles.cell}>
           <div className={styles.inner}>
-            <p className={styles.colHeading}>Product</p>
+            <p className={styles.colHeading}>Products and Services</p>
             <nav className={styles.links}>
               {PRODUCT_LINKS.map((l) => <a key={l.label} href={l.href} className={styles.link}>{l.label}</a>)}
             </nav>
