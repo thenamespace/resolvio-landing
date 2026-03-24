@@ -88,7 +88,8 @@ const ENV_VARS = [
   { name: 'REVERSE_RESOLVE_CACHE_EXPIRY', desc: 'Reverse cache TTL in seconds. 0 disables caching.', required: false },
   { name: 'MAX_BULK_REVERSE_REQUEST', desc: 'Max addresses per bulk reverse request', required: false },
   { name: 'MAX_BULK_PROFILE_REQUEST', desc: 'Max names per bulk profile request', required: false },
-  { name: 'ENABLE_DOCS', desc: 'Expose Swagger UI at /api-docs', required: false },
+  { name: 'ENABLE_DOCS',  desc: 'Expose Swagger UI at /api-docs', required: false },
+  { name: 'IS_TESTNET',  desc: 'Set to true to use Sepolia testnet ENS registry. Defaults to mainnet.', required: false },
 ]
 
 export const DevDocs = () => {
@@ -148,18 +149,18 @@ export const DevDocs = () => {
             For Humans
           </button>
           <button
-            className={tab === 'agents' ? styles.audienceTabActive : styles.audienceTab}
+            className={`${tab === 'agents' ? styles.audienceTabActive : styles.audienceTab} ${styles.audienceTabAgents}`}
             onClick={handleAgentTab}
           >
             <Bot size={14} />
-            For Agents
+            <span className={styles.gradientAgents}>For Agents</span>
           </button>
           <button
-            className={tab === 'self' ? styles.audienceTabActive : styles.audienceTab}
+            className={`${tab === 'self' ? styles.audienceTabActive : styles.audienceTab} ${styles.audienceTabSelf}`}
             onClick={() => setTab('self')}
           >
             <Server size={14} />
-            Run it yourself
+            <span className={styles.gradientSelf}>Self-host Resolvio</span>
           </button>
         </div>
       </div>

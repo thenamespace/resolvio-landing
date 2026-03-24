@@ -4,6 +4,7 @@ import { StatsBar } from "./sections/StatsBar";
 import { TryItNow } from "./sections/TryItNow";
 import { DevDocs } from "./sections/DevDocs";
 import { WhyResolvio } from "./sections/WhyResolvio";
+import { Capabilities } from "./sections/Capabilities";
 import { CallToAction } from "./sections/CallToAction";
 import { FAQ } from "./sections/FAQ";
 import { Footer } from "./sections/Footer";
@@ -17,8 +18,9 @@ export default function App() {
       <TryItNow />
       <DevDocs />
       <WhyResolvio />
-      <CallToAction />
+      <Capabilities />
       <FAQ />
+      <CallToAction />
       <Footer />
     </div>
   )

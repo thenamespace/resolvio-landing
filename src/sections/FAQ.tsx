@@ -179,6 +179,7 @@ export const FAQ = () => {
       <div className={styles.header}>
         <span className={styles.label}>FAQ</span>
         <h2 className={styles.heading}>Frequently Asked Questions</h2>
+        <p className={styles.subtitle}>Everything you need to know about Resolvio and how it works.</p>
       </div>
 
       <div className={styles.gridOuter}>
