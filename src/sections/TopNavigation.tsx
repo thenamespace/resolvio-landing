@@ -18,7 +18,6 @@ export const TopNavigation = ({ className, innerClassName }: Props) => {
           </a>
           <div className={styles.right}>
             <div className={styles.navLinks}>
-              <a href="#playground" className={styles.navLink}>Playground</a>
               <a href="#docs" className={styles.navLink}>Docs</a>
               <a href="#benefits" className={styles.navLink}>Benefits</a>
               <a href="#capabilities" className={styles.navLink}>Capabilities</a>

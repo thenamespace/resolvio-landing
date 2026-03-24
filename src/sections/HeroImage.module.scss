@@ -98,8 +98,29 @@
   font-size: 0.8rem;
   line-height: 1.8;
   height: 310px;
-  overflow: hidden;
+  overflow-y: scroll;
+  overflow-x: hidden;
   background: #fff;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &.codeBodyHovered {
+    scrollbar-width: thin;
+    scrollbar-color: #ddd transparent;
+
+    &::-webkit-scrollbar {
+      display: block;
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #ddd;
+      border-radius: 2px;
+    }
+  }
 
   code {
     display: block;
