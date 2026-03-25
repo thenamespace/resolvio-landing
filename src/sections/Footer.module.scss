@@ -34,12 +34,6 @@
   background-color: $background;
   padding: 40px 36px;
   border-radius: 10px;
-  transition: background-color 0.2s ease, border-radius 0.4s ease;
-
-  &:hover {
-    background-color: #fff;
-    border-radius: 0;
-  }
 }
 
 // ─── Brand column ─────────────────────────────────────────────────────────────
@@ -51,7 +45,7 @@
 .oneliner {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--text-body);
   margin-bottom: 8px;
   max-width: 260px;
   line-height: 1.6;
@@ -66,17 +60,17 @@
 
 .tagline {
   font-size: 0.8rem;
-  color: #999;
+  color: var(--text-muted);
   line-height: 1.6;
   max-width: 260px;
   margin-bottom: 16px;
 
   a {
-    color: #777;
+    color: var(--text-secondary);
     text-decoration: underline;
     text-underline-offset: 2px;
 
-    &:hover { color: #333; }
+    &:hover { color: var(--text-code); }
   }
 }
 
@@ -90,14 +84,14 @@
   background: $background;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #555;
+  color: var(--text-secondary);
   text-decoration: none;
   margin-bottom: 16px;
   transition: border-color 0.15s ease, background 0.15s ease;
 
   &:hover {
-    border-color: #bbb;
-    background: #fff;
+    border-color: var(--text-dim);
+    background: var(--surface);
   }
 }
 
@@ -120,12 +114,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666;
+  color: var(--text-secondary);
   transition: border-color 0.2s ease, color 0.2s ease;
 
   &:hover {
-    border-color: #aaa;
-    color: #000;
+    border-color: var(--text-subtle);
+    color: var(--text-primary);
   }
 }
 
@@ -133,7 +127,7 @@
 .colHeading {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #999;
+  color: var(--text-muted);
   margin-bottom: 28px;
 }
 
@@ -146,7 +140,7 @@
 .link {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--text-body);
   text-decoration: none;
   transition: color 0.15s ease;
 
@@ -169,7 +163,7 @@
 
 .copyright {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .legal {
@@ -180,16 +174,16 @@
 
 .legalLink {
   font-size: 0.875rem;
-  color: #555;
+  color: var(--text-secondary);
   text-decoration: none;
   transition: color 0.15s ease;
 
   &:hover {
-    color: #000;
+    color: var(--text-primary);
   }
 }
 
 .divider {
-  color: #ccc;
+  color: var(--text-dim);
   font-size: 0.875rem;
 }

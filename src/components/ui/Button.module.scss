@@ -53,11 +53,11 @@
   }
 
   &.secondary {
-    background-color: #1a1a1a;
-    color: #fff;
+    background-color: var(--text-primary);
+    color: var(--bg);
 
     &:hover:not(:disabled) {
-      background-color: #333;
+      background-color: var(--text-code);
     }
   }
 
@@ -74,7 +74,7 @@
 
   &.ghost {
     background-color: transparent;
-    color: #1a1a1a;
+    color: var(--text-body);
 
     &:hover:not(:disabled) {
       background-color: $border;

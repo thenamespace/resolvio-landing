@@ -18,7 +18,7 @@
 .label {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #999;
+  color: var(--text-muted);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   margin-bottom: 12px;
@@ -27,14 +27,14 @@
 .heading {
   font-size: 2.25rem;
   font-weight: 800;
-  color: #0a0a0a;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   margin-bottom: 12px;
 }
 
 .subtitle {
   font-size: 0.9375rem;
-  color: #666;
+  color: var(--text-secondary);
   max-width: 520px;
 }
 
@@ -98,19 +98,19 @@
   border: 1px solid $border;
   border-radius: 9999px;
   background: $background;
-  color: #555;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 
   &:hover {
     border-color: #bbb;
-    color: #111;
+    color: var(--text-body);
   }
 
   &.tabActive {
-    background: #0a0a0a;
-    color: #fff;
-    border-color: #0a0a0a;
+    background: var(--text-primary);
+    color: var(--bg);
+    border-color: var(--text-primary);
   }
 }
 
@@ -138,7 +138,7 @@
 .cardTitle {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #0a0a0a;
+  color: var(--text-primary);
   margin-bottom: 20px;
 }
 
@@ -150,7 +150,7 @@
   font-size: 0.875rem;
   font-family: inherit;
   background: $background;
-  color: #111;
+  color: var(--text-body);
   outline: none;
   margin-bottom: 12px;
   transition: border-color 0.2s ease;
@@ -160,7 +160,7 @@
   }
 
   &::placeholder {
-    color: #aaa;
+    color: var(--text-subtle);
   }
 }
 
@@ -171,8 +171,8 @@
   border-radius: 10px;
   font-size: 0.8rem;
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  background: #fff;
-  color: #111;
+  background: var(--surface);
+  color: var(--text-body);
   outline: none;
   resize: vertical;
   line-height: 1.7;
@@ -203,7 +203,7 @@
 .reverseAddr {
   font-size: 0.75rem;
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  color: #888;
+  color: var(--text-muted);
   margin-bottom: 4px;
   word-break: break-all;
 }
@@ -216,7 +216,7 @@
 
 .examplesLabel {
   font-size: 0.8125rem;
-  color: #999;
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
 
@@ -233,8 +233,8 @@
   font-family: inherit;
   border: 1px solid $border;
   border-radius: 9999px;
-  background: #fff;
-  color: #555;
+  background: var(--surface);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
 
@@ -260,7 +260,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background: #fff;
+  background: var(--surface);
 }
 
 .checkboxGroupTitleRow {
@@ -273,7 +273,7 @@
 .checkboxGroupTitle {
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #333;
+  color: var(--text-code);
 }
 
 // ─── Info icon + tooltip ───────────────────────────────────────────────────────
@@ -290,7 +290,7 @@
 }
 
 .infoIcon {
-  color: #aaa;
+  color: var(--text-subtle);
   cursor: default;
   flex-shrink: 0;
   transition: color 0.15s ease;
@@ -306,8 +306,8 @@
   top: -4px;
   z-index: 10;
   width: 240px;
-  background: #1a1a1a;
-  color: #eee;
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 0.775rem;
@@ -370,26 +370,26 @@
   font-size: 0.75rem;
   font-weight: 600;
   color: $primary;
-  background: transparentize($primary, 0.9);
-  border: 1px solid transparentize($primary, 0.7);
+  background: rgba(0, 128, 188, 0.1);
+  border: 1px solid rgba(0, 128, 188, 0.3);
   border-radius: 5px;
   padding: 3px 10px;
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.12s ease;
 
-  &:hover { background: transparentize($primary, 0.8); }
+  &:hover { background: rgba(0, 128, 188, 0.2); }
 }
 
 .checkboxLabel {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111;
+  color: var(--text-body);
 }
 
 .checkboxSub {
   font-size: 0.75rem;
-  color: #999;
+  color: var(--text-muted);
 }
 
 .checkbox {
@@ -438,7 +438,7 @@
   align-items: center;
   gap: 14px;
   text-align: center;
-  color: #999;
+  color: var(--text-muted);
   font-size: 0.875rem;
   line-height: 1.5;
 }
@@ -491,7 +491,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: #aaa;
+  color: var(--text-subtle);
   margin-bottom: 8px;
 }
 
@@ -510,7 +510,7 @@
   gap: 6px;
   border: 1px solid $border;
   border-radius: 10px;
-  background: #fff;
+  background: var(--surface);
   cursor: pointer;
   overflow: hidden;
   max-width: 200px;
@@ -563,7 +563,7 @@
 
 .noRecord {
   font-size: 0.8125rem;
-  color: #aaa;
+  color: var(--text-subtle);
   font-style: italic;
 }
 
@@ -574,7 +574,7 @@
 
 .emptyRecordsText {
   font-size: 0.875rem;
-  color: #aaa;
+  color: var(--text-subtle);
 
   strong { color: #555; font-weight: 600; }
 }
@@ -589,10 +589,10 @@
 
 .errorMsg {
   font-size: 0.875rem;
-  color: #e53e3e;
+  color: var(--error-text);
   text-align: center;
-  background: #fff5f5;
-  border: 1px solid #fed7d7;
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
   border-radius: 8px;
   padding: 12px 16px;
 }
@@ -612,26 +612,26 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
-  background: #fafafa;
+  background: var(--surface-alt);
   border-bottom: 1px solid $border;
 }
 
 .requestPreviewBody {
   padding: 12px 14px;
-  background: #fff;
+  background: var(--surface);
 }
 
 .curlPlaceholder {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
   font-size: 0.775rem;
-  color: #aaa;
+  color: var(--text-subtle);
   display: block;
 }
 
 .curlCode {
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
   font-size: 0.775rem;
-  color: #333;
+  color: var(--text-code);
   white-space: pre-wrap;
   word-break: break-all;
   display: block;
@@ -650,7 +650,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
-  background: #fafafa;
+  background: var(--surface-alt);
   border-bottom: 1px solid $border;
 }
 
@@ -660,7 +660,7 @@
   gap: 5px;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #777;
+  color: var(--text-muted);
 }
 
 .terminalCopy {
@@ -669,7 +669,7 @@
   gap: 4px;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #777;
+  color: var(--text-muted);
   background: none;
   border: 1px solid $border;
   border-radius: 5px;
@@ -682,7 +682,7 @@
 
 .jsonTerminalBody {
   padding: 14px 16px;
-  background: #fff;
+  background: var(--surface);
   max-height: 400px;
   overflow: auto;
 
@@ -691,7 +691,7 @@
 
 .jsonPlaceholder {
   font-size: 0.8125rem;
-  color: #aaa;
+  color: var(--text-subtle);
   font-style: italic;
 }
 
@@ -703,7 +703,7 @@
 
   code {
     font-size: 0.875rem;
-    color: #555;
+    color: var(--text-secondary);
   }
 }
 
@@ -713,7 +713,7 @@
   gap: 8px;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-code);
 }
 
 .toggle {
@@ -721,7 +721,7 @@
   width: 42px;
   height: 24px;
   border-radius: 9999px;
-  background: #ccc;
+  background: var(--text-dim);
   border: none;
   cursor: pointer;
   transition: background 0.2s ease;
@@ -739,7 +739,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--surface);
   transition: transform 0.2s ease;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 
@@ -759,7 +759,7 @@
   font-family: inherit;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #888;
+  color: var(--text-muted);
   background: none;
   border: 1px solid $border;
   padding: 5px 14px;
@@ -768,8 +768,8 @@
   transition: color 0.15s, background 0.15s, border-color 0.15s;
 
   &:hover {
-    color: #333;
-    background: rgba(0,0,0,0.03);
+    color: var(--text-code);
+    background: var(--hover-overlay);
   }
 }
 
@@ -827,6 +827,6 @@
 .bulkProfileName {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-code);
   margin-bottom: 8px;
 }

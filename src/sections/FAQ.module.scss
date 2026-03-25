@@ -16,7 +16,7 @@
 .label {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #999;
+  color: var(--text-muted);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   margin-bottom: 12px;
@@ -25,14 +25,14 @@
 .heading {
   font-size: 2.25rem;
   font-weight: 800;
-  color: #0a0a0a;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   margin-bottom: 12px;
 }
 
 .subtitle {
   font-size: 0.9375rem;
-  color: #666;
+  color: var(--text-secondary);
   max-width: 480px;
 }
 
@@ -65,7 +65,7 @@
   transition: background-color 0.2s ease, border-radius 0.4s ease;
 
   &:hover {
-    background-color: #fff;
+    background-color: var(--surface);
     border-radius: 0;
   }
 }
@@ -82,19 +82,19 @@
   font-family: inherit;
   font-size: 1rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-body);
   text-align: left;
   cursor: pointer;
   transition: color 0.15s ease;
 
   &:hover {
-    color: #000;
+    color: var(--text-primary);
   }
 }
 
 .chevron {
   flex-shrink: 0;
-  color: #aaa;
+  color: var(--text-subtle);
   transition: transform 0.25s ease, color 0.15s ease;
 
   &.chevronOpen {
@@ -112,7 +112,7 @@
 .answer {
   padding: 0 28px 24px;
   font-size: 0.9375rem;
-  color: #444;
+  color: var(--text-code);
   line-height: 1.65;
 
   p {
@@ -136,16 +136,16 @@
   code {
     font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
     font-size: 0.85em;
-    background: rgba(0,0,0,0.05);
+    background: var(--code-bg);
     border-radius: 4px;
     padding: 1px 5px;
-    color: #333;
+    color: var(--text-code);
   }
 }
 
 // ─── Code block ───────────────────────────────────────────────────────────────
 .codeBlock {
-  background: #fff;
+  background: var(--surface);
   border: 1px solid $border;
   border-radius: 8px;
   padding: 14px 16px;
@@ -174,7 +174,7 @@
   font-family: inherit;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #888;
+  color: var(--text-muted);
   background: none;
   border: none;
   padding: 6px 14px;
@@ -183,8 +183,8 @@
   transition: color 0.15s, background 0.15s;
 
   &:hover {
-    color: #333;
-    background: rgba(0,0,0,0.04);
+    color: var(--text-code);
+    background: var(--hover-overlay);
   }
 }
 

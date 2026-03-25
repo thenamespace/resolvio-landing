@@ -6,7 +6,7 @@
 .label {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #999;
+  color: var(--text-muted);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   margin-bottom: 12px;
@@ -25,14 +25,14 @@
 .heading {
   font-size: 2.25rem;
   font-weight: 800;
-  color: #0a0a0a;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   margin-bottom: 12px;
 }
 
 .subtitle {
   font-size: 0.9375rem;
-  color: #666;
+  color: var(--text-secondary);
   max-width: 480px;
 }
 
@@ -83,12 +83,6 @@
   background-color: $background;
   padding: 36px 32px;
   border-radius: 10px;
-  transition: background-color 0.2s ease, border-radius 0.4s ease;
-
-  &:hover {
-    background-color: #fff;
-    border-radius: 0;
-  }
 }
 
 .iconCircle {
@@ -103,20 +97,20 @@
   margin-bottom: 48px;
 
   svg {
-    color: #0a0a0a;
+    color: var(--text-primary);
   }
 }
 
 .cardTitle {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #0a0a0a;
+  color: var(--text-primary);
   margin-bottom: 10px;
 }
 
 .cardDesc {
   font-size: 0.9375rem;
-  color: #555;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
@@ -149,14 +143,14 @@
 .capHeading {
   font-size: 1.75rem;
   font-weight: 800;
-  color: #0a0a0a;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   margin-bottom: 8px;
 }
 
 .capSubtitle {
   font-size: 0.9375rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .capTable {
@@ -168,7 +162,7 @@
     text-align: left;
     font-size: 0.7rem;
     font-weight: 500;
-    color: #999;
+    color: var(--text-muted);
     letter-spacing: 0.05em;
     text-transform: uppercase;
     padding: 0 32px 12px;
@@ -186,13 +180,13 @@
 
 .capName {
   font-weight: 600;
-  color: #0a0a0a;
+  color: var(--text-primary);
   white-space: nowrap;
   width: 200px;
 }
 
 .capDesc {
-  color: #555;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
