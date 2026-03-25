@@ -10,18 +10,18 @@ const stats = [
 
 export const StatsBar = () => {
   return (
-    <section className={styles.outer}>
-      <div className={styles.row}>
+    <section className={styles.outer} aria-label="API feature highlights">
+      <dl className={styles.row}>
         {stats.map((stat) => (
           <div key={stat.label} className={styles.innerWrapper}>
             <div className={styles.inner}>
-              <span className={styles.icon}>{stat.icon}</span>
-              <span className={styles.value}>{stat.value}</span>
-              <span className={styles.label}>{stat.label}</span>
+              <span className={styles.icon} aria-hidden="true">{stat.icon}</span>
+              <dt className={styles.value}>{stat.value}</dt>
+              <dd className={styles.label}>{stat.label}</dd>
             </div>
           </div>
         ))}
-      </div>
+      </dl>
     </section>
   )
 }

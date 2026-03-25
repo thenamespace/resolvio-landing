@@ -150,14 +150,15 @@ const AccordionItem = ({
 
   return (
     <div className={cx(styles.item, isOpen && styles.itemOpen)}>
-      <button className={styles.question} onClick={onToggle}>
+      <button className={styles.question} onClick={onToggle} aria-expanded={isOpen}>
         <span>{item.q}</span>
-        <ChevronDown size={18} className={cx(styles.chevron, isOpen && styles.chevronOpen)} />
+        <ChevronDown size={18} className={cx(styles.chevron, isOpen && styles.chevronOpen)} aria-hidden="true" />
       </button>
       <div
         ref={bodyRef}
         className={styles.answerWrap}
         style={{ maxHeight: isOpen ? bodyRef.current?.scrollHeight : 0 }}
+        role="region"
       >
         <div className={styles.answer}>{item.a}</div>
       </div>
