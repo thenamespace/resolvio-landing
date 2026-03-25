@@ -1,0 +1,369 @@
+# Resolvio — Full API Reference
+
+> Resolvio is a high-performance Web3 name resolution API. It resolves ENS names to addresses, text records, content hashes, and reverse-resolves Ethereum addresses back to ENS names, all in a single REST call.
+
+Resolvio is part of the Namespace ENS infrastructure suite. It is the unified resolution layer for names, addresses, and identities across Web3.
+
+---
+
+## Base URL
+
+https://api.resolvio.xyz
+
+## Authentication
+
+No API key required. All endpoints are publicly accessible. An API key may be required for higher rate limits or usage analytics in production. Contact support@namespace.ninja.
+
+---
+
+## Endpoints
+
+### 1. Resolve full profile
+
+```
+GET /ens/v2/profile/{name}
+```
+
+Resolves an ENS name to its full profile: cryptocurrency addresses, text records, and content hash.
+
+**Path parameters:**
+- `name` (string, required) — The ENS name to resolve, e.g. `vitalik.eth`
+
+**Query parameters:**
+- `texts` (string, optional) — Comma-separated list of text record keys to fetch. Example: `avatar,email,description,com.twitter,com.github,url`. Omit to get none; use `useDefault=true` for a sensible default set.
+- `chains` (string, optional) — Comma-separated chain slugs to fetch addresses for. Example: `eth,btc,base,sol`. Omit to get ETH only; use `useDefault=true` for common chains.
+- `useDefault` (boolean, optional) — When `true`, fetches a sensible default set of text records and addresses. Recommended for general use.
+- `noCache` (boolean, optional) — When `true`, bypasses the server cache and forces a fresh resolution from the blockchain.
+
+**Example request:**
+```
+GET https://api.resolvio.xyz/ens/v2/profile/vitalik.eth?useDefault=true
+```
+
+**Example response:**
+```json
+{
+  "name": "vitalik.eth",
+  "addresses": {
+    "eth": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+    "btc": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq"
+  },
+  "texts": {
+    "avatar": "https://openseauserdata.com/files/...",
+    "description": "ethereum",
+    "com.twitter": "VitalikButerin",
+    "url": "https://vitalik.ca"
+  },
+  "contenthash": "ipfs://bafybeig...",
+  "resolver": "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63"
+}
+```
+
+---
+
+### 2. Resolve text records only
+
+```
+GET /ens/v2/texts/{name}
+```
+
+Resolves text records for an ENS name.
+
+**Path parameters:**
+- `name` (string, required) — The ENS name to resolve.
+
+**Query parameters:**
+- `keys` (string, optional) — Comma-separated text record keys. Example: `avatar,email,description`. Omit for defaults.
+- `noCache` (boolean, optional) — Bypass cache if `true`.
+
+**Example request:**
+```
+GET https://api.resolvio.xyz/ens/v2/texts/vitalik.eth?keys=avatar,description,com.twitter
+```
+
+**Example response:**
+```json
+{
+  "name": "vitalik.eth",
+  "texts": {
+    "avatar": "https://...",
+    "description": "ethereum",
+    "com.twitter": "VitalikButerin"
+  }
+}
+```
+
+---
+
+### 3. Resolve addresses only
+
+```
+GET /ens/v2/addresses/{name}
+```
+
+Resolves cryptocurrency addresses for an ENS name.
+
+**Path parameters:**
+- `name` (string, required) — The ENS name to resolve.
+
+**Query parameters:**
+- `chains` (string, optional) — Comma-separated chain slugs. Example: `eth,btc,sol,base`. Supports all ENSIP-9 / SLIP-44 coin types.
+- `noCache` (boolean, optional) — Bypass cache if `true`.
+
+**Example request:**
+```
+GET https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chains=eth,btc
+```
+
+**Example response:**
+```json
+{
+  "name": "vitalik.eth",
+  "addresses": {
+    "eth": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+    "btc": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq"
+  }
+}
+```
+
+---
+
+### 4. Resolve content hash only
+
+```
+GET /ens/v2/contenthash/{name}
+```
+
+Resolves the content hash for an ENS name. Supports IPFS, IPNS, Arweave, and Swarm.
+
+**Path parameters:**
+- `name` (string, required) — The ENS name to resolve.
+
+**Query parameters:**
+- `noCache` (boolean, optional) — Bypass cache if `true`.
+
+**Example response:**
+```json
+{
+  "name": "vitalik.eth",
+  "contenthash": "ipfs://bafybeig..."
+}
+```
+
+---
+
+### 5. Reverse resolve (address → name)
+
+```
+GET /ens/v2/reverse/{address}
+```
+
+Finds the primary ENS name for an Ethereum address.
+
+**Path parameters:**
+- `address` (string, required) — The Ethereum address to reverse-resolve, e.g. `0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045`
+
+**Example request:**
+```
+GET https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+```
+
+**Example response:**
+```json
+{
+  "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+  "name": "vitalik.eth"
+}
+```
+
+**Note:** Returns `null` for `name` if no primary ENS name is set for the address.
+
+---
+
+### 6. Bulk forward resolution
+
+```
+GET /ens/v2/profile/bulk?names={name1},{name2},...
+```
+
+Resolves multiple ENS names in a single request.
+
+**Query parameters:**
+- `names` (string, required) — Comma-separated list of ENS names.
+- `texts` (string, optional) — Comma-separated text record keys to fetch for each name.
+- `chains` (string, optional) — Comma-separated chain slugs to fetch addresses for.
+- `useDefault` (boolean, optional) — Fetch default texts and chains for each name.
+
+**Example request:**
+```
+GET https://api.resolvio.xyz/ens/v2/profile/bulk?names=vitalik.eth,nick.eth&useDefault=true
+```
+
+**Example response:**
+```json
+[
+  {
+    "name": "vitalik.eth",
+    "addresses": { "eth": "0xd8dA..." },
+    "texts": { "avatar": "https://...", "description": "ethereum" },
+    "contenthash": "ipfs://..."
+  },
+  {
+    "name": "nick.eth",
+    "addresses": { "eth": "0xb8c2..." },
+    "texts": { "avatar": "https://...", "description": "ENS lead developer" },
+    "contenthash": null
+  }
+]
+```
+
+---
+
+### 7. Bulk reverse resolution
+
+```
+GET /ens/v2/reverse/bulk?addresses={addr1},{addr2},...
+```
+
+Resolves multiple Ethereum addresses to ENS names in a single request. Uses multicall RPC batching for efficiency.
+
+**Query parameters:**
+- `addresses` (string, required) — Comma-separated list of Ethereum addresses.
+
+**Example request:**
+```
+GET https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045,0x225f137127d9067788314bc7fcc1f36746a3c3B5
+```
+
+**Example response:**
+```json
+[
+  { "address": "0xd8dA...", "name": "vitalik.eth" },
+  { "address": "0x225f...", "name": null }
+]
+```
+
+---
+
+### 8. List supported chains
+
+```
+GET /ens/v2/chains
+```
+
+Returns all supported blockchain networks with their slugs and ENSIP-9 coinType values.
+
+**Example response:**
+```json
+[
+  { "slug": "eth", "name": "Ethereum", "coinType": 60 },
+  { "slug": "btc", "name": "Bitcoin", "coinType": 0 },
+  { "slug": "sol", "name": "Solana", "coinType": 501 },
+  { "slug": "base", "name": "Base", "coinType": 2147492101 }
+]
+```
+
+Supports 100+ chains. See the full list via this endpoint.
+
+---
+
+### 9. Invalidate cache
+
+```
+DELETE /ens/v2/cache/{name}
+```
+
+Invalidates the cached resolution for a specific ENS name, forcing fresh resolution on the next request.
+
+**Path parameters:**
+- `name` (string, required) — The ENS name whose cache should be invalidated.
+
+**Example request:**
+```
+DELETE https://api.resolvio.xyz/ens/v2/cache/vitalik.eth
+```
+
+**Response:** `204 No Content`
+
+---
+
+## Response: NOT_FOUND
+
+When a name is not registered or has no resolver set:
+```json
+{
+  "name": "unregistered-name.eth",
+  "error": "NOT_FOUND"
+}
+```
+
+## Response: Error codes
+
+| Status | Meaning |
+|--------|---------|
+| 200 | Success |
+| 204 | Cache invalidated (DELETE) |
+| 400 | Bad request — invalid name or address format |
+| 404 | Name not found or no resolver set |
+| 429 | Rate limit exceeded (unauthenticated requests) |
+| 500 | Upstream RPC error |
+
+---
+
+## Caching
+
+Resolution results are cached server-side. The TTL is derived from the `ttl()` value set on the ENS resolver contract for the name. Use `?noCache=true` to bypass the cache. Use `DELETE /ens/v2/cache/{name}` to invalidate a specific name.
+
+---
+
+## Multi-chain address resolution
+
+ENS supports storing addresses for chains other than Ethereum via ENSIP-9, which maps blockchain types to SLIP-44 coin type integers. Pass chain slugs as a query parameter:
+
+```
+GET https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chains=eth,btc,sol,base,matic
+```
+
+Supported chain slugs include: `eth`, `btc`, `ltc`, `doge`, `sol`, `matic`, `arb`, `base`, `op`, and all other SLIP-44 registered chain types.
+
+---
+
+## Supported name types
+
+- ENS `.eth` names (e.g. `vitalik.eth`)
+- ENS subnames (e.g. `foo.vitalik.eth`)
+- Offchain subnames via CCIP-Read (transparent — same API call)
+- DNS-linked names (if the domain has been claimed in ENS via the DNS Registrar)
+
+---
+
+## Self-hosting
+
+Resolvio is open-source (MIT). Clone and run it with your own RPC:
+
+```bash
+git clone https://github.com/thenamespace/resolvio
+cd resolvio
+npm install
+RPC_URL=https://your-rpc-endpoint npm start
+```
+
+Environment variables:
+- `RPC_URL` (required) — Ethereum RPC endpoint
+- `PORT` (default: 3000) — HTTP server port
+- `CACHE_TTL` (optional) — Override default cache TTL in seconds
+- `BULK_LIMIT` (optional) — Max names/addresses per bulk request
+
+---
+
+## Discovery resources
+
+- **LLM summary:** https://resolvio.xyz/llms.txt
+- **Full API reference (this file):** https://resolvio.xyz/llms-full.txt
+- **AI plugin manifest:** https://resolvio.xyz/.well-known/ai-plugin.json
+- **MCP server manifest:** https://resolvio.xyz/.well-known/mcp.json
+- **OpenAPI spec (JSON):** https://api.resolvio.xyz/api-docs.json
+- **Interactive docs:** https://api.resolvio.xyz/api-docs
+- **Agent skill definitions:** https://resolvio.xyz/Skill.md
+- **GitHub repository:** https://github.com/thenamespace/resolvio
+- **ENS MCP server:** https://github.com/thenamespace/ens-mcp

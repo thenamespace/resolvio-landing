@@ -17,10 +17,19 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
-# AI discovery files
+User-agent: Googlebot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# Sitemap
 Sitemap: https://resolvio.xyz/sitemap.xml
 
-# LLM-friendly content
-# Full API description for AI agents: https://resolvio.xyz/llms.txt
-# AI plugin manifest: https://resolvio.xyz/.well-known/ai-plugin.json
-# OpenAPI spec: https://api.resolvio.xyz/api-docs.json
+# AI / LLM discovery resources
+# LLM summary:          https://resolvio.xyz/llms.txt
+# LLM full reference:   https://resolvio.xyz/llms-full.txt
+# AI plugin manifest:   https://resolvio.xyz/.well-known/ai-plugin.json
+# MCP server manifest:  https://resolvio.xyz/.well-known/mcp.json
+# Agent skill defs:     https://resolvio.xyz/Skill.md
+# OpenAPI spec:         https://api.resolvio.xyz/api-docs.json

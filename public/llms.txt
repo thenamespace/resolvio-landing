@@ -106,5 +106,8 @@ All endpoints return JSON. Profile responses include:
 
 ## Full API Reference
 
+Full LLM reference (all endpoints, parameters, error codes): https://resolvio.xyz/llms-full.txt
 OpenAPI spec: https://api.resolvio.xyz/api-docs.json
 Interactive docs: https://api.resolvio.xyz/api-docs
+Agent skill definitions (Claude + OpenAI formats): https://resolvio.xyz/Skill.md
+MCP server manifest: https://resolvio.xyz/.well-known/mcp.json

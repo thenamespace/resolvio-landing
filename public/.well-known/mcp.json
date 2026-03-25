@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "resolvio-ens": {
+      "type": "http",
+      "url": "https://ens-mcp.namespace.ninja/mcp",
+      "name": "Resolvio ENS Resolution",
+      "description": "Resolve ENS names to cryptocurrency addresses, text records (avatar, email, description, socials), and content hashes (IPFS, IPNS, Arweave). Reverse-resolve Ethereum addresses to their primary ENS name. Supports bulk resolution for multiple names or addresses in a single call. No API key required.",
+      "repository": "https://github.com/thenamespace/ens-mcp",
+      "auth": {
+        "type": "none"
+      },
+      "tools": [
+        "resolve_ens_name",
+        "reverse_resolve_address",
+        "bulk_resolve_ens_names",
+        "bulk_reverse_resolve_addresses"
+      ]
+    }
+  }
+}

@@ -36,9 +36,196 @@
     <!-- Theme -->
     <meta name="theme-color" content="#0080BC" />
 
+    <!-- Canonical -->
+    <link rel="canonical" href="https://resolvio.xyz/" />
+
     <!-- AI / LLM discovery -->
     <link rel="alternate" type="text/plain" title="LLM-friendly description" href="/llms.txt" />
+    <link rel="alternate" type="text/plain" title="LLM full API reference" href="/llms-full.txt" />
+    <link rel="alternate" type="application/json" title="OpenAPI specification" href="https://api.resolvio.xyz/api-docs.json" />
+    <link rel="alternate" type="text/markdown" title="Agent skill definitions" href="/Skill.md" />
+    <link rel="alternate" type="application/json" title="AI plugin manifest" href="/.well-known/ai-plugin.json" />
+    <link rel="alternate" type="application/json" title="MCP server manifest" href="/.well-known/mcp.json" />
     <meta name="ai-plugin" content="/.well-known/ai-plugin.json" />
+    <meta name="AI-Training" content="allow" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://resolvio.xyz/#website",
+          "url": "https://resolvio.xyz",
+          "name": "Resolvio",
+          "description": "Resolvio provides a complete Web3 identity resolution service through a single API. Built for every chain, wallet, app, and AI agent.",
+          "publisher": { "@id": "https://resolvio.xyz/#organization" }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://resolvio.xyz/#organization",
+          "name": "Resolvio",
+          "url": "https://resolvio.xyz",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://resolvio.xyz/icon.svg"
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "email": "support@namespace.ninja",
+            "contactType": "technical support"
+          },
+          "sameAs": [
+            "https://github.com/thenamespace/resolvio",
+            "https://x.com/namespace_eth"
+          ],
+          "parentOrganization": {
+            "@type": "Organization",
+            "name": "Namespace",
+            "url": "https://namespace.ninja"
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://resolvio.xyz/#api",
+          "name": "Resolvio ENS Resolution API",
+          "applicationCategory": "DeveloperApplication",
+          "applicationSubCategory": "Web3 API",
+          "operatingSystem": "Any",
+          "url": "https://resolvio.xyz",
+          "description": "High-performance Web3 name resolution API. Resolves ENS names to addresses, text records, and content hashes. Reverse-resolves Ethereum addresses to ENS names. Supports bulk resolution and 100+ blockchain networks.",
+          "featureList": [
+            "Forward ENS name resolution",
+            "Reverse address resolution",
+            "Bulk forward resolution",
+            "Bulk reverse resolution",
+            "Multi-chain address resolution (100+ chains)",
+            "Text record resolution (avatar, email, description, socials)",
+            "Content hash resolution (IPFS, IPNS, Arweave, Swarm)",
+            "Server-side caching with TTL",
+            "No API key required",
+            "OpenAPI specification",
+            "Sub-100ms response times",
+            "99.9% uptime"
+          ],
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "description": "Free public access. No API key required."
+          },
+          "codeRepository": "https://github.com/thenamespace/resolvio",
+          "license": "https://opensource.org/licenses/MIT",
+          "softwareVersion": "2",
+          "creator": { "@id": "https://resolvio.xyz/#organization" },
+          "documentation": "https://api.resolvio.xyz/api-docs"
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://resolvio.xyz/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is Resolvio?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Resolvio is a universal Web3 name resolution layer. It offers forward and reverse resolution for ENS (.eth) names and subnames with extra features like a cache service, bulk resolution, and more."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Who is Resolvio for?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Resolvio is for Web3 developers who want a simple way to display human-readable names and avatars; wallet and app builders that accept Web3 identities as input (payments, messaging, access control); AI agent builders whose agents need to resolve Web3 names at runtime via the REST API; and others such as L2 chains, communities, wallets, payment apps, and games."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is Resolvio open-source?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Resolvio is open-source and MIT-licensed. The source is available on GitHub at https://github.com/thenamespace/resolvio. The hosted REST API is a managed service operated by Namespace."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I self-host Resolvio?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Resolvio is a lightweight Node.js server with no external dependencies. Clone the repo, set your RPC endpoint, and run it. The hosted API at api.resolvio.xyz is optional convenience infrastructure."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do I need a wallet or an API key to use Resolvio?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No wallet and no API key are required to get started. Public resolution is available immediately with no authentication. An API key is only needed if you want higher rate limits or usage analytics on the hosted REST API."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Are both onchain and offchain subnames supported?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Resolvio supports both onchain subnames (stored directly on Ethereum) and offchain subnames (resolved via CCIP-Read from an off-chain data source). The resolution flow is transparent — you call the same API and Resolvio handles the routing automatically."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does Resolvio support traditional DNS domain names?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, but indirectly. Resolvio works with ENS, and ENS supports DNS-linked names via its DNS Registrar. If a traditional domain has been imported or tokenized with ENS and has a resolver set, Resolvio can resolve it. A standard DNS domain that has not been claimed in ENS will return NOT_FOUND."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do I need an API key?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No API key is required. You can start making requests immediately. An API key gives you higher rate limits and usage analytics for production apps with high resolution volume."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Are there rate limits?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Rate limits apply to the hosted REST API for unauthenticated usage. If you are building a production app with high resolution volume, an API key gives you higher rate limits and usage analytics. See the docs at https://api.resolvio.xyz/api-docs for details."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How can AI agents use Resolvio?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The REST API is plain HTTP/JSON — any agent that can make GET requests can call it directly. No special setup required. Example: GET https://api.resolvio.xyz/ens/v2/profile/vitalik.eth. Tool definitions for Claude and OpenAI function calling are available at https://resolvio.xyz/Skill.md."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does caching work?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Resolution results are cached server-side with a TTL derived from the on-chain ttl() value set on the resolver. You can bypass the cache with the noCache query parameter if you need a fresh result."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does bulk reverse resolution work?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Pass a comma-separated list of addresses to the bulk reverse endpoint. Resolvio batches the lookups into a single multicall RPC request and returns results in the same order. Example: GET https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=0xd8dA…,0x225f…"
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
