@@ -1,7 +1,7 @@
 // ─── Brand colours ────────────────────────────────────────────────────────────
 $primary:    #0080BC;
-$background: #F9F9F7;
-$border:     #DADADA;
+$background: var(--bg);
+$border:     var(--border-color);
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 $section_width: 1080px;

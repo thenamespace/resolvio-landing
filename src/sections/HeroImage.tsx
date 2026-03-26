@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { Network } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import styles from './HeroImage.module.scss'
 
@@ -118,7 +117,6 @@ export const HeroImage = () => {
       <div className={styles.inner}>
         <div className={styles.badge}>
           <span>Universal Web3 Name Resolution</span>
-          <Network size={16} strokeWidth={2.5} />
         </div>
 
         <h1 className={styles.heading}>

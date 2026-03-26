@@ -41,11 +41,17 @@ const AGENT_RESOURCES = [
     desc: 'Plain-text summary of the API designed for language models',
     url: 'https://resolvio.xyz/llms.txt',
   },
-  {
+{
     icon: <Puzzle size={14} />,
     label: 'AI plugin manifest',
     desc: 'Agent plugin discovery file referencing the OpenAPI spec',
     url: 'https://resolvio.xyz/.well-known/ai-plugin.json',
+  },
+  {
+    icon: <Puzzle size={14} />,
+    label: 'MCP server manifest',
+    desc: 'Model Context Protocol discovery file for MCP-compatible agents',
+    url: 'https://resolvio.xyz/.well-known/mcp.json',
   },
   {
     icon: <FileJson size={14} />,
@@ -246,7 +252,7 @@ export const DevDocs = () => {
                   <h3 className={styles.sectionTitle}>Discovery Resources</h3>
                 </div>
                 <p className={styles.agentIntro}>
-                  Point your agent at any of these URLs. The plugin manifest and OpenAPI spec can be used directly by most agent frameworks to auto-configure tool calls.
+                  Use any of these URLs with your agents. The plugin manifest & OpenAPI spec can be used directly by most agent frameworks to auto-configure tool calls.
                 </p>
                 <div className={styles.resourceList}>
                   {AGENT_RESOURCES.map((r, i) => (

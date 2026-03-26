@@ -1,3 +1,4 @@
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { TopNavigation } from "./sections/TopNavigation";
 import { HeroImage } from "./sections/HeroImage";
 import { StatsBar } from "./sections/StatsBar";
@@ -11,17 +12,19 @@ import { Footer } from "./sections/Footer";
 
 export default function App() {
   return (
-    <div>
-      <TopNavigation />
-      <HeroImage />
-      <StatsBar />
-      <TryItNow />
-      <DevDocs />
-      <WhyResolvio />
-      <Capabilities />
-      <FAQ />
-      <CallToAction />
-      <Footer />
-    </div>
+    <ThemeProvider>
+      <div>
+        <TopNavigation />
+        <HeroImage />
+        <StatsBar />
+        <TryItNow />
+        <DevDocs />
+        <WhyResolvio />
+        <Capabilities />
+        <FAQ />
+        <CallToAction />
+        <Footer />
+      </div>
+    </ThemeProvider>
   )
 }

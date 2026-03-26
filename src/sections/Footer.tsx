@@ -1,7 +1,9 @@
 import { Github, BadgeCheck } from 'lucide-react'
 import ensMark from '../assets/ens-mark-Blue.svg'
 import logo from '../assets/logo.svg'
+import logoWhite from '../assets/logo-w.svg'
 import styles from './Footer.module.scss'
+import { useTheme } from '../contexts/ThemeContext'
 
 const PRODUCT_LINKS = [
   { label: 'Resolvio Playground',     href: '#playground' },
@@ -32,7 +34,9 @@ const TelegramIcon = () => (
   </svg>
 )
 
-export const Footer = () => (
+export const Footer = () => {
+  const { theme } = useTheme()
+  return (
   <footer className={styles.outer}>
     <div className={styles.gridOuter}>
       <div className={styles.grid}>
@@ -41,7 +45,7 @@ export const Footer = () => (
         <div className={styles.cell}>
           <div className={styles.inner}>
             <a href="/" className={styles.logo}>
-              <img src={logo} alt="Resolvio" height={28} />
+              <img src={theme === 'dark' ? logoWhite : logo} alt="Resolvio" height={28} />
             </a>
             <p className={styles.oneliner}>Resolve any Web3 identity.<br /><span className={styles.onelinerGradient}>One API, every chain.</span></p>
             <p className={styles.tagline}>
@@ -90,4 +94,5 @@ export const Footer = () => (
       </div>
     </div>
   </footer>
-)
+  )
+}

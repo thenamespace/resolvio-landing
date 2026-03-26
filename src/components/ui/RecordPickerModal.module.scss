@@ -21,7 +21,7 @@
 
 // ─── Modal ─────────────────────────────────────────────────────────────────────
 .modal {
-  background: #fff;
+  background: var(--surface);
   border-radius: 14px;
   border: 1px solid $border;
   width: 100%;
@@ -52,7 +52,7 @@
 .headerTitle {
   font-size: 0.9375rem;
   font-weight: 700;
-  color: #111;
+  color: var(--text-body);
 }
 
 .headerActions {
@@ -63,7 +63,7 @@
 
 .count {
   font-size: 0.75rem;
-  color: #999;
+  color: var(--text-muted);
   margin-right: 4px;
 }
 
@@ -72,13 +72,13 @@
   font-weight: 600;
   color: $primary;
   background: none;
-  border: 1px solid transparentize($primary, 0.7);
+  border: 1px solid rgba(0, 128, 188, 0.3);
   border-radius: 5px;
   padding: 3px 8px;
   cursor: pointer;
   transition: background 0.12s ease;
 
-  &:hover { background: transparentize($primary, 0.9); }
+  &:hover { background: rgba(0, 128, 188, 0.1); }
 }
 
 .closeBtn {
@@ -90,12 +90,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   margin-left: 4px;
   transition: background 0.12s ease, color 0.12s ease;
 
-  &:hover { background: #eee; color: #111; }
+  &:hover { background: $border; color: var(--text-body); }
 }
 
 // ─── Search ───────────────────────────────────────────────────────────────────
@@ -116,7 +116,7 @@
   outline: none;
   font-size: 0.875rem;
   font-family: inherit;
-  color: #111;
+  color: var(--text-body);
   background: transparent;
 
   &::placeholder { color: #bbb; }
@@ -125,7 +125,7 @@
 .searchClear {
   background: none;
   border: none;
-  color: #bbb;
+  color: var(--text-dim);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -150,7 +150,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: #bbb;
+  color: var(--text-dim);
   padding: 0 6px;
   margin-bottom: 4px;
 }
@@ -178,9 +178,9 @@
 }
 
 .itemActive {
-  background: transparentize($primary, 0.94);
+  background: rgba(0, 128, 188, 0.06);
 
-  &:hover { background: transparentize($primary, 0.88); }
+  &:hover { background: rgba(0, 128, 188, 0.12); }
 }
 
 .itemCheck { color: #ccc; flex-shrink: 0; }
@@ -196,12 +196,12 @@
 .itemLabel {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111;
+  color: var(--text-body);
 }
 
 .itemSub {
   font-size: 0.75rem;
-  color: #999;
+  color: var(--text-muted);
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
 }
 
@@ -216,12 +216,12 @@
   padding: 2px;
   border-radius: 4px;
   flex-shrink: 0;
-  &:hover { color: #e53e3e; background: #fff5f5; }
+  &:hover { color: var(--error-text); background: var(--error-bg); }
 }
 
 .empty {
   font-size: 0.875rem;
-  color: #aaa;
+  color: var(--text-subtle);
   text-align: center;
   padding: 24px 0;
 }
@@ -244,7 +244,7 @@
   font-size: 0.8rem;
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
   background: $background;
-  color: #111;
+  color: var(--text-body);
   outline: none;
   transition: border-color 0.15s ease;
 
@@ -259,11 +259,11 @@
   background: $background;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #555;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: background 0.12s ease;
 
-  &:hover { background: #eee; color: #111; }
+  &:hover { background: $border; color: var(--text-body); }
 }
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
@@ -285,5 +285,5 @@
   cursor: pointer;
   transition: background 0.15s ease;
 
-  &:hover { background: darken($primary, 8%); }
+  &:hover { background: #006ea3; }
 }
