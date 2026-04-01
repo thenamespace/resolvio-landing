@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build": "tsc -b && vite build --outDir dist/client && vite build --ssr src/entry-server.tsx --outDir dist/server && node scripts/prerender.mjs",
+    "serve": "npm run build && vite preview --outDir dist/client",
+    "preview": "vite preview --outDir dist/client",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@fontsource/work-sans": "^5.2.8",
