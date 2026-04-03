@@ -41,6 +41,12 @@ const AGENT_RESOURCES = [
     desc: 'Plain-text summary of the API designed for language models',
     url: 'https://resolvio.xyz/llms.txt',
   },
+  {
+    icon: <FileText size={14} />,
+    label: 'LLM full reference',
+    desc: 'Complete API reference in plain text for language models',
+    url: 'https://resolvio.xyz/llms-full.txt',
+  },
 {
     icon: <Puzzle size={14} />,
     label: 'AI plugin manifest',

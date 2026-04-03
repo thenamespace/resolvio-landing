@@ -519,9 +519,10 @@
   text-align: left;
 
   &:hover {
-    border-color: #ccc;
+    border-color: $primary;
+    background: rgba(0, 128, 188, 0.1);
 
-    .recordBadgeCopy { color: #666; }
+    .recordBadgeCopy { color: var(--text-secondary); }
   }
 }
 
@@ -540,7 +541,7 @@
 .recordBadgeValue {
   font-size: 0.72rem;
   font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  color: #444;
+  color: var(--text-body);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -576,7 +577,7 @@
   font-size: 0.875rem;
   color: var(--text-subtle);
 
-  strong { color: #555; font-weight: 600; }
+  strong { color: var(--text-primary); font-weight: 600; }
 }
 
 .errorState {
@@ -677,7 +678,7 @@
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 
-  &:hover { background: $border; color: #333; }
+  &:hover { background: $border; color: var(--text-primary); }
 }
 
 .jsonTerminalBody {

@@ -16,7 +16,7 @@ const PRODUCT_LINKS = [
 ]
 
 const RESOURCE_LINKS = [
-  { label: 'Blog',           href: 'https://paragraph.com/@namespace'          },
+  { label: 'Blog',           href: '/blog'                                      },
   { label: 'Resolvio Docs',  href: 'https://api.resolvio.xyz/api-docs'         },
   { label: 'Resolvio Repo',  href: 'https://github.com/thenamespace/resolvio'  },
   { label: 'Subname Docs',   href: 'https://docs.namespace.ninja'              },
@@ -69,7 +69,7 @@ export const Footer = () => {
           <div className={styles.inner}>
             <p className={styles.colHeading}>Products and Services</p>
             <nav className={styles.links}>
-              {PRODUCT_LINKS.map((l) => <a key={l.label} href={l.href} className={styles.link}>{l.label}</a>)}
+              {PRODUCT_LINKS.map((l) => <a key={l.label} href={l.href} className={styles.link} target="_blank" rel="noreferrer">{l.label}</a>)}
             </nav>
           </div>
         </div>
@@ -80,7 +80,7 @@ export const Footer = () => {
             <p className={styles.colHeading}>Resources</p>
             <nav className={styles.links}>
               {RESOURCE_LINKS.map((l) => (
-                <a key={l.label} href={l.href} className={styles.link} target={l.href.startsWith('http') ? '_blank' : undefined} rel={l.href.startsWith('http') ? 'noreferrer' : undefined}>{l.label}</a>
+                <a key={l.label} href={l.href} className={styles.link} target="_blank" rel="noreferrer">{l.label}</a>
               ))}
             </nav>
           </div>

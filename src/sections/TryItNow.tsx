@@ -11,7 +11,7 @@ import { RESOLVIO_API } from '../constants/api'
 type Tab = 'forward' | 'reverse'
 type ForwardMode = 'single' | 'bulk'
 
-const FORWARD_EXAMPLES = ['artii.eth', 'thecap.eth', 'happy.rsk.eth', 'vitalik.eth']
+const FORWARD_EXAMPLES = ['vitalik.eth', 'jesse.xyz', 'artii.eth', 'cap.eth', 'kris.cash', 'thecap.base.eth', 'happy.rsk.eth']
 const REVERSE_EXAMPLES_SINGLE = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
 const REVERSE_EXAMPLES_BULK = [
   '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',

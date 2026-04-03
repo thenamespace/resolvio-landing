@@ -21,6 +21,13 @@ const AI_ITEMS = [
     external: true,
   },
   {
+    icon: <FileText size={14} />,
+    label: 'LLM full reference',
+    desc: 'Complete API reference for language models',
+    href: 'https://resolvio.xyz/llms-full.txt',
+    external: true,
+  },
+  {
     icon: <Puzzle size={14} />,
     label: 'AI plugin manifest',
     desc: 'Agent plugin discovery file',
@@ -67,10 +74,11 @@ export const TopNavigation = ({ className, innerClassName }: Props) => {
           </a>
           <div className={styles.right}>
             <div className={styles.navLinks}>
-              <a href="#docs" className={styles.navLink}>Docs</a>
-              <a href="#benefits" className={styles.navLink}>Benefits</a>
-              <a href="#capabilities" className={styles.navLink}>Capabilities</a>
-              <a href="#faq" className={styles.navLink}>FAQ</a>
+              <a href="/#docs" className={styles.navLink}>Docs</a>
+              <a href="/#benefits" className={styles.navLink}>Benefits</a>
+              <a href="/#capabilities" className={styles.navLink}>Capabilities</a>
+              <a href="/#faq" className={styles.navLink}>FAQ</a>
+              <a href="/blog" className={styles.navLink}>Blog</a>
 
               <div className={styles.dropdown} ref={dropdownRef}>
                 <button
@@ -109,7 +117,7 @@ export const TopNavigation = ({ className, innerClassName }: Props) => {
             >
               {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
             </button>
-            <a href="#playground"><Button size="sm">Try Playground</Button></a>
+            <a href="/#playground"><Button size="sm">Try Playground</Button></a>
           </div>
         </div>
       </div>
