@@ -69,7 +69,7 @@
   color: var(--text-secondary);
 
   &:hover {
-    color: #111;
+    color: var(--text-primary);
     background: var(--hover-overlay);
   }
 }
@@ -78,6 +78,12 @@
   background: var(--surface);
   color: var(--text-primary);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  :global([data-theme="dark"]) & {
+    background: #3e3e44;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    border: 1px solid #4e4e56;
+  }
 }
 
 .audienceTabAgents {
@@ -85,7 +91,7 @@
 
   svg { color: #a855f7; }
 
-  &:hover {
+  &:not(.audienceTabActive):hover {
     opacity: 1;
     background: var(--hover-overlay);
     color: unset;
@@ -108,7 +114,7 @@
 
   svg { color: #0080BC; }
 
-  &:hover {
+  &:not(.audienceTabActive):hover {
     opacity: 1;
     background: var(--hover-overlay);
     color: unset;
@@ -217,7 +223,7 @@
   display: inline-block;
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--bg);
   background: var(--text-primary);
   border-radius: 6px;
   padding: 2px 7px;

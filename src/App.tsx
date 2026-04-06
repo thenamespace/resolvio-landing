@@ -1,28 +1,21 @@
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { TopNavigation } from "./sections/TopNavigation";
-import { HeroImage } from "./sections/HeroImage";
-import { StatsBar } from "./sections/StatsBar";
-import { TryItNow } from "./sections/TryItNow";
-import { DevDocs } from "./sections/DevDocs";
-import { WhyResolvio } from "./sections/WhyResolvio";
-import { Capabilities } from "./sections/Capabilities";
-import { CallToAction } from "./sections/CallToAction";
-import { FAQ } from "./sections/FAQ";
-import { Footer } from "./sections/Footer";
+import { Routes, Route } from 'react-router-dom'
+import { ThemeProvider } from './contexts/ThemeContext'
+import { TopNavigation } from './sections/TopNavigation'
+import { Footer } from './sections/Footer'
+import { LandingPage } from './pages/LandingPage'
+import { BlogIndex } from './pages/BlogIndex'
+import { BlogPost } from './pages/BlogPost'
 
 export default function App() {
   return (
     <ThemeProvider>
       <div>
         <TopNavigation />
-        <HeroImage />
-        <StatsBar />
-        <TryItNow />
-        <DevDocs />
-        <WhyResolvio />
-        <Capabilities />
-        <FAQ />
-        <CallToAction />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/blog" element={<BlogIndex />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+        </Routes>
         <Footer />
       </div>
     </ThemeProvider>
