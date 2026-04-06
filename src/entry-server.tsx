@@ -1,6 +1,6 @@
 import { renderToString } from 'react-dom/server'
 import { StrictMode } from 'react'
-import { StaticRouter } from 'react-router-dom/server'
+import { StaticRouter } from 'react-router'
 import App from './App'
 import './styles/main.scss'
 import { blogPosts } from './data/posts'

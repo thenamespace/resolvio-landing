@@ -47,7 +47,7 @@ function parseFrontmatter(raw: string): { data: Frontmatter; content: string } {
     }
   }
 
-  return { data: data as Frontmatter, content }
+  return { data: data as unknown as Frontmatter, content }
 }
 
 const rawFiles = import.meta.glob<string>('/posts/*.md', {
