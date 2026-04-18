@@ -1,0 +1,19 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://api.resolvio.xyz",
+      "service-desc": [
+        {
+          "href": "https://api.resolvio.xyz/api-docs.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://api.resolvio.xyz/api-docs",
+          "type": "text/html"
+        }
+      ]
+    }
+  ]
+}
