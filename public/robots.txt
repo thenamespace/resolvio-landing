@@ -26,6 +26,9 @@ Allow: /
 # Sitemap
 Sitemap: https://resolvio.xyz/sitemap.xml
 
+# Content Signals (IETF draft-romm-aipref-contentsignals)
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
+
 # AI / LLM discovery resources
 # LLM summary:          https://resolvio.xyz/llms.txt
 # LLM full reference:   https://resolvio.xyz/llms-full.txt
