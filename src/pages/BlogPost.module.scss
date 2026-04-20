@@ -253,7 +253,22 @@
     overflow: hidden;
     margin-bottom: 24px;
     margin-top: 6px;
-    background: var(--surface-alt);
+    background: var(--hljs-bg);
+    position: relative;
+
+    &[data-lang]::before {
+      content: attr(data-lang);
+      display: block;
+      padding: 7px 16px;
+      font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--hljs-comment);
+      border-bottom: 1px solid $border;
+      background: var(--hljs-bg);
+    }
 
     code {
       display: block;
@@ -261,7 +276,7 @@
       font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
       font-size: 0.8rem;
       line-height: 1.8;
-      color: var(--text-body);
+      color: var(--hljs-variable);
       overflow-x: auto;
       background: transparent;
     }

@@ -1,4 +1,5 @@
 import { marked } from 'marked'
+import hljs from 'highlight.js'
 
 function slugify(text: string) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -12,6 +13,15 @@ marked.use({
     },
     blockquote({ text }) {
       return `<div class="callout">${text}</div>\n`
+    },
+    code({ text, lang }) {
+      const language = lang && hljs.getLanguage(lang) ? lang : undefined
+      const result = language
+        ? hljs.highlight(text, { language })
+        : hljs.highlightAuto(text)
+      const langLabel = result.language ?? lang ?? ''
+      const langAttr = langLabel ? ` data-lang="${langLabel}"` : ''
+      return `<pre${langAttr}><code class="hljs">${result.value}</code></pre>\n`
     },
   },
 })
