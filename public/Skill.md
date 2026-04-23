@@ -1,206 +1,92 @@
-# Resolvio - AI Agent Skill Definition
+---
+name: resolvio
+description: Resolves ENS names to addresses, fetches ENS profile and text records, reverse-resolves addresses to ENS names, and batch-resolves ENS names for leaderboards or tables via Resolvio HTTP endpoints. Use when users ask for ENS lookup, reverse lookup, profile data, or bulk ENS resolution.
+---
 
-Tool definitions for integrating Resolvio ENS resolution into AI agents and agentic pipelines.
+# Resolvio ENS Resolution API
 
-**Base URL:** `https://api.resolvio.xyz`
-**Auth:** None required
-**OpenAPI spec:** `https://api.resolvio.xyz/api-docs.json`
+**Base URL**: `https://api.resolvio.xyz`  
+**OpenAPI JSON**: `https://api.resolvio.xyz/api-docs.json`
+
+No authentication required.
 
 ---
 
-## Tool Definitions - Anthropic / Claude format
+## Route map
 
-```json
-[
-  {
-    "name": "resolve_ens_name",
-    "description": "Resolve an ENS name to its full Web3 profile: cryptocurrency addresses (ETH, BTC, Base, and 100+ chains), text records (avatar, email, description, socials, and custom keys), and content hash (IPFS, IPNS, Arweave). Use this whenever a user provides an ENS name (e.g. vitalik.eth) and wants to know the associated address or profile.",
-    "input_schema": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "The ENS name to resolve, e.g. vitalik.eth"
-        },
-        "chains": {
-          "type": "string",
-          "description": "Comma-separated chain slugs to include in the response, e.g. eth,btc,base. Omit to use defaults."
-        },
-        "texts": {
-          "type": "string",
-          "description": "Comma-separated text record keys to include, e.g. avatar,email,description. Omit to use defaults."
-        },
-        "useDefault": {
-          "type": "boolean",
-          "description": "Set to true to fetch a sensible default set of addresses and text records. Recommended for general use."
-        }
-      },
-      "required": ["name"]
-    }
-  },
-  {
-    "name": "reverse_resolve_address",
-    "description": "Reverse-resolve an Ethereum address to its primary ENS name. Use this when you have a wallet address (0x...) and want to find the human-readable ENS identity associated with it.",
-    "input_schema": {
-      "type": "object",
-      "properties": {
-        "address": {
-          "type": "string",
-          "description": "The Ethereum address to reverse-resolve, e.g. 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
-        }
-      },
-      "required": ["address"]
-    }
-  },
-  {
-    "name": "bulk_resolve_ens_names",
-    "description": "Resolve multiple ENS names at once in a single API call. Use when you need to look up addresses or profiles for a list of ENS names simultaneously.",
-    "input_schema": {
-      "type": "object",
-      "properties": {
-        "names": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Array of ENS names to resolve, e.g. [\"vitalik.eth\", \"nick.eth\"]"
-        },
-        "useDefault": {
-          "type": "boolean",
-          "description": "Set to true to fetch a sensible default set of addresses and text records for each name."
-        }
-      },
-      "required": ["names"]
-    }
-  },
-  {
-    "name": "bulk_reverse_resolve_addresses",
-    "description": "Reverse-resolve multiple Ethereum addresses to ENS names in a single API call.",
-    "input_schema": {
-      "type": "object",
-      "properties": {
-        "addresses": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Array of Ethereum addresses to reverse-resolve, e.g. [\"0xd8dA...\", \"0xab5C...\"]"
-        }
-      },
-      "required": ["addresses"]
-    }
-  }
-]
+| Task | Route | Notes |
+| --- | --- | --- |
+| ENS name -> one or more chain addresses | `GET /ens/v2/addresses/:name` | Use `chains` or `coins`, not both |
+| Full profile (texts + addresses + contenthash) | `GET /ens/v2/profile/:name` | Prefer this over multiple separate calls |
+| Multiple profiles | `GET /ens/v2/profile/bulk` | Max 20 names per call |
+| Text records only | `GET /ens/v2/texts/:name` | Pass `keys=` list |
+| Contenthash only | `GET /ens/v2/contenthash/:name` | Returns `{ exists: false }` when unset |
+| Reverse lookup for one address | `GET /ens/v2/reverse/:address` | Returns `hasReverseRecord` |
+| Reverse lookup for many addresses | `GET /ens/v2/reverse/bulk` | Max 20 addresses per call; do not loop single calls |
+| List supported chains + coinTypes | `GET /ens/v2/chains` | Chain names and coinTypes are equivalent |
+| Cache management | `GET ...?noCache=true`, `DELETE /ens/v2/cache/:name` | Use only when fresh data is needed |
+
+---
+
+## Core rules
+
+- All requested records are returned. Missing records appear as `{ "exists": false }` and are not silently dropped.
+- Always check `exists` before reading `value`.
+- Use bulk endpoints for lists. Max 20 items per bulk request; batch larger sets in chunks of 20.
+- For cache, only use `?noCache=true` or cache clear when fresh data is required.
+
+---
+
+## Output shapes (quick reference)
+
+- `GET /ens/v2/addresses/:name` -> `{ name, addresses: [{ coin, chain, exists, value? }] }`
+- `GET /ens/v2/profile/:name` -> `{ name, resolver?, texts: [{ key, exists, value? }], addresses: [{ coin, chain, exists, value? }], contenthash: { exists, value? } }`
+- `GET /ens/v2/reverse/:address` -> `{ address, hasReverseRecord, name? }`
+- `GET /ens/v2/reverse/bulk` -> `{ addresses: [{ address, hasReverseRecord, name? }] }`
+- `GET /ens/v2/texts/:name` -> `{ name, texts: [{ key, exists, value? }] }`
+- `GET /ens/v2/contenthash/:name` -> `{ exists, value? }`
+- `GET /ens/v2/chains` -> `[{ name, coin }]`
+
+`value` and `name` are optional and omitted when `exists: false` or `hasReverseRecord: false`.
+
+---
+
+## Error handling
+
+- Expect `400` for invalid ENS names, invalid addresses, unsupported chains, or bulk requests over limit.
+- When a lookup does not exist, treat it as a valid empty result (`exists: false` or `hasReverseRecord: false`), not a transport failure.
+
+---
+
+## Minimal examples
+
+### Name -> ETH address
+
+```bash
+curl "https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chains=eth"
+```
+
+### Profile with selected fields
+
+```bash
+curl "https://api.resolvio.xyz/ens/v2/profile/vitalik.eth?texts=avatar,description,com.twitter&addresses=eth,base&contenthash=false"
+```
+
+### Bulk reverse for leaderboard rows
+
+```bash
+curl "https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045,0x225f137127d9067788314bc7fcc1f36746a3c3B5"
+```
+
+### Fresh read after update
+
+```bash
+curl "https://api.resolvio.xyz/ens/v2/profile/vitalik.eth?noCache=true"
 ```
 
 ---
 
-## Tool Definitions - OpenAI / function calling format
+## References
 
-```json
-[
-  {
-    "type": "function",
-    "function": {
-      "name": "resolve_ens_name",
-      "description": "Resolve an ENS name to its full Web3 profile: cryptocurrency addresses (ETH, BTC, Base, and 100+ chains), text records (avatar, email, description, socials, and custom keys), and content hash (IPFS, IPNS, Arweave).",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "The ENS name to resolve, e.g. vitalik.eth"
-          },
-          "chains": {
-            "type": "string",
-            "description": "Comma-separated chain slugs, e.g. eth,btc,base"
-          },
-          "texts": {
-            "type": "string",
-            "description": "Comma-separated text record keys, e.g. avatar,email,description"
-          },
-          "useDefault": {
-            "type": "boolean",
-            "description": "Fetch a sensible default set of addresses and text records"
-          }
-        },
-        "required": ["name"]
-      }
-    }
-  },
-  {
-    "type": "function",
-    "function": {
-      "name": "reverse_resolve_address",
-      "description": "Reverse-resolve an Ethereum address (0x...) to its primary ENS name.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "address": {
-            "type": "string",
-            "description": "The Ethereum address to reverse-resolve"
-          }
-        },
-        "required": ["address"]
-      }
-    }
-  },
-  {
-    "type": "function",
-    "function": {
-      "name": "bulk_resolve_ens_names",
-      "description": "Resolve multiple ENS names at once in a single API call.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "names": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "Array of ENS names to resolve"
-          },
-          "useDefault": {
-            "type": "boolean",
-            "description": "Fetch a sensible default set of addresses and text records for each name"
-          }
-        },
-        "required": ["names"]
-      }
-    }
-  },
-  {
-    "type": "function",
-    "function": {
-      "name": "bulk_reverse_resolve_addresses",
-      "description": "Reverse-resolve multiple Ethereum addresses to ENS names in a single API call.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "addresses": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "Array of Ethereum addresses to reverse-resolve"
-          }
-        },
-        "required": ["addresses"]
-      }
-    }
-  }
-]
-```
-
----
-
-## HTTP implementation
-
-When the tool is called, map each function to the corresponding REST call:
-
-| Tool | HTTP call |
-|---|---|
-| `resolve_ens_name` | `GET https://api.resolvio.xyz/ens/v2/profile/{name}?useDefault=true` |
-| `reverse_resolve_address` | `GET https://api.resolvio.xyz/ens/v2/reverse/{address}` |
-| `bulk_resolve_ens_names` | `GET https://api.resolvio.xyz/ens/v2/profile/bulk?names={name1},{name2}` |
-| `bulk_reverse_resolve_addresses` | `GET https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses={addr1},{addr2}` |
-
-All endpoints return JSON. No authentication required.
-
-## Discovery
-
-- **LLM description:** `https://resolvio.xyz/llms.txt`
-- **AI plugin manifest:** `https://resolvio.xyz/.well-known/ai-plugin.json`
-- **Full OpenAPI spec:** `https://api.resolvio.xyz/api-docs.json`
+- Full API reference (params, response shapes, errors): [references/api.md](references/api.md)
+- Concise usage examples by workflow: [references/examples.md](references/examples.md)
