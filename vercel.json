@@ -22,6 +22,11 @@
       ]
     }
   ],
+  "redirects": [
+    { "source": "/Skill.md", "destination": "/skill.md", "permanent": true },
+    { "source": "/SKILL.MD", "destination": "/skill.md", "permanent": true },
+    { "source": "/SKILL.md", "destination": "/skill.md", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
