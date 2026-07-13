@@ -7,12 +7,12 @@ import { useTheme } from '../contexts/ThemeContext'
 
 const PRODUCT_LINKS = [
   { label: 'Resolvio Playground',     href: '#playground' },
-  { label: 'Offchain Subnames',       href: 'https://docs.namespace.ninja/developer-guide/guide/create-offchain-subnames' },
-  { label: 'Onchain Subnames',        href: 'https://docs.namespace.ninja/developer-guide/guide/mint-l1-l2-subnames'     },
-  { label: 'ENS Resolver for Sheets', href: 'https://github.com/thenamespace/ens-sheets'                                 },
-  { label: 'ENS Widget',              href: 'https://docs.namespace.ninja/user-guide/ens-widget'                         },
-  { label: 'ENS MCP Server',          href: 'https://github.com/thenamespace/ens-mcp'                                    },
-  { label: 'Custom Solutions',        href: '#'                                                                           },
+  { label: 'Offchain Subnames',       href: 'https://app.namespace.ninja/offchain' },
+  { label: 'Onchain Subnames',        href: 'https://app.namespace.ninja/onchain'  },
+  { label: 'ENS Resolver for Sheets', href: 'https://ens-sheets.namespace.ninja/' },
+  { label: 'ENS Widget',              href: 'https://app.namespace.ninja/widgets'  },
+  { label: 'ENS MCP Server',          href: 'https://github.com/thenamespace/ens-mcp' },
+  { label: 'Custom Solutions',        href: 'https://namespace.ninja'              },
 ]
 
 const RESOURCE_LINKS = [
