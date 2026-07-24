@@ -19,6 +19,7 @@ No API key required. All endpoints are publicly accessible.
 - Resolve cryptocurrency addresses for 100+ chains (ENSIP-9)
 - Resolve IPFS, IPNS, Arweave, and Swarm content hashes
 - Reverse resolve an Ethereum address to its primary ENS name
+- Reverse resolve an address to its verified ENS profile with avatar, display name, and description
 - Bulk forward resolution:resolve multiple ENS names in a single call
 - Bulk reverse resolution:resolve multiple Ethereum addresses in a single call
 - List all supported chains with names and coinType values
@@ -59,6 +60,16 @@ Returns the primary ENS name for an Ethereum address.
 Example:
 ```
 GET https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+```
+
+### Reverse resolve to profile (address → verified ENS profile)
+GET /ens/v2/reverse/{address}/profile
+
+Reverse-resolves an address to its verified ENS primary name, then returns the full profile plus convenience fields (avatar, displayName, description). Always returns 200 for valid addresses. Same query params as /profile/{name}.
+
+Example:
+```
+GET https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045/profile?texts=avatar,name,description
 ```
 
 ### Bulk forward resolution

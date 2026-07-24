@@ -29,6 +29,7 @@ Resolvio is part of the [Namespace](https://namespace.ninja) ENS infrastructure 
 | Address records | Cryptocurrency addresses for 100+ chains (ENSIP-9 / SLIP-44) |
 | Content hash | IPFS, IPNS, Arweave, and Swarm content pointers |
 | Reverse resolution | Ethereum address → primary ENS name |
+| Reverse profile | Ethereum address → verified ENS profile with avatar, display name, and description |
 | Bulk forward | Multiple ENS names resolved concurrently in one API call |
 | Bulk reverse | Multiple Ethereum addresses resolved in one batched RPC call |
 | Supported chains | List all chains with names and coinType values |
@@ -67,6 +68,12 @@ GET https://api.resolvio.xyz/ens/v2/contenthash/{name}
 ```
 GET https://api.resolvio.xyz/ens/v2/reverse/{address}
 ```
+
+### Reverse resolve to profile (address → verified ENS profile)
+```
+GET https://api.resolvio.xyz/ens/v2/reverse/{address}/profile
+```
+Returns the verified ENS name, full profile, and convenience fields (avatar, display name, description). Always returns 200 for valid addresses — null fields when no reverse record exists.
 
 ### Bulk forward resolution
 ```
