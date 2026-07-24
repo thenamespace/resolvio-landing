@@ -28,6 +28,7 @@ const ENDPOINTS = [
   { label: 'Resolve ENS profile',      method: 'GET', path: '/ens/v2/profile/:name' },
   { label: 'Bulk forward resolution',  method: 'GET', path: '/ens/v2/profile/bulk?names=vitalik.eth,nick.eth' },
   { label: 'Reverse resolve',          method: 'GET', path: '/ens/v2/reverse/:address' },
+  { label: 'Reverse resolve to profile', method: 'GET', path: '/ens/v2/reverse/:address/profile' },
   { label: 'Bulk reverse resolution',  method: 'GET', path: '/ens/v2/reverse/bulk?addresses=0x…,0x…' },
   { label: 'Text records',             method: 'GET', path: '/ens/v2/texts/:name?texts=avatar,com.twitter' },
   { label: 'Address records',          method: 'GET', path: '/ens/v2/addresses/:name?addresses=eth,base' },

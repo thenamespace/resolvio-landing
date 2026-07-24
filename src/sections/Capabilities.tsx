@@ -6,6 +6,7 @@ const CAPABILITIES = [
   { operation: 'Address records',         desc: 'Resolve cryptocurrency addresses for 100+ chains per ENSIP-9',                                                           status: 'Live' },
   { operation: 'Contenthash',             desc: 'Resolve IPFS, IPNS, Arweave, and Swarm content pointers',                                                                status: 'Live' },
   { operation: 'Reverse resolution',      desc: 'Resolve an Ethereum address back to its primary ENS name',                                                               status: 'Live' },
+  { operation: 'Reverse profile',         desc: 'Resolve an address to its verified ENS profile with avatar, display name, and description',                                status: 'Live' },
   { operation: 'Bulk forward resolution', desc: 'Resolve multiple ENS names concurrently in a single API call',                                                           status: 'Live' },
   { operation: 'Bulk reverse resolution', desc: 'Resolve multiple addresses to ENS names in a single batched RPC call',                                                   status: 'Live' },
   { operation: 'Supported chains',        desc: 'List all supported chains with names and coinType values',                                                                status: 'Live' },

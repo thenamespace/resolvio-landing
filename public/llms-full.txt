@@ -30,14 +30,14 @@ Resolves an ENS name to its full profile: cryptocurrency addresses, text records
 - `name` (string, required) — The ENS name to resolve, e.g. `vitalik.eth`
 
 **Query parameters:**
-- `texts` (string, optional) — Comma-separated list of text record keys to fetch. Example: `avatar,email,description,com.twitter,com.github,url`. Omit to get none; use `useDefault=true` for a sensible default set.
-- `chains` (string, optional) — Comma-separated chain slugs to fetch addresses for. Example: `eth,btc,base,sol`. Omit to get ETH only; use `useDefault=true` for common chains.
-- `useDefault` (boolean, optional) — When `true`, fetches a sensible default set of text records and addresses. Recommended for general use.
-- `noCache` (boolean, optional) — When `true`, bypasses the server cache and forces a fresh resolution from the blockchain.
+- `texts` (string, optional) — Comma-separated text record keys. Omit for the standard profile set.
+- `addresses` (string, optional) — Comma-separated chain names or coin type numbers. Omit all profile selectors for the standard profile set.
+- `contenthash` (boolean, optional) — Include contenthash (default: `true`).
+- `noCache` (boolean, optional) — Bypass the server cache and force fresh resolution.
 
 **Example request:**
 ```
-GET https://api.resolvio.xyz/ens/v2/profile/vitalik.eth?useDefault=true
+GET https://api.resolvio.xyz/ens/v2/profile/vitalik.eth
 ```
 
 **Example response:**
@@ -180,7 +180,62 @@ GET https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37a
 
 ---
 
-### 6. Bulk forward resolution
+### 6. Reverse resolve to profile (address → verified ENS profile)
+
+```
+GET /ens/v2/reverse/{address}/profile
+```
+
+Reverse-resolves an Ethereum address to its verified ENS primary name, then returns the full ENS profile plus convenience fields. Always returns HTTP 200 for valid addresses — when no verified reverse record exists, `name`, `avatar`, `displayName`, `description`, and `profile` are `null` and the forward resolver is not called.
+
+**Path parameters:**
+- `address` (string, required) — The Ethereum address to reverse-resolve.
+
+**Query parameters:** (same as `/profile/{name}`)
+- `texts` (string, optional) — Comma-separated text record keys to fetch.
+- `addresses` (string, optional) — Comma-separated chain slugs to fetch addresses for.
+- `contenthash` (boolean, optional) — Include contenthash (default: `true`).
+- `noCache` (boolean, optional) — Bypass cache for both reverse and forward lookups.
+
+**Example request:**
+```
+GET https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045/profile?texts=avatar,name,description
+```
+
+**Example response (verified reverse record exists):**
+```json
+{
+  "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+  "hasReverseRecord": true,
+  "name": "vitalik.eth",
+  "avatar": "https://...",
+  "displayName": "Vitalik",
+  "description": "Ethereum founder",
+  "profile": {
+    "name": "vitalik.eth",
+    "texts": [...],
+    "addresses": [...],
+    "contenthash": { "exists": false }
+  }
+}
+```
+
+**Example response (no verified reverse record):**
+```json
+{
+  "address": "0x225f137127d9067788314bc7fcc1f36746a3c3B5",
+  "hasReverseRecord": false,
+  "name": null,
+  "avatar": null,
+  "displayName": null,
+  "description": null,
+  "profile": null
+}
+```
+
+---
+
+### 7. Bulk forward resolution
 
 ```
 GET /ens/v2/profile/bulk?names={name1},{name2},...
@@ -190,13 +245,14 @@ Resolves multiple ENS names in a single request.
 
 **Query parameters:**
 - `names` (string, required) — Comma-separated list of ENS names.
-- `texts` (string, optional) — Comma-separated text record keys to fetch for each name.
-- `chains` (string, optional) — Comma-separated chain slugs to fetch addresses for.
-- `useDefault` (boolean, optional) — Fetch default texts and chains for each name.
+- `texts` (string, optional) — Comma-separated text record keys to fetch for each name. Omit for defaults.
+- `addresses` (string, optional) — Comma-separated chain names or coin type numbers. Omit for defaults.
+- `contenthash` (boolean, optional) — Include contenthash (default: `true`).
+- `noCache` (boolean, optional) — Bypass cache.
 
 **Example request:**
 ```
-GET https://api.resolvio.xyz/ens/v2/profile/bulk?names=vitalik.eth,nick.eth&useDefault=true
+GET https://api.resolvio.xyz/ens/v2/profile/bulk?names=vitalik.eth,nick.eth
 ```
 
 **Example response:**
@@ -219,7 +275,7 @@ GET https://api.resolvio.xyz/ens/v2/profile/bulk?names=vitalik.eth,nick.eth&useD
 
 ---
 
-### 7. Bulk reverse resolution
+### 8. Bulk reverse resolution
 
 ```
 GET /ens/v2/reverse/bulk?addresses={addr1},{addr2},...
@@ -245,7 +301,7 @@ GET https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=0xd8dA6BF26964aF9D7eE
 
 ---
 
-### 8. List supported chains
+### 9. List supported chains
 
 ```
 GET /ens/v2/chains
@@ -267,7 +323,7 @@ Supports 100+ chains. See the full list via this endpoint.
 
 ---
 
-### 9. Invalidate cache
+### 10. Invalidate cache
 
 ```
 DELETE /ens/v2/cache/{name}
