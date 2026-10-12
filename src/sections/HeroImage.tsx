@@ -116,14 +116,14 @@ export const HeroImage = () => {
 
       <div className={styles.inner}>
         <div className={styles.badge}>
-          <span>Universal Web3 Name Resolution</span>
+          <span>Free ENS API · No key required</span>
         </div>
 
         <h1 className={styles.heading}>
-          Resolve Web3 Identities.<br />One API. Every namespace.
+          Resolve any ENS name or subname in one API call.
         </h1>
 
-        <p className={styles.subtitle}>Complete identity resolution service through a single API. Built for chains, wallets, apps, and agents.</p>
+        <p className={styles.subtitle}>A single API for chains, wallets, apps and agents that need to know who’s behind an address.</p>
 
         <div className={styles.codeWindow}>
           <div className={styles.codeWindowBar}>

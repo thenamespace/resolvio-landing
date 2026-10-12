@@ -4,6 +4,7 @@ import { StaticRouter } from 'react-router'
 import App from './App'
 import './styles/main.scss'
 import { blogPosts } from './data/posts'
+import { getLegalDoc } from './data/legal'
 
 export function render(url: string) {
   return renderToString(
@@ -30,6 +31,14 @@ export function getPageMeta(url: string): { title: string; description: string; 
       canonical: 'https://resolvio.xyz/blog',
     }
   }
+  const legal = getLegalDoc(url.slice(1))
+  if (legal) {
+    return {
+      title: `${legal.title} | Resolvio`,
+      description: legal.description,
+      canonical: `https://resolvio.xyz${url}`,
+    }
+  }
   const slug = url.replace('/blog/', '')
   const post = blogPosts.find(p => p.slug === slug)
   if (post) {
@@ -47,5 +56,5 @@ export function getPageMeta(url: string): { title: string; description: string; 
 }
 
 export function getAllRoutes(): string[] {
-  return ['/', '/blog', ...blogPosts.map(p => `/blog/${p.slug}`)]
+  return ['/', '/blog', '/terms', '/privacy', ...blogPosts.map(p => `/blog/${p.slug}`)]
 }

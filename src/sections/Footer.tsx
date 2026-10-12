@@ -90,7 +90,12 @@ export const Footer = () => {
 
       {/* Bottom bar */}
       <div className={styles.bottomBar}>
-        <span className={styles.copyright}>© 2025 Resolvio. All rights reserved.</span>
+        <span className={styles.copyright}>© {new Date().getFullYear()} Resolvio. All rights reserved.</span>
+        <nav className={styles.legal} aria-label="Legal">
+          <a href="/terms" className={styles.legalLink}>Terms of Service</a>
+          <span className={styles.divider}>·</span>
+          <a href="/privacy" className={styles.legalLink}>Privacy Policy</a>
+        </nav>
       </div>
     </div>
   </footer>

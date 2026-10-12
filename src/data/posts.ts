@@ -11,8 +11,8 @@ marked.use({
       const id = slugify(text.replace(/<[^>]+>/g, ''))
       return `<h${depth} id="${id}">${text}</h${depth}>\n`
     },
-    blockquote({ text }) {
-      return `<div class="callout">${text}</div>\n`
+    blockquote({ tokens }) {
+      return `<div class="callout">${this.parser.parse(tokens)}</div>\n`
     },
     code({ text, lang }) {
       const language = lang && hljs.getLanguage(lang) ? lang : undefined
