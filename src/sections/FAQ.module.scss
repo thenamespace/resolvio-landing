@@ -1,199 +1,37 @@
 .outer {
-  width: 100%;
-  border-bottom: 1px solid $border;
-}
-
-.header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  max-width: $section_width;
+  max-width: 1160px;
   margin: auto;
-  padding: 64px 24px 40px;
-}
-
-.label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.heading {
-  font-size: 2.25rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: 12px;
-}
-
-.subtitle {
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
-  max-width: 480px;
-}
-
-// ─── Grid ─────────────────────────────────────────────────────────────────────
-.gridOuter {
-  width: 100%;
-  border-top: 1px solid $border;
-}
-
-.grid {
+  padding: 0 32px 72px;
   display: grid;
-  grid-template-columns: 1fr;
-  margin: auto;
-  width: 100%;
-  max-width: $section_width;
-  background-color: $border;
-  gap: 1px;
-  border-left: 1px solid $border;
-  border-right: 1px solid $border;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 64px;
 }
-
-.cell {
-  min-width: 0;
-}
-
-// ─── Accordion items ──────────────────────────────────────────────────────────
-.item {
-  background-color: $background;
-  border-radius: 10px;
-  transition: background-color 0.2s ease, border-radius 0.4s ease;
-
-  &:hover {
-    background-color: var(--surface);
-    border-radius: 0;
-  }
-}
-
-.question {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 24px 28px;
-  background: none;
-  border: none;
-  font-family: inherit;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-body);
-  text-align: left;
-  cursor: pointer;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: var(--text-primary);
-  }
-}
-
-.chevron {
-  flex-shrink: 0;
-  color: var(--text-subtle);
-  transition: transform 0.25s ease, color 0.15s ease;
-
-  &.chevronOpen {
-    transform: rotate(180deg);
-    color: $primary;
-  }
-}
-
-.answerWrap {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.answer {
-  padding: 0 28px 24px;
-  font-size: 0.9375rem;
-  color: var(--text-code);
-  line-height: 1.65;
-
-  p {
-    margin-bottom: 12px;
-
-    &:last-child { margin-bottom: 0; }
-  }
-
-  ul {
-    padding-left: 18px;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    li {
-      line-height: 1.6;
-    }
-  }
-
-  code {
-    font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-    font-size: 0.85em;
-    background: var(--code-bg);
-    border-radius: 4px;
-    padding: 1px 5px;
-    color: var(--text-code);
-  }
-}
-
-// ─── Code block ───────────────────────────────────────────────────────────────
-.codeBlock {
-  background: var(--surface);
-  border: 1px solid $border;
-  border-radius: 8px;
-  padding: 14px 16px;
-  overflow-x: auto;
-  margin: 10px 0;
-
-  &:last-child { margin-bottom: 0; }
-}
-
-// ─── Tabs ─────────────────────────────────────────────────────────────────────
-.tabCell {
-  background-color: $background;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tabs {
-  display: flex;
-  gap: 4px;
-  padding: 10px 0;
-}
-
-.tab {
-  font-family: inherit;
-  font-size: 0.8125rem;
+.outer h2 {
+  font-size: 28px;
   font-weight: 500;
-  color: var(--text-muted);
-  background: none;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-
-  &:hover {
-    color: var(--text-code);
-    background: var(--hover-overlay);
-  }
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
 }
-
-.tabActive {
-  color: $primary;
-  background: rgba(0, 128, 188, 0.08);
-
-  &:hover {
-    color: $primary;
-    background: rgba(0, 128, 188, 0.12);
+.outer details {
+  border-top: 1px solid var(--border-color);
+}
+.outer summary {
+  padding: 20px 0;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+.outer p {
+  padding: 0 0 24px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-secondary);
+}
+@media (max-width: 760px) {
+  .outer {
+    grid-template-columns: 1fr;
+    padding: 0 20px 48px;
+    gap: 24px;
   }
 }

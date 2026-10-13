@@ -32,7 +32,5 @@ Content-Signal: ai-train=yes, search=yes, ai-input=yes
 # AI / LLM discovery resources
 # LLM summary:          https://resolvio.xyz/llms.txt
 # LLM full reference:   https://resolvio.xyz/llms-full.txt
-# AI plugin manifest:   https://resolvio.xyz/.well-known/ai-plugin.json
-# MCP server manifest:  https://resolvio.xyz/.well-known/mcp.json
 # Agent skill defs:     https://resolvio.xyz/Skill.md
 # OpenAPI spec:         https://api.resolvio.xyz/api-docs.json

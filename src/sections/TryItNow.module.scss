@@ -1,833 +1,346 @@
-// ─── Outer ────────────────────────────────────────────────────────────────────
 .outer {
-  width: 100%;
-  border-bottom: 1px solid $border;
+  max-width: 1096px;
+  margin: 0 auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface);
+  scroll-margin-top: 24px;
 }
-
-// ─── Header text ──────────────────────────────────────────────────────────────
-.header {
+.toolbar {
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+.toolbar h2 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.toolbar > span {
+  font: 12px var(--font-mono);
+  color: var(--text-secondary);
+}
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+}
+.request {
+  padding: 28px;
+  border-right: 1px solid var(--border-color);
+  min-width: 0;
+}
+.request fieldset {
+  border: none;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  max-width: $section_width;
-  margin: auto;
-  padding: 64px 24px 40px;
 }
-
-.label {
-  font-size: 0.75rem;
+.request label {
+  font-size: 13px;
   font-weight: 500;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.heading {
-  font-size: 2.25rem;
-  font-weight: 800;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 20px 0 8px;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: 12px;
 }
-
-.subtitle {
-  font-size: 0.9375rem;
+.request label:first-child {
+  margin-top: 0;
+}
+.request label > span {
+  font-size: 12px;
+  font-weight: 400;
   color: var(--text-secondary);
-  max-width: 520px;
 }
-
-// ─── 4-card grid — same border system as StatsBar ─────────────────────────────
-.gridOuter {
+.request input:not([type='checkbox']),
+.request select,
+.request textarea {
   width: 100%;
-  border-top: 1px solid $border;
+  min-height: 44px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text-primary);
+  padding: 11px 12px;
+  font: 14px/1.4 var(--font-mono);
 }
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin: auto;
-  width: 100%;
-  max-width: $section_width;
-  background-color: $border;
-  gap: 1px;
-  border-left: 1px solid $border;
-  border-right: 1px solid $border;
-
-  @media (max-width: $mobile) {
+.request select {
+  font-family: inherit;
+  padding-right: 24px;
+}
+.request textarea {
+  resize: vertical;
+}
+.request input:hover,
+.request select:hover,
+.request textarea:hover {
+  border-color: var(--text-muted);
+}
+.help {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 8px 0 0;
+}
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  align-items: center;
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+.examples button {
+  background: transparent;
+  border: 0;
+  font: 12px var(--font-mono);
+  min-height: 44px;
+  color: var(--accent);
+  cursor: pointer;
+}
+.examples button:hover {
+  text-decoration: underline;
+}
+.request .checkbox {
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 44px;
+  margin: 12px 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+.checkbox input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--accent);
+}
+.resolve {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 46px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--action-bg);
+  color: white;
+  font:
+    500 15px 'Work Sans',
+    sans-serif;
+  cursor: pointer;
+  margin-top: 12px;
+  transition:
+    background-color 150ms,
+    transform 100ms;
+}
+.resolve:hover {
+  background: color-mix(in oklch, var(--action-bg) 85%, black);
+}
+.resolve:active {
+  transform: translateY(1px);
+}
+.request fieldset:disabled .resolve {
+  background: var(--surface-tab);
+  color: var(--text-secondary);
+  cursor: wait;
+}
+.reference {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-decoration: none;
+}
+.reference:hover {
+  color: var(--accent);
+}
+.command {
+  padding-top: 16px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+.command > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.command > code {
+  display: block;
+  font: 12px/1.8 var(--font-mono);
+  overflow-wrap: anywhere;
+  color: var(--text-secondary);
+}
+.command button,
+.responseHeader button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 0;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.response {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-alt);
+}
+.responseHeader {
+  padding: 16px 24px;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.responseHeader h3 {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.responseHeader > div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font: 11px var(--font-mono);
+  color: var(--text-secondary);
+}
+.status {
+  color: var(--accent);
+}
+.failed {
+  color: var(--error-text);
+}
+.error {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--error-text);
+}
+.error:empty {
+  display: none;
+}
+.json {
+  margin: 0;
+  padding: 8px 24px 24px;
+  font: 12px/1.85 var(--font-mono);
+  overflow: auto;
+  max-height: 540px;
+  color: var(--text-code);
+  flex: 1;
+  tab-size: 2;
+}
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  flex: 1;
+  min-height: 360px;
+  padding: 40px;
+}
+.braces {
+  color: var(--accent);
+  font: 36px var(--font-mono);
+  letter-spacing: -0.12em;
+  margin-bottom: 24px;
+}
+.empty h3 {
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+.empty p {
+  margin-top: 12px;
+  max-width: 32ch;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.responseNote {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  padding: 16px 24px;
+}
+.responseFooter {
+  margin-top: auto;
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid var(--border-color);
+  padding: 18px 24px;
+  font: 11px/1.5 var(--font-mono);
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+.responseFooter > span {
+  color: var(--accent);
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (max-width: 1160px) {
+  .outer {
+    margin-left: 32px;
+    margin-right: 32px;
+  }
+}
+@media (max-width: 760px) {
+  .outer {
+    margin: 0 20px;
+  }
+  .workspace {
     grid-template-columns: 1fr;
   }
-}
-
-.cell {
-  min-width: 0;
-
-  &.full {
-    grid-column: 1 / -1;
+  .request {
+    padding: 20px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
   }
-}
-
-.inner {
-  width: 100%;
-  height: 100%;
-  background-color: $background;
-  padding: 28px;
-  border-radius: 10px;
-  transition: border-radius 0.4s ease;
-
-  &:hover {
-    border-radius: 0;
+  .toolbar {
+    padding: 16px 20px;
   }
-}
-
-// ─── Tabs ─────────────────────────────────────────────────────────────────────
-.tabs {
-  display: flex;
-  gap: 8px;
-}
-
-.tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 20px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  font-family: inherit;
-  border: 1px solid $border;
-  border-radius: 9999px;
-  background: $background;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-
-  &:hover {
-    border-color: #bbb;
-    color: var(--text-body);
+  .toolbar > span {
+    font-size: 10px;
   }
-
-  &.tabActive {
-    background: var(--text-primary);
-    color: var(--bg);
-    border-color: var(--text-primary);
+  .request input:not([type='checkbox']),
+  .request select,
+  .request textarea {
+    font-size: 16px;
   }
-}
-
-// ─── Card content ─────────────────────────────────────────────────────────────
-.responseHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-
-  .cardTitle {
-    margin-bottom: 0;
+  .empty {
+    padding: 28px;
+    min-height: 240px;
   }
-}
-
-.responseMs {
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.1);
-  border-radius: 9999px;
-  padding: 2px 8px;
-}
-
-.cardTitle {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 20px;
-}
-
-.textInput {
-  width: 100%;
-  padding: 10px 16px;
-  border: 1px solid $border;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-family: inherit;
-  background: $background;
-  color: var(--text-body);
-  outline: none;
-  margin-bottom: 12px;
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    border-color: $primary;
+  .responseHeader {
+    padding: 12px 20px;
+    flex-wrap: wrap;
   }
-
-  &::placeholder {
-    color: var(--text-subtle);
+  .responseHeader > div {
+    gap: 10px;
   }
-}
-
-.reverseTextarea {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1px solid $border;
-  border-radius: 10px;
-  font-size: 0.8rem;
-  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  background: var(--surface);
-  color: var(--text-body);
-  outline: none;
-  resize: vertical;
-  line-height: 1.7;
-  margin-bottom: 12px;
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    border-color: $primary;
+  .json {
+    padding: 8px 20px 20px;
   }
-
-  &::placeholder {
-    color: #ccc;
-  }
-}
-
-.reverseCard {
-  padding: 10px 14px;
-  background: $background;
-  border: 1px solid $border;
-  border-radius: 8px;
-  margin-bottom: 8px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.reverseAddr {
-  font-size: 0.75rem;
-  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-  word-break: break-all;
-}
-
-.reverseName {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: $primary;
-}
-
-.examplesLabel {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 20px;
-}
-
-.chip {
-  padding: 4px 12px;
-  font-size: 0.8125rem;
-  font-family: inherit;
-  border: 1px solid $border;
-  border-radius: 9999px;
-  background: var(--surface);
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
-
-  &:hover {
-    border-color: $primary;
-    color: $primary;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 128, 188, 0.15);
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: none;
-  }
-}
-
-// ─── Checkbox group ───────────────────────────────────────────────────────────
-.checkboxGroup {
-  border: 1px solid $border;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  background: var(--surface);
-}
-
-.checkboxGroupTitleRow {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-
-.checkboxGroupTitle {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: var(--text-code);
-}
-
-// ─── Info icon + tooltip ───────────────────────────────────────────────────────
-.infoWrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-
-  &:hover .tooltip {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-  }
-}
-
-.infoIcon {
-  color: var(--text-subtle);
-  cursor: default;
-  flex-shrink: 0;
-  transition: color 0.15s ease;
-
-  .infoWrap:hover & {
-    color: $primary;
-  }
-}
-
-.tooltip {
-  position: absolute;
-  left: 20px;
-  top: -4px;
-  z-index: 10;
-  width: 240px;
-  background: var(--tooltip-bg);
-  color: var(--tooltip-text);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 0.775rem;
-  line-height: 1.55;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(4px);
-  transition: opacity 0.15s ease, transform 0.15s ease;
-
-  p + p {
-    margin-top: 6px;
-  }
-}
-
-.checkboxRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-}
-
-.checkboxLabelWrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-// ─── Record controls wrapper — dims when useDefault ───────────────────────────
-.recordControls {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  transition: opacity 0.2s ease;
-}
-
-.recordControlsDisabled {
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-// ─── Record section ───────────────────────────────────────────────────────────
-.recordSection {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.recordRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.recordRowText {
-  flex: 1;
-  min-width: 0;
-}
-
-.editBtn {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: $primary;
-  background: rgba(0, 128, 188, 0.1);
-  border: 1px solid rgba(0, 128, 188, 0.3);
-  border-radius: 5px;
-  padding: 3px 10px;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.12s ease;
-
-  &:hover { background: rgba(0, 128, 188, 0.2); }
-}
-
-.checkboxLabel {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-body);
-}
-
-.checkboxSub {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.checkbox {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  border: 1.5px solid $border;
-  background: $background;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
-
-  svg {
-    width: 13px;
-    height: 13px;
-    color: #fff;
-  }
-
-  &.checkboxChecked {
-    background: $primary;
-    border-color: $primary;
-  }
-}
-
-.resolveBtn {
-  width: 100%;
-}
-
-// ─── Response box ─────────────────────────────────────────────────────────────
-.responseBox {
-  border: 1px solid $border;
-  border-radius: 12px;
-  min-height: 280px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.emptyState {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
-
-.emptyIcon svg {
-  width: 56px;
-  height: 56px;
-}
-
-.dots {
-  display: flex;
-  gap: 6px;
-
-  span {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: $primary;
-    animation: bounce 0.6s infinite alternate;
-  }
-}
-
-@keyframes bounce {
-  from { transform: translateY(0); }
-  to   { transform: translateY(-8px); }
-}
-
-.resultList {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.resultGroups {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.resultGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.resultGroupLabel {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--text-subtle);
-  margin-bottom: 8px;
-}
-
-.recordBadges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 10px;
-
-  &:last-child { margin-bottom: 0; }
-}
-
-.recordBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid $border;
-  border-radius: 10px;
-  background: var(--surface);
-  cursor: pointer;
-  overflow: hidden;
-  max-width: 200px;
-  padding: 7px 12px 7px 7px;
-  transition: background 0.12s ease, border-color 0.12s ease;
-  text-align: left;
-
-  &:hover {
-    border-color: $primary;
-    background: rgba(0, 128, 188, 0.1);
-
-    .recordBadgeCopy { color: var(--text-secondary); }
-  }
-}
-
-.recordBadgeLabel {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  color: $primary;
-  background: rgba(0, 128, 188, 0.12);
-  padding: 2px 7px;
-  border-radius: 5px;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.recordBadgeValue {
-  font-size: 0.72rem;
-  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  color: var(--text-body);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
-  flex: 1;
-}
-
-.recordBadgeCopy {
-  display: flex;
-  align-items: center;
-  color: #bbb;
-  flex-shrink: 0;
-  transition: color 0.12s ease;
-}
-
-.resolvedName {
-  color: $primary;
-  font-weight: 600;
-}
-
-.noRecord {
-  font-size: 0.8125rem;
-  color: var(--text-subtle);
-  font-style: italic;
-}
-
-.emptyRecords {
-  padding: 20px 0 8px;
-  text-align: center;
-}
-
-.emptyRecordsText {
-  font-size: 0.875rem;
-  color: var(--text-subtle);
-
-  strong { color: var(--text-primary); font-weight: 600; }
-}
-
-.errorState {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 24px;
-}
-
-.errorMsg {
-  font-size: 0.875rem;
-  color: var(--error-text);
-  text-align: center;
-  background: var(--error-bg);
-  border: 1px solid var(--error-border);
-  border-radius: 8px;
-  padding: 12px 16px;
-}
-
-
-// ─── Curl terminal ────────────────────────────────────────────────────────────
-// ─── Request preview (curl terminal) ─────────────────────────────────────────
-.requestPreview {
-  margin-top: 20px;
-  border: 1px solid $border;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.requestPreviewBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: var(--surface-alt);
-  border-bottom: 1px solid $border;
-}
-
-.requestPreviewBody {
-  padding: 12px 14px;
-  background: var(--surface);
-}
-
-.curlPlaceholder {
-  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.775rem;
-  color: var(--text-subtle);
-  display: block;
-}
-
-.curlCode {
-  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.775rem;
-  color: var(--text-code);
-  white-space: pre-wrap;
-  word-break: break-all;
-  display: block;
-}
-
-// ─── JSON terminal (card 4 expanded) ─────────────────────────────────────────
-.jsonTerminal {
-  margin-top: 16px;
-  border: 1px solid $border;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.jsonTerminalBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: var(--surface-alt);
-  border-bottom: 1px solid $border;
-}
-
-.terminalTitle {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.terminalCopy {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  background: none;
-  border: 1px solid $border;
-  border-radius: 5px;
-  padding: 3px 8px;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-
-  &:hover { background: $border; color: var(--text-primary); }
-}
-
-.jsonTerminalBody {
-  padding: 14px 16px;
-  background: var(--surface);
-  max-height: 400px;
-  overflow: auto;
-
-  pre { margin: 0; }
-}
-
-.jsonPlaceholder {
-  font-size: 0.8125rem;
-  color: var(--text-subtle);
-  font-style: italic;
-}
-
-// ─── JSON toggle row ──────────────────────────────────────────────────────────
-.jsonToggleRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  code {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-  }
-}
-
-.jsonToggleLabel {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-code);
-}
-
-.toggle {
-  position: relative;
-  width: 42px;
-  height: 24px;
-  border-radius: 9999px;
-  background: var(--text-dim);
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  flex-shrink: 0;
-
-  &.toggleOn {
-    background: $primary;
-  }
-}
-
-.toggleThumb {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--surface);
-  transition: transform 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-
-  .toggleOn & {
-    transform: translateX(18px);
-  }
-}
-
-// ─── Forward bulk mode ────────────────────────────────────────────────────────
-.modeTabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 16px;
-}
-
-.modeTab {
-  font-family: inherit;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  background: none;
-  border: 1px solid $border;
-  padding: 5px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s, border-color 0.15s;
-
-  &:hover {
-    color: var(--text-code);
-    background: var(--hover-overlay);
-  }
-}
-
-.modeTabActive {
-  color: $primary;
-  background: rgba(0, 128, 188, 0.08);
-  border-color: $primary;
-}
-
-.chipActive {
-  background: rgba(0, 128, 188, 0.1);
-  color: $primary;
-  border-color: $primary;
-}
-
-.bulkNamesList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 16px;
-}
-
-.bulkNameTag {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.8rem;
-  background: rgba(0, 128, 188, 0.08);
-  color: $primary;
-  border: 1px solid rgba(0, 128, 188, 0.25);
-  border-radius: 9999px;
-  padding: 3px 10px 3px 12px;
-
-  button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: inherit;
-    font-size: 1rem;
-    line-height: 1;
-    padding: 0;
-    opacity: 0.6;
-
-    &:hover { opacity: 1; }
-  }
-}
-
-.bulkProfileCard {
-  padding: 12px 0;
-  border-bottom: 1px solid $border;
-
-  &:last-child { border-bottom: none; }
-}
-
-.bulkProfileName {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text-code);
-  margin-bottom: 8px;
 }

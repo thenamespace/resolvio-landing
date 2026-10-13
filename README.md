@@ -1,73 +1,30 @@
-# React + TypeScript + Vite
+# Resolvio landing page
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The public website and API playground for [Resolvio](https://resolvio.xyz), built with React, TypeScript, and Vite. The playground calls `https://api.resolvio.xyz`; it requires no local secrets.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Use Node.js 24 and the checked-in npm lockfile.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm ci
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Checks and production build
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm test
+npm run lint
+npm run build
 ```
+
+The build type-checks the app, checks that agent references are synchronized, and prerenders landing, blog, and legal routes into `dist/client`. Use `npm run preview` to inspect the result.
+
+## Documentation
+
+Human documentation links point to [Namespace docs](https://docs.namespace.ninja/user-guide/resolvio). The OpenAPI JSON remains a machine-readable resource, not the primary human documentation link.
+
+Edit `public/references/api.md` for the detailed local API contract, then run `npm run docs:sync` to update `public/llms-full.txt`. Update the concise `public/llms.txt`, skill, examples, and relevant blog posts when the contract changes. `npm run docs:check` catches a stale full reference during builds.
+
+Keep response shapes and query parameters aligned with the API. Do not add uptime, latency, rate-limit, API-key-tier, or freshness guarantees without verifying the deployed service.

@@ -1,211 +1,34 @@
 .outer {
-  width: 100%;
-  border-bottom: 1px solid $border;
-}
-
-.label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  max-width: $section_width;
+  max-width: 1160px;
   margin: auto;
-  padding: 64px 24px 40px;
-}
-
-.heading {
-  font-size: 2.25rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: 12px;
-}
-
-.subtitle {
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
-  max-width: 480px;
-}
-
-.gridOuter {
-  width: 100%;
-  border-top: 1px solid $border;
-  padding: 64px 24px;
-  position: relative;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: $border;
-    pointer-events: none;
-  }
-
-  &::before { top: 64px; }
-  &::after  { bottom: 64px; }
-}
-
-.grid {
+  padding: 56px 32px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin: auto;
-  width: 100%;
-  max-width: $section_width;
-  background-color: $border;
-  gap: 1px;
-  border: 1px solid $border;
-
-  @media (max-width: $mobile) {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  grid-template-columns: 1fr 1.6fr;
+  gap: 64px;
 }
-
-.cell {
-  min-width: 0;
-  cursor: default;
-}
-
-.inner {
-  width: 100%;
-  height: 100%;
-  background-color: $background;
-  padding: 36px 32px;
-  border-radius: 10px;
-}
-
-.iconCircle {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: transparent;
-  border: 1.5px solid $border;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 48px;
-
-  svg {
-    color: var(--text-primary);
-  }
-}
-
-.cardTitle {
-  font-size: 1.125rem;
-  font-weight: 700;
+.outer h2 {
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
   color: var(--text-primary);
-  margin-bottom: 10px;
 }
-
-.cardDesc {
-  font-size: 0.9375rem;
+.outer dl { margin: 0; }
+.outer dl > div {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 24px;
+  border-top: 1px solid var(--border-color);
+  padding: 20px 0;
+}
+.outer dt { color: var(--text-primary); font-weight: 500; }
+.outer dd {
+  margin: 0;
   color: var(--text-secondary);
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.7;
 }
-
-// ─── Capabilities table ───────────────────────────────────────────────────────
-.cellFull {
-  grid-column: 1 / -1;
-  min-width: 0;
-
-  .inner {
-    padding-left: 0;
-    padding-right: 0;
-  }
-}
-
-.capSectionHeader {
-  border-top: 1px solid $border;
-  padding-top: 48px;
-  padding-bottom: 32px;
-}
-
-.capHeader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: 32px;
-  padding: 0 32px;
-}
-
-.capHeading {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: 8px;
-}
-
-.capSubtitle {
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
-}
-
-.capTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-
-  th {
-    text-align: left;
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    padding: 0 32px 12px;
-    border-bottom: 1px solid $border;
-  }
-
-  td {
-    padding: 14px 32px;
-    border-bottom: 1px solid $border;
-    vertical-align: middle;
-  }
-
-  tr:last-child td { border-bottom: none; }
-}
-
-.capName {
-  font-weight: 600;
-  color: var(--text-primary);
-  white-space: nowrap;
-  width: 200px;
-}
-
-.capDesc {
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.badgeLive {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #16a34a;
-  background: rgba(22, 163, 74, 0.1);
-  border-radius: 9999px;
-  padding: 3px 9px;
-  white-space: nowrap;
-}
-
-.badgeBeta {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #2563eb;
-  background: rgba(37, 99, 235, 0.1);
-  border-radius: 9999px;
-  padding: 3px 9px;
-  white-space: nowrap;
+@media (max-width: 760px) {
+  .outer { padding: 40px 20px; grid-template-columns: 1fr; gap: 24px; }
+  .outer h2 { font-size: 28px; }
+  .outer dl > div { grid-template-columns: 1fr; gap: 8px; }
 }

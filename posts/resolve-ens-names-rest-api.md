@@ -21,7 +21,7 @@ const address = await provider.resolveName('vitalik.eth')
 // "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
 ```
 
-That works — but it requires: a 300KB+ library, an Ethereum RPC endpoint (and a key to go with it), async/await handling, and it only gives you the address. Getting the avatar or other text records requires additional calls.
+That works, but it requires a Web3 library and an Ethereum RPC endpoint, and this call only gives you the address. Getting the avatar or other text records requires additional calls.
 
 ## Forward Resolution with Resolvio
 
@@ -29,32 +29,35 @@ The Resolvio API exposes a simple REST endpoint. No libraries, no RPC key, no bo
 
 ```bash
 # Simple address resolution
-curl https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chain=eth
+curl 'https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chains=eth'
 
-# Full profile (address + avatar + all text records)
-curl https://api.resolvio.xyz/ens/v2/profile/vitalik.eth
+# Full profile (standard selection of addresses and text records)
+curl 'https://api.resolvio.xyz/ens/v2/profile/vitalik.eth'
 
 # Specific text record
-curl https://api.resolvio.xyz/ens/v2/texts/vitalik.eth?keys=com.twitter
+curl 'https://api.resolvio.xyz/ens/v2/texts/vitalik.eth?keys=com.twitter'
 ```
 
 In JavaScript/TypeScript, this is just a fetch call:
 
 ```typescript
 const res = await fetch('https://api.resolvio.xyz/ens/v2/profile/vitalik.eth')
+if (!res.ok) throw new Error(`Resolvio returned ${res.status}`)
 const profile = await res.json()
 
-console.log(profile.addresses)      
-console.log(profile.texts)       
+console.log(profile.addresses)
+console.log(profile.texts)
 console.log(profile.contenthash)
 ```
+
+The `addresses` and `texts` fields are arrays. Match an address by `coin` or `chain`, or a text record by `key`, then check `exists` before using `value`. Missing records omit `value`. The `contenthash` field is an object with `exists` and an optional `value`.
 
 ## Reverse Resolution
 
 Reverse resolution maps a wallet address back to its primary ENS name — essential for displaying human-readable names in transaction histories, leaderboards, and profiles.
 
 ```bash
-curl https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+curl 'https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
 ```
 
 ```json
@@ -71,13 +74,13 @@ ENS names can store addresses for hundreds of chains via ENSIP-9. Pass a <code>c
 
 ```bash
 # Bitcoin,Optimism and Base addresses for an ENS name
-curl "https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chains=btc,opt,base"
+curl "https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chains=btc,op,base"
 ```
 
-## Rate Limits and Production Use
+## Caching and Production Use
 
-The public API is free and requires no API key for development and moderate production traffic. Results are cached server-side with TTLs derived from each resolver's onchain <code>ttl()</code> value, which means most responses return in under 50ms.
+The public API requires no API key. Results are cached server-side. The source defaults to five minutes for forward records and thirty minutes for reverse lookups; operators can configure these durations. They do not come from the resolver’s onchain TTL. `noCache=true` requests a refresh, but deployments with a refresh cooldown can reuse recent results.
 
-> For high-volume production use, you can easily host an instance of resolvio yourself and remove the api limiting
+For high-volume production use, you can [self-host Resolvio](https://github.com/thenamespace/resolvio#readme) with your own RPC provider. This gives you control over cache configuration and bulk limits; your upstream provider’s limits still apply.
 
-You can also bypass the cache for a specific request using the <code>noCache=true</code> query parameter — useful when you need the freshest onchain data after a name update.
+See the [Namespace documentation](https://docs.namespace.ninja/user-guide/resolvio) for parameters and response formats.
