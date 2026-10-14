@@ -1,20 +1,96 @@
-import { RESOLVIO_DOCS, RESOLVIO_REPO } from '../constants/api'
+import { Github, BadgeCheck } from 'lucide-react'
+import ensMark from '../assets/ens-mark-Blue.svg'
+import logo from '../assets/logo.svg'
+import logoWhite from '../assets/logo-w.svg'
 import styles from './Footer.module.scss'
+import { useTheme } from '../hooks/useTheme'
+import { RESOLVIO_DOCS } from '../constants/api'
 
-export const Footer = () => (
+const PRODUCT_LINKS = [
+  { label: 'Resolvio Playground',     href: '/#playground' },
+  { label: 'Offchain Subnames',       href: 'https://app.namespace.ninja/offchain' },
+  { label: 'Onchain Subnames',        href: 'https://app.namespace.ninja/onchain'  },
+  { label: 'ENS Resolver for Sheets', href: 'https://ens-sheets.namespace.ninja/' },
+  { label: 'ENS Widget',              href: 'https://app.namespace.ninja/widgets'  },
+  { label: 'ENS MCP Server',          href: 'https://github.com/thenamespace/ens-mcp' },
+  { label: 'Custom Solutions',        href: 'https://namespace.ninja'              },
+]
+
+const RESOURCE_LINKS = [
+  { label: 'Blog',           href: '/blog'                                      },
+  { label: 'Resolvio Docs',  href: RESOLVIO_DOCS         },
+  { label: 'Resolvio Repo',  href: 'https://github.com/thenamespace/resolvio'  },
+  { label: 'Subname Docs',   href: 'https://docs.namespace.ninja'              },
+]
+
+const XIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+)
+
+const TelegramIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+  </svg>
+)
+
+export const Footer = () => {
+  const { theme } = useTheme()
+  return (
   <footer className={styles.outer}>
-    <div className={styles.inner}>
-      <p>
-        Resolvio is built by <a href="https://namespace.ninja">Namespace</a>.
-      </p>
-      <nav aria-label="Footer navigation">
-        <a href={RESOLVIO_DOCS}>Docs</a>
-        <a href={RESOLVIO_REPO}>GitHub</a>
-        <a href="/blog">Blog</a>
-        <a href="https://app.namespace.ninja">Namespace app</a>
-        <a href="/terms">Terms</a>
-        <a href="/privacy">Privacy</a>
-      </nav>
+    <div className={styles.gridOuter}>
+      <div className={styles.grid}>
+        <div className={styles.cell}>
+          <div className={styles.inner}>
+            <a href="/" className={styles.logo}>
+              <img src={theme === 'dark' ? logoWhite : logo} alt="Resolvio" width={130} height={28} />
+            </a>
+            <p className={styles.oneliner}>Resolve any ENS name or subname in one API call.</p>
+            <p className={styles.tagline}>
+              Part of <a href="https://namespace.ninja" target="_blank" rel="noreferrer">Namespace</a>. ENS subname infrastructure, components, and tooling for chains, wallets, and apps.
+            </p>
+            <a href="https://namespace.ninja" target="_blank" rel="noreferrer" className={styles.ensBadge}>
+              <img src={ensMark} alt="" width={18} height={18} />
+              <span>ENS Service Provider</span>
+              <BadgeCheck size={15} className={styles.ensBadgeCheck} />
+            </a>
+            <div className={styles.socials}>
+              <a href="https://github.com/thenamespace/resolvio" target="_blank" rel="noreferrer" className={styles.socialBtn} aria-label="GitHub"><Github size={16} /></a>
+              <a href="https://x.com/namespace_eth" target="_blank" rel="noreferrer" className={styles.socialBtn} aria-label="X"><XIcon /></a>
+              <a href="https://t.me/+u2X1_QbR-CVmMGIy" target="_blank" rel="noreferrer" className={styles.socialBtn} aria-label="Telegram (builders)"><TelegramIcon /></a>
+            </div>
+          </div>
+        </div>
+        <div className={styles.cell}>
+          <div className={styles.inner}>
+            <p className={styles.colHeading}>Products and Services</p>
+            <nav className={styles.links} aria-label="Products and services">
+              {PRODUCT_LINKS.map((l) => <a key={l.label} href={l.href} className={styles.link}>{l.label}</a>)}
+            </nav>
+          </div>
+        </div>
+        <div className={styles.cell}>
+          <div className={styles.inner}>
+            <p className={styles.colHeading}>Resources</p>
+            <nav className={styles.links} aria-label="Resources">
+              {RESOURCE_LINKS.map((l) => (
+                <a key={l.label} href={l.href} className={styles.link}>{l.label}</a>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+      </div>
+      <div className={styles.bottomBar}>
+        <span className={styles.copyright}>© {new Date().getFullYear()} Resolvio. All rights reserved.</span>
+        <nav className={styles.legal} aria-label="Legal">
+          <a href="/terms" className={styles.legalLink}>Terms of Service</a>
+          <span>·</span>
+          <a href="/privacy" className={styles.legalLink}>Privacy Policy</a>
+        </nav>
+      </div>
     </div>
   </footer>
-)
+  )
+}

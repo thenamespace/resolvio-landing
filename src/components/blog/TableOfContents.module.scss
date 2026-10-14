@@ -1,6 +1,4 @@
 .toc {
-  position: sticky;
-  top: 88px;
   padding: 0;
 }
 
@@ -27,7 +25,8 @@
   font-weight: 500;
   color: var(--text-secondary);
   text-decoration: none;
-  padding: 6px 12px;
+  padding: 11px 12px;
+  min-height: 44px;
   border-left: 2px solid var(--border-color);
   line-height: 1.4;
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
@@ -40,10 +39,10 @@
 }
 
 .active {
-  color: $primary;
-  border-left-color: $primary;
+  color: var(--accent);
+  border-left-color: var(--accent);
 
   &:hover {
-    color: $primary;
+    color: var(--accent);
   }
 }

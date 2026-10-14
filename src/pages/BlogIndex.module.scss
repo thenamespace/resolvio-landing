@@ -1,250 +1,78 @@
-.main {
-  min-height: 100vh;
-}
-
-// ─── Hero ─────────────────────────────────────────────────────────────────────
-
-.heroOuter {
-  width: 100%;
-  border-bottom: 1px solid $border;
-  background: $background;
-}
-
-.heroDeco {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  color: $primary;
-  pointer-events: none;
-  user-select: none;
+.hero, .content {
+  max-width: 1160px;
+  margin: auto;
+  padding: 0 32px;
 }
 
 .hero {
-  max-width: $section_width;
-  margin: 0 auto;
-  padding: 72px 25px 64px;
-  border-left: 1px solid $border;
-  border-right: 1px solid $border;
-  background: $background;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 48px;
-  position: relative;
-  overflow: hidden;
-
-  @media (max-width: $mobile) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 36px;
-    padding: 48px 25px 44px;
-  }
+  padding-top: 72px;
+  padding-bottom: 56px;
 }
 
-.heroText {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  flex: 1;
+.eyebrow, .sectionLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
 }
 
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: $primary;
-
-  &::before {
-    content: '';
-    display: inline-block;
-    width: 20px;
-    height: 2px;
-    background: $primary;
-    border-radius: 2px;
-  }
-}
-
-.heading {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
+.hero h1 {
+  max-width: 18ch;
+  margin: 20px 0;
+  font-size: clamp(36px, 5vw, 60px);
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.045em;
   color: var(--text-primary);
-  line-height: 1.1;
+  text-wrap: balance;
 }
 
 .subtitle {
-  font-size: 1rem;
-  color: var(--text-secondary);
+  max-width: 55ch;
+  font-size: 18px;
   line-height: 1.65;
-  max-width: 480px;
+  color: var(--text-secondary);
 }
 
-.topicPills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 4px;
+.featured {
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 32px 0 40px;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: 32px;
 }
 
-.pill {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  background: var(--hover-overlay);
-  border: 1px solid $border;
-  padding: 4px 12px;
-  border-radius: 9999px;
+.sectionLabel {
+  padding-top: 4px;
 }
 
-// ─── Stats panel ─────────────────────────────────────────────────────────────
-
-.heroStats {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  border: 1px solid $border;
-  border-radius: 12px;
-  overflow: hidden;
-  flex-shrink: 0;
-  min-width: 130px;
-
-  @media (max-width: $mobile) {
-    flex-direction: row;
-    min-width: unset;
-    width: 100%;
-    border-radius: 10px;
-  }
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 20px 32px;
-  width: 100%;
-
-  @media (max-width: $mobile) {
-    flex: 1;
-    padding: 16px 0;
-  }
-}
-
-.statNumber {
-  font-size: 1.75rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--text-primary);
-  line-height: 1;
-}
-
-.statLabel {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--text-muted);
-}
-
-.statDivider {
-  width: calc(100% - 32px);
-  height: 1px;
-  background: $border;
-
-  @media (max-width: $mobile) {
-    width: 1px;
-    height: 40px;
-  }
-}
-
-// ─── Content ─────────────────────────────────────────────────────────────────
-
-.content {
-  max-width: $section_width;
-  margin: 0 auto;
-  border-left: 1px solid $border;
-  border-right: 1px solid $border;
-  border-bottom: 1px solid $border;
-}
-
-// ─── Featured ────────────────────────────────────────────────────────────────
-
-.featuredSection {
-  border-bottom: 1px solid $border;
-}
-
-// ─── Grid ────────────────────────────────────────────────────────────────────
-
-.gridSection {
-  // intentionally empty wrapper
-}
-
-.gridOuter {
-  background: $background;
+.articles {
+  padding: 40px 0 64px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: $mobile) {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 64px;
 }
 
-.cell {
-  background: $background;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid $border;
-  border-bottom: 1px solid $border;
-
-  // Remove right border from last column
-  &:nth-child(3n) {
-    border-right: none;
+@media (max-width: 700px) {
+  .hero, .content {
+    padding-left: 20px;
+    padding-right: 20px;
   }
-
-  // Remove bottom border from last row (3-col): the cell that starts the last
-  // row (3n+1) and is among the last 3 items, plus any siblings after it
-  &:nth-last-child(-n+3):nth-child(3n+1),
-  &:nth-last-child(-n+3):nth-child(3n+1) ~ & {
-    border-bottom: none;
+  .hero {
+    padding-top: 44px;
+    padding-bottom: 36px;
   }
-
-  @media (max-width: 900px) {
-    &:nth-child(3n) { border-right: 1px solid $border; }
-    &:nth-child(2n) { border-right: none; }
-
-    // Last row for 2-col
-    &:nth-last-child(-n+3):nth-child(3n+1),
-    &:nth-last-child(-n+3):nth-child(3n+1) ~ & {
-      border-bottom: 1px solid $border;
-    }
-    &:nth-last-child(-n+2):nth-child(2n+1),
-    &:nth-last-child(-n+2):nth-child(2n+1) ~ & {
-      border-bottom: none;
-    }
+  .featured {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
-
-  @media (max-width: $mobile) {
-    border-right: none;
-    &:last-child { border-bottom: none; }
-    // Restore for non-last items
-    &:nth-last-child(-n+3):nth-child(3n+1),
-    &:nth-last-child(-n+3):nth-child(3n+1) ~ &,
-    &:nth-last-child(-n+2):nth-child(2n+1),
-    &:nth-last-child(-n+2):nth-child(2n+1) ~ & {
-      border-bottom: 1px solid $border;
-    }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .articles {
+    padding-bottom: 32px;
   }
 }

@@ -3,6 +3,7 @@ import { TryItNow } from '../sections/TryItNow'
 import { DevDocs } from '../sections/DevDocs'
 import { WhyResolvio } from '../sections/WhyResolvio'
 import { Capabilities } from '../sections/Capabilities'
+import { CallToAction } from '../sections/CallToAction'
 import { FAQ } from '../sections/FAQ'
 
 export function LandingPage() {
@@ -14,6 +15,7 @@ export function LandingPage() {
       <Capabilities />
       <DevDocs />
       <FAQ />
+      <CallToAction />
     </main>
   )
 }
