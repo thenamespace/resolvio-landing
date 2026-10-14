@@ -7,58 +7,101 @@ tags: [ENS, API, Performance, Bulk]
 excerpt: "Fetching ENS names one by one for a leaderboard or transaction feed is slow. Resolvio's bulk endpoints let you resolve multiple names in a single request."
 ---
 
-Many Web3 applications need to display ENS names for lists of addresses — leaderboards, transaction histories, governance voter lists, NFT gallery ownership labels. Resolving each address one at a time is slow and hammers rate limits. Resolvio's bulk resolution endpoints solve this with a single API call.
+Many Web3 applications need to display ENS names for lists of addresses — leaderboards, transaction histories, governance voter lists, NFT gallery ownership labels. Resolving each address one at a time requires a separate HTTP request. Resolvio’s bulk resolution endpoints let you group these lookups into batches.
 
 ## Why Bulk Resolution Matters
 
-Consider a leaderboard with 100 addresses. Sequential resolution at ~100ms per lookup means 10 seconds of wait time before the page renders. Parallel requests help, but they still consume multiple network round trips and eat rate limit headroom. Bulk resolution batches everything into a single request, typically resolving 50 addresses in under 200ms total.
+Consider a leaderboard with 100 addresses. Resolvio’s default bulk limit is 20, so you can resolve the list in five HTTP requests instead of 100 individual requests. Response times depend on cache hits and upstream resolvers.
 
 ## Bulk Reverse Resolution
 
 The most common use case: you have a list of wallet addresses and want to display human-readable names next to each one. Pass them as a comma-separated list to the bulk reverse endpoint:
 
 ```bash
-curl "https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045,0x225f137C3Eb2e12F21e5Be6d21b6f8B07157DebC,0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
+curl 'https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045,0x225f137127d9067788314bc7fcc1f36746a3c3B5'
 ```
+
+This response was recorded from the public API on October 14, 2026. Records can change.
+
+```json
+{
+  "addresses": [
+    {
+      "address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+      "hasReverseRecord": true,
+      "name": "vitalik.eth"
+    },
+    {
+      "address": "0x225f137127d9067788314bc7fcc1f36746a3c3b5",
+      "hasReverseRecord": true,
+      "name": "luc.eth"
+    }
+  ]
+}
+```
+
+The response contains an `addresses` array. Inputs are deduplicated case-insensitively, so match results by address rather than position. If a verified primary name is missing, `hasReverseRecord` is false and `name` is omitted. This endpoint does not return an avatar or `displayName`.
+
+## Bulk Forward Resolution
+
+If you have a list of ENS names and need their addresses, use the bulk profile endpoint:
+
+```bash
+curl 'https://api.resolvio.xyz/ens/v2/profile/bulk?names=vitalik.eth,nick.eth&texts=avatar&addresses=eth&contenthash=false'
+```
+
+This response was recorded on October 14, 2026:
 
 ```json
 [
   {
-    "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
     "name": "vitalik.eth",
-    "avatar": "eip155:1/erc1155:...",
-    "displayName": "vitalik.eth"
+    "texts": [
+      {
+        "key": "avatar",
+        "value": "https://euc.li/vitalik.eth",
+        "exists": true
+      }
+    ],
+    "addresses": [
+      {
+        "coin": 60,
+        "chain": "eth",
+        "value": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+        "exists": true
+      }
+    ],
+    "contenthash": {
+      "exists": false
+    },
+    "resolver": "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63"
   },
   {
-    "address": "0x225f137C3Eb2e12F21e5Be6d21b6f8B07157DebC",
-    "name": null,
-    "displayName": "0x225f...ebC"
-  },
-  {
-    "address": "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B",
-    "name": "balajis.eth",
-    "displayName": "balajis.eth"
+    "name": "nick.eth",
+    "texts": [
+      {
+        "key": "avatar",
+        "value": "https://euc.li/nick.eth",
+        "exists": true
+      }
+    ],
+    "addresses": [
+      {
+        "coin": 60,
+        "chain": "eth",
+        "value": "0xb8c2C29ee19D8307cb7255e1Cd9CbDE883A267d5",
+        "exists": true
+      }
+    ],
+    "contenthash": {
+      "exists": false
+    },
+    "resolver": "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41"
   }
 ]
 ```
 
-Results are returned in the same order as the input addresses, making it trivial to zip them back with your original data. When an address has no primary ENS name, <code>name</code> is <code>null</code> and <code>displayName</code> falls back to a truncated address.
-
-## Bulk Forward Resolution
-
-If you have a list of ENS names and need their addresses, use the bulk forward endpoint:
-
-```bash
-curl "https://api.resolvio.xyz/ens/v2/resolve/bulk?names=vitalik.eth,nick.eth,ens.eth"
-```
-
-```json
-[
-  { "name": "vitalik.eth", "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" },
-  { "name": "nick.eth",    "address": "0xb8c2C29ee19D8307cb7255e1Cd9CbDE883A267d5" },
-  { "name": "ens.eth",     "address": "0xFe89cc7aBB2C4183683ab71653C4cdc9B02D44b7" }
-]
-```
+Each profile contains arrays of text and address records. Match address records by `coin` or `chain` and check `exists` before reading `value`.
 
 ## Using Bulk Resolution in Practice
 
@@ -71,23 +114,41 @@ interface LeaderboardEntry {
   displayName?: string
 }
 
+interface ReverseRecord {
+  address: string
+  hasReverseRecord: boolean
+  name?: string
+}
+
 async function enrichWithENS(entries: LeaderboardEntry[]): Promise<LeaderboardEntry[]> {
-  const addresses = entries.map(e => e.address).join(',')
+  const addresses = [...new Set(entries.map(entry => entry.address.toLowerCase()))]
+  const names = new Map<string, string>()
 
-  const res = await fetch(
-    `https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=${addresses}`
-  )
-  const resolved = await res.json()
+  for (let offset = 0; offset < addresses.length; offset += 20) {
+    const query = new URLSearchParams({ addresses: addresses.slice(offset, offset + 20).join(',') })
+    const res = await fetch(`https://api.resolvio.xyz/ens/v2/reverse/bulk?${query}`)
+    if (!res.ok) throw new Error(`Resolvio returned ${res.status}`)
+    const resolved: { addresses: ReverseRecord[] } = await res.json()
+    for (const record of resolved.addresses) {
+      if (record.hasReverseRecord && record.name) {
+        names.set(record.address.toLowerCase(), record.name)
+      }
+    }
+  }
 
-  return entries.map((entry, i) => ({
+  return entries.map(entry => ({
     ...entry,
-    displayName: resolved[i].hasReverseRecord ? resolver[i].name || "",
+    displayName: names.get(entry.address.toLowerCase()) ?? entry.address,
   }))
 }
 ```
 
 ## Performance and Caching
 
-Resolvio batches bulk requests into multicall RPC calls against Ethereum, resolving all names in a single onchain round trip. Results are cached server-side with per-name TTLs, so repeated lookups for the same address are nearly instant.
+Results are cached server-side. The source defaults to five minutes for forward records and thirty minutes for reverse lookups; operators can configure these durations. They do not come from the resolver’s onchain TTL. `noCache=true` requests a refresh, but deployments with a refresh cooldown can reuse recent results.
 
-> Bulk endpoints support up to 50 addresses per request. For larger sets, split into chunks of 50 and run requests in parallel.
+One HTTP request does not guarantee one upstream RPC call. A failed upstream lookup can fail a whole batch; there is no per-name error envelope.
+
+> Bulk endpoints default to 20 names or addresses per request. For larger lists, split into batches. Self-hosted instances can configure a different limit.
+
+See the [bulk reverse reference](https://docs.namespace.ninja/api-reference/resolvio/bulk-reverse-resolve) and [bulk profile reference](https://docs.namespace.ninja/api-reference/resolvio/get-bulk-ens-profiles).

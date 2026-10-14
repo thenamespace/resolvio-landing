@@ -1,61 +1,24 @@
-import { Zap, Shield, Globe, Code2, Layers, BrainCircuit } from 'lucide-react'
 import styles from './WhyResolvio.module.scss'
 
-
 const FEATURES = [
-  {
-    icon: <Zap size={18} />,
-    title: 'Lightning Fast',
-    desc: 'Sub-100ms response times with intelligent caching and optimized resolution paths.',
-  },
-  {
-    icon: <Shield size={18} />,
-    title: 'Rock Solid',
-    desc: '99.9% uptime guarantee with automatic failover and redundant infrastructure.',
-  },
-  {
-    icon: <Globe size={18} />,
-    title: 'Multi-Chain',
-    desc: 'Support for ENS, DNS, and other naming systems across multiple blockchain networks.',
-  },
-  {
-    icon: <Code2 size={18} />,
-    title: 'Developer First',
-    desc: 'RESTful API with comprehensive documentation, SDKs, and code examples.',
-  },
-  {
-    icon: <Layers size={18} />,
-    title: 'Flexible Queries',
-    desc: 'Fetch exactly what you need – addresses, text records, content hashes, or everything.',
-  },
-  {
-    icon: <BrainCircuit size={18} />,
-    title: 'AI-Friendly',
-    desc: 'Built for the agentic stack – for use by AI agents that need to resolve Web3 identities.',
-  },
+  ['Built-in Caching', 'Resolution results are cached with configurable durations for forward and reverse lookups.'],
+  ['Self-hostable', 'Run the open-source Node.js service with your own Ethereum RPC provider.'],
+  ['Multi-Chain', 'Resolve addresses stored in ENS for Ethereum, Bitcoin, Solana, and other supported chains.'],
+  ['Developer First', 'RESTful API with documentation and code examples.'],
+  ['Flexible Queries', 'Fetch exactly what you need: addresses, text records, content hashes, or a profile.'],
+  ['AI-Friendly', 'For use by AI agents that need to resolve ENS names through HTTP requests.'],
 ]
 
 export const WhyResolvio = () => (
-  <section id="benefits" className={styles.outer}>
-    <div className={styles.header}>
-      <span className={styles.label}>Benefits</span>
-      <h2 className={styles.heading}>Why Resolvio?</h2>
-      <p className={styles.subtitle}>The most complete Web3 name resolution service.</p>
-    </div>
-
-    <div className={styles.gridOuter}>
-      <div className={styles.grid}>
-        {FEATURES.map((f) => (
-          <div key={f.title} className={styles.cell}>
-            <div className={styles.inner}>
-              <div className={styles.iconCircle}>{f.icon}</div>
-              <h3 className={styles.cardTitle}>{f.title}</h3>
-              <p className={styles.cardDesc}>{f.desc}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-
+  <section id="benefits" className={styles.outer} aria-labelledby="benefits-heading">
+    <h2 id="benefits-heading">Why Resolvio?</h2>
+    <dl>
+      {FEATURES.map(([title, description]) => (
+        <div key={title}>
+          <dt>{title}</dt>
+          <dd>{description}</dd>
+        </div>
+      ))}
+    </dl>
   </section>
 )

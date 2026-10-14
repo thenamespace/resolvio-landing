@@ -1,0 +1,93 @@
+.disclosure {
+  --disclosure-duration: 160ms;
+  --disclosure-ease: cubic-bezier(0.32, 0.72, 0, 1);
+
+  &[data-open='true'] {
+    --disclosure-duration: 220ms;
+  }
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  min-height: 44px;
+  padding: 16px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+
+  &:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform var(--disclosure-duration) var(--disclosure-ease);
+}
+
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--disclosure-duration)
+    var(--disclosure-ease);
+}
+
+.clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.content {
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--disclosure-duration) var(--disclosure-ease),
+    transform var(--disclosure-duration) var(--disclosure-ease);
+}
+
+.disclosure[data-open='true'] {
+  > .trigger .chevron {
+    transform: rotate(90deg);
+  }
+  > .panel {
+    grid-template-rows: 1fr;
+  }
+  > .panel > .clip > .content {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .trigger:hover {
+    color: var(--accent);
+  }
+}
+
+.disclosure[data-instant='true'] {
+  > .trigger .chevron,
+  > .panel,
+  > .panel > .clip > .content {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron,
+  .panel,
+  .content {
+    transition: none;
+  }
+}

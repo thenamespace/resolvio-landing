@@ -11,7 +11,7 @@ Most developers know ENS as a way to resolve <code>.eth</code> names to Ethereum
 
 ## ENS's Multi-Chain Design: ENSIP-9
 
-<strong>ENSIP-9</strong> (ENS Improvement Proposal 9, based on SLIP-0044) defines a standard for storing multi-chain addresses in ENS resolvers. Each chain is assigned a numeric <strong>coin type</strong> — Ethereum mainnet is <code>60</code>, Bitcoin is <code>0</code>, Solana is <code>501</code>, and so on. L2s and EVM-compatible chains use a formula based on their chain ID: <code>0x80000000 | chainId</code>.
+<strong>ENSIP-9</strong> (ENS Improvement Proposal 9, based on SLIP-0044) defines a standard for storing multi-chain addresses in ENS resolvers. Each chain is assigned a numeric <strong>coin type</strong> — Ethereum mainnet is <code>60</code>, Bitcoin is <code>0</code>, Solana is <code>501</code>, and so on. ENSIP-11 extends this for EVM-compatible chains using a formula based on their chain ID: <code>0x80000000 | chainId</code>.
 
 ## Common Coin Types
 
@@ -21,55 +21,63 @@ Most developers know ENS as a way to resolve <code>.eth</code> names to Ethereum
 - <strong>2147483658</strong> — Optimism (0x80000000 | 10)
 - <strong>2147492101</strong> — Base (0x80000000 | 8453)
 - <strong>2147525809</strong> — Arbitrum One (0x80000000 | 42161)
-- <strong>2147484614</strong> — Polygon (0x80000000 | 137)
-- <strong>2147492936</strong> — Linea (0x80000000 | 59144)
+- <strong>2147483785</strong> — Polygon (0x80000000 | 137)
+- <strong>2147542792</strong> — Linea (0x80000000 | 59144)
 
 ## Querying Multi-Chain Addresses
 
-Resolvio has a list of all supported chains with their coins and chain names
+Resolvio lists supported chains with their `name`, numeric `coin`, and `label`. The public directory returned 148 entries on October 14, 2026:
 
 ```bash
-curl https://api.resolvio.xyz/ens/v2/chains
+curl 'https://api.resolvio.xyz/ens/v2/chains'
 ```
 
-With Resolvio, pass the <code>coinType</code> or <code>chain name</code> parameter to resolve a name to any supported chain:
+With Resolvio, pass the <code>coins</code> or <code>chains</code> parameter to resolve a name to any supported chain:
 
 ```bash
 # Get specific addresses using coin type parameter (Ethereum, Bitcoin, Optimism, Base, Solana)
-curl https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?coins=60,0,2147483658,2147492101,501
+curl 'https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?coins=60,0,2147483658,2147492101,501'
 
 # Get specific addresses using chain name parameter (Ethereum, Bitcoin, Optimism, Base, Solana)
-curl "https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?coins=eth,btc,opt,base,sol"
+curl "https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chains=eth,btc,op,base,sol"
 ```
 
 ## Getting Most Common Chain Addresses at Once
 
-The profile endpoint returns most common stored addresses in a single call:
+The profile endpoint returns the standard selection of text and address records in a single call. You can select records explicitly:
 
 ```bash
-curl https://api.resolvio.xyz/ens/v2/profile/artii.eth
+curl 'https://api.resolvio.xyz/ens/v2/profile/vitalik.eth?texts=avatar&addresses=eth&contenthash=false'
 ```
+
+This response was recorded on October 14, 2026:
 
 ```json
 {
-  "name": "artii.eth",
+  "name": "vitalik.eth",
+  "texts": [
+    {
+      "key": "avatar",
+      "value": "https://euc.li/vitalik.eth",
+      "exists": true
+    }
+  ],
   "addresses": [
     {
       "coin": 60,
       "chain": "eth",
-      "value": "0x1D84...c19f8",
-      "exists": true
-    },
-    {
-      "coin": 2147492101,
-      "chain": "base",
-      "value": "0x1D84...c19f8",
+      "value": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
       "exists": true
     }
   ],
+  "contenthash": {
+    "exists": false
+  },
+  "resolver": "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63"
 }
 ```
 
+Use `addresses` on the profile endpoint. On the addresses endpoint, use either `chains` for chain names or `coins` for numeric identifiers. Do not combine them.
 
 ## Building a Cross-Chain Payment Widget
 
@@ -83,25 +91,39 @@ const COIN_TYPES = {
   arbitrum: 2147525809,
 } as const
 
+interface AddressRecord {
+  coin: number
+  exists: boolean
+  value?: string
+}
+
 async function getChainAddresses(ensName: string) {
-  const profile = await fetch(
-    `https://api.resolvio.xyz/ens/v2/profile/${ensName}`
-  ).then(r => r.json())
+  const query = new URLSearchParams({ coins: Object.values(COIN_TYPES).join(',') })
+  const res = await fetch(
+    `https://api.resolvio.xyz/ens/v2/addresses/${encodeURIComponent(ensName)}?${query}`
+  )
+  if (!res.ok) throw new Error(`Resolvio returned ${res.status}`)
+  const result: { addresses: AddressRecord[] } = await res.json()
 
   return Object.entries(COIN_TYPES).reduce<Record<string, string | null>>(
     (acc, [chain, coinType]) => {
-      acc[chain] = profile.coinAddresses?.[coinType] ?? null
+      const record = result.addresses.find(address => address.coin === coinType)
+      acc[chain] = record?.exists ? record.value ?? null : null
       return acc
     },
     {}
   )
 }
 
-// Returns: { ethereum: "0x...", optimism: "0x...", base: null, arbitrum: "0x..." }
+// Returns one address or null for each requested chain.
 ```
 
-> Not every ENS name has addresses set for every chain. A null response for a coin type means the name owner hasn't configured that address — always handle null gracefully.
+> Not every ENS name has addresses set for every chain. The API marks missing records with `exists: false` and omits `value`. This helper returns null for those records. Do not substitute an Ethereum address for a missing address on another chain.
+
+Before sending a payment, confirm the destination address and chain. Cached lookups can be stale; `noCache=true` requests a refresh but may still be subject to a refresh cooldown.
 
 ## L2 Subnames and Multi-Chain
 
-ENS is actively expanding to L2s. ENS names and subnames can be issued natively on chains like Linea and Base, with resolution handled by L2-aware resolvers. Resolvio handles these automatically — the same API call works regardless of whether the name's resolver is on mainnet or an L2.
+ENS is actively expanding to L2s. ENS names and subnames can be issued natively on chains like Linea and Base, with resolution handled by L2-aware resolvers. Resolvio supports offchain resolution through CCIP-Read when the name’s ENS resolver provides it. Support depends on that resolver and its gateway.
+
+See the [address endpoint reference](https://docs.namespace.ninja/api-reference/resolvio/get-ens-addresses).

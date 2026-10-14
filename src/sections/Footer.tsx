@@ -3,10 +3,11 @@ import ensMark from '../assets/ens-mark-Blue.svg'
 import logo from '../assets/logo.svg'
 import logoWhite from '../assets/logo-w.svg'
 import styles from './Footer.module.scss'
-import { useTheme } from '../contexts/ThemeContext'
+import { useTheme } from '../hooks/useTheme'
+import { RESOLVIO_DOCS } from '../constants/api'
 
 const PRODUCT_LINKS = [
-  { label: 'Resolvio Playground',     href: '#playground' },
+  { label: 'Resolvio Playground',     href: '/#playground' },
   { label: 'Offchain Subnames',       href: 'https://app.namespace.ninja/offchain' },
   { label: 'Onchain Subnames',        href: 'https://app.namespace.ninja/onchain'  },
   { label: 'ENS Resolver for Sheets', href: 'https://ens-sheets.namespace.ninja/' },
@@ -17,7 +18,7 @@ const PRODUCT_LINKS = [
 
 const RESOURCE_LINKS = [
   { label: 'Blog',           href: '/blog'                                      },
-  { label: 'Resolvio Docs',  href: 'https://api.resolvio.xyz/api-docs'         },
+  { label: 'Resolvio Docs',  href: RESOLVIO_DOCS         },
   { label: 'Resolvio Repo',  href: 'https://github.com/thenamespace/resolvio'  },
   { label: 'Subname Docs',   href: 'https://docs.namespace.ninja'              },
 ]
@@ -40,19 +41,17 @@ export const Footer = () => {
   <footer className={styles.outer}>
     <div className={styles.gridOuter}>
       <div className={styles.grid}>
-
-        {/* Brand cell */}
         <div className={styles.cell}>
           <div className={styles.inner}>
             <a href="/" className={styles.logo}>
-              <img src={theme === 'dark' ? logoWhite : logo} alt="Resolvio" height={28} />
+              <img src={theme === 'dark' ? logoWhite : logo} alt="Resolvio" width={130} height={28} />
             </a>
-            <p className={styles.oneliner}>Resolve any Web3 identity.<br /><span className={styles.onelinerGradient}>One API, every chain.</span></p>
+            <p className={styles.oneliner}>Resolve any ENS name or subname in one API call.</p>
             <p className={styles.tagline}>
-              Part of <a href="https://namespace.ninja" target="_blank" rel="noreferrer">Namespace</a> — ENS subname infrastructure, components, and tooling for chains, wallets, and apps.
+              Part of <a href="https://namespace.ninja" target="_blank" rel="noreferrer">Namespace</a>. ENS subname infrastructure, components, and tooling for chains, wallets, and apps.
             </p>
             <a href="https://namespace.ninja" target="_blank" rel="noreferrer" className={styles.ensBadge}>
-              <img src={ensMark} alt="ENS" height={18} />
+              <img src={ensMark} alt="" width={18} height={18} />
               <span>ENS Service Provider</span>
               <BadgeCheck size={15} className={styles.ensBadgeCheck} />
             </a>
@@ -63,37 +62,31 @@ export const Footer = () => {
             </div>
           </div>
         </div>
-
-        {/* Product cell */}
         <div className={styles.cell}>
           <div className={styles.inner}>
             <p className={styles.colHeading}>Products and Services</p>
-            <nav className={styles.links}>
-              {PRODUCT_LINKS.map((l) => <a key={l.label} href={l.href} className={styles.link} target="_blank" rel="noreferrer">{l.label}</a>)}
+            <nav className={styles.links} aria-label="Products and services">
+              {PRODUCT_LINKS.map((l) => <a key={l.label} href={l.href} className={styles.link}>{l.label}</a>)}
             </nav>
           </div>
         </div>
-
-        {/* Resources cell */}
         <div className={styles.cell}>
           <div className={styles.inner}>
             <p className={styles.colHeading}>Resources</p>
-            <nav className={styles.links}>
+            <nav className={styles.links} aria-label="Resources">
               {RESOURCE_LINKS.map((l) => (
-                <a key={l.label} href={l.href} className={styles.link} target="_blank" rel="noreferrer">{l.label}</a>
+                <a key={l.label} href={l.href} className={styles.link}>{l.label}</a>
               ))}
             </nav>
           </div>
         </div>
 
       </div>
-
-      {/* Bottom bar */}
       <div className={styles.bottomBar}>
         <span className={styles.copyright}>© {new Date().getFullYear()} Resolvio. All rights reserved.</span>
         <nav className={styles.legal} aria-label="Legal">
           <a href="/terms" className={styles.legalLink}>Terms of Service</a>
-          <span className={styles.divider}>·</span>
+          <span>·</span>
           <a href="/privacy" className={styles.legalLink}>Privacy Policy</a>
         </nav>
       </div>

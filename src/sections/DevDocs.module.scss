@@ -1,567 +1,159 @@
-// ─── Outer ────────────────────────────────────────────────────────────────────
 .outer {
-  width: 100%;
-  border-bottom: 1px solid $border;
-}
-
-// ─── Header ───────────────────────────────────────────────────────────────────
-.header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  max-width: $section_width;
+  max-width: 1160px;
   margin: auto;
-  padding: 64px 24px 40px;
+  padding: 72px 32px;
+  scroll-margin-top: 24px;
 }
-
-.label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
 .heading {
-  font-size: 2.25rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: 12px;
-}
-
-.subtitle {
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
-  max-width: 480px;
-}
-
-// ─── Audience tabs ────────────────────────────────────────────────────────────
-.audienceTabs {
   display: flex;
-  gap: 4px;
-  margin-top: 24px;
-  background: var(--surface-tab);
-  border: 1px solid $border;
-  border-radius: 10px;
-  padding: 4px;
-}
-
-.audienceTab,
-.audienceTabActive {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  font-family: inherit;
-  padding: 7px 18px;
-  border-radius: 7px;
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.audienceTab {
-  background: transparent;
-  color: var(--text-secondary);
-
-  &:hover {
-    color: var(--text-primary);
-    background: var(--hover-overlay);
-  }
-}
-
-.audienceTabActive {
-  background: var(--surface);
-  color: var(--text-primary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-
-  :global([data-theme="dark"]) & {
-    background: #3e3e44;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-    border: 1px solid #4e4e56;
-  }
-}
-
-.audienceTabAgents {
-  opacity: 0.7;
-
-  svg { color: #a855f7; }
-
-  &:not(.audienceTabActive):hover {
-    opacity: 1;
-    background: var(--hover-overlay);
-    color: unset;
-  }
-
-  &.audienceTabActive {
-    opacity: 1;
-  }
-}
-
-.gradientAgents {
-  background: linear-gradient(90deg, #a855f7, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.audienceTabSelf {
-  opacity: 0.7;
-
-  svg { color: #0080BC; }
-
-  &:not(.audienceTabActive):hover {
-    opacity: 1;
-    background: var(--hover-overlay);
-    color: unset;
-  }
-
-  &.audienceTabActive {
-    opacity: 1;
-  }
-}
-
-.gradientSelf {
-  background: linear-gradient(90deg, #0080BC, #00b4d8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-// ─── Grid — same border system ────────────────────────────────────────────────
-.gridOuter {
-  width: 100%;
-  border-top: 1px solid $border;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  margin: auto;
-  width: 100%;
-  max-width: $section_width;
-  background-color: $border;
-  gap: 1px;
-  border-left: 1px solid $border;
-  border-right: 1px solid $border;
-}
-
-.cell {
-  min-width: 0;
-}
-
-.inner {
-  width: 100%;
-  height: 100%;
-  background-color: $background;
-  padding: 32px 28px;
-  border-radius: 10px;
-  transition: border-radius 0.4s ease;
-
-  &:hover {
-    border-radius: 0;
-  }
-}
-
-// ─── Section head row ─────────────────────────────────────────────────────────
-.sectionHead {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.iconCircle {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: $primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  svg {
-    width: 16px;
-    height: 16px;
-    color: #fff;
-  }
-}
-
-.sectionTitle {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  flex: 1;
-}
-
-// ─── Quick Start — step cards ─────────────────────────────────────────────────
-.stepsGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
-
-  @media (max-width: $mobile) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.stepCard {
-  border: 1px solid $border;
-  border-radius: 12px;
-  padding: 16px;
-  background: var(--surface);
-}
-
-.stepNum {
-  display: inline-block;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  color: var(--bg);
-  background: var(--text-primary);
-  border-radius: 6px;
-  padding: 2px 7px;
-  margin-bottom: 12px;
-  letter-spacing: 0.02em;
-}
-
-.stepTitle {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-bottom: 6px;
-  line-height: 1.3;
-}
-
-.stepDesc {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-// ─── Terminal block ───────────────────────────────────────────────────────────
-.terminal {
-  border: 1px solid $border;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.terminalBar {
-  display: flex;
-  align-items: center;
+  gap: 24px;
   justify-content: space-between;
-  padding: 10px 14px;
-  border-bottom: 1px solid $border;
-  background: var(--surface-alt);
+  align-items: baseline;
+  margin-bottom: 32px;
 }
-
-.terminalLabel {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-
-  svg {
-    flex-shrink: 0;
-  }
-}
-
-.terminalBody {
-  padding: 14px 16px;
-  background: var(--surface);
-
-  code {
-    font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-    font-size: 0.8125rem;
-    color: var(--text-code);
-    word-break: break-all;
-  }
-}
-
-// ─── Copy button (shared) ─────────────────────────────────────────────────────
-.copyBtn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.8125rem;
+.heading h2 {
   font-weight: 500;
-  font-family: inherit;
-  color: var(--text-secondary);
-  background: $background;
-  border: 1px solid $border;
-  border-radius: 8px;
-  padding: 5px 10px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: border-color 0.15s ease, color 0.15s ease;
-
-  &:hover {
-    border-color: var(--text-dim);
-    color: var(--text-body);
-  }
-}
-
-// ─── API Endpoints ────────────────────────────────────────────────────────────
-.docsBtn {
-  margin-left: auto;
-}
-
-.endpointsGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-
-  @media (max-width: $mobile) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.endpointCard {
-  border: 1px solid $border;
-  border-radius: 12px;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.endpointTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.endpointLabel {
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: -0.025em;
   color: var(--text-primary);
 }
-
-.endpointRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--surface);
-  border: 1px solid $border;
-  border-radius: 8px;
-  padding: 13px 17px;
-}
-
-.methodBadge {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: $primary;
-  background: rgba(0, 128, 188, 0.12);
-  border: 1px solid $primary;
-  border-radius: 5px;
-  padding: 2px 7px;
-  flex-shrink: 0;
-  letter-spacing: 0.02em;
-}
-
-.endpointPath {
-  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.8rem;
-  color: var(--text-code);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-// ─── Agent tab — intro text ────────────────────────────────────────────────────
-.agentIntro {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-// ─── Agent tab — discovery resources ──────────────────────────────────────────
-.resourceList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.resourceRow {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  border: 1px solid $border;
-  border-radius: 12px;
-  padding: 14px 16px;
-  background: var(--surface);
-
-  @media (max-width: $mobile) {
-    flex-direction: column;
-  }
-}
-
-.resourceLeft {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.resourceLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
-
-  svg {
-    flex-shrink: 0;
-    color: $primary;
-  }
-}
-
-.resourceDesc {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-}
-
-.resourceRight {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-
-  @media (max-width: $mobile) {
-    width: 100%;
-  }
-}
-
-.resourceUrl {
-  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.75rem;
-  color: $primary;
+.heading a,
+.resources a,
+.selfhost a {
+  color: var(--accent);
   text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 240px;
-
-  &:hover {
-    text-decoration: underline;
-  }
+  font-size: 14px;
 }
-
-// ─── Agent tab — Skill.md block ────────────────────────────────────────────────
-.skillBlock {
-  border: 1px solid $border;
-  border-radius: 12px;
-  overflow: hidden;
+.heading a:hover,
+.resources a:hover,
+.selfhost a:hover {
+  text-decoration: underline;
 }
-
-.skillBody {
-  padding: 0;
-  background: var(--surface);
-  max-height: 380px;
-  overflow-y: auto;
-
-  pre {
-    margin: 0;
-    padding: 16px;
-  }
-
-  code {
-    font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-    font-size: 0.775rem;
-    color: var(--text-code);
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
+.layout {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 64px;
 }
-
-.skillLoading {
-  display: block;
-  padding: 16px;
-  font-size: 0.8125rem;
-  color: var(--text-subtle);
+.intro,
+.agents p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  max-width: 55ch;
 }
-
-// ─── Self-host tab ─────────────────────────────────────────────────────────────
-.selfSection {
-  margin-bottom: 28px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.terminalLine {
-  display: block;
-  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-  font-size: 0.8rem;
-  color: #e8e8e8;
-  line-height: 1.8;
-
-  &:before {
-    content: '$ ';
-    color: var(--text-secondary);
-  }
-}
-
-.selfNote {
-  margin-top: 8px;
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-}
-
-.envTable {
-  display: flex;
-  flex-direction: column;
+.endpoints a {
+  padding: 15px 0;
+  border-top: 1px solid var(--border-color);
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 8px;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: 14px;
 }
-
-.envRow {
-  border: 1px solid $border;
-  border-radius: 10px;
-  padding: 12px 16px;
-  background: var(--surface);
+.endpoints code {
+  grid-row: 2;
+  font: 12px/1.5 var(--font-mono);
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+.endpoints a > span:last-child {
+  grid-row: 1 / 3;
+  grid-column: 2;
+  align-self: center;
+  color: var(--accent);
+}
+.endpoints a:hover {
+  color: var(--accent);
+}
+.agents {
+  padding-left: 32px;
+  border-left: 1px solid var(--border-color);
+}
+.agents h3 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+.command {
+  background: var(--surface-tab);
+  padding: 16px;
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 16px;
+  align-items: flex-start;
 }
-
-.envName {
+.command code {
+  font: 13px/1.7 var(--font-mono);
+  overflow-wrap: anywhere;
+}
+.command button {
+  border: 0;
+  color: var(--text-secondary);
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   gap: 8px;
-
-  code {
-    font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-primary);
+  cursor: pointer;
+}
+.resources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 20px;
+  margin: 16px 0 28px;
+}
+.resources a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+.selfhost {
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+.selfhostTrigger {
+  padding: 8px 0;
+  font-size: 15px;
+}
+.selfhost a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.selfhost p {
+  margin: 12px 0;
+}
+@media (max-width: 760px) {
+  .outer {
+    padding: 48px 20px;
+  }
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .heading h2 {
+    font-size: 28px;
+  }
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .agents {
+    border-left: 0;
+    padding-left: 0;
   }
 }
 
-.envRequired {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #fff;
-  background: $primary;
-  border-radius: 4px;
-  padding: 1px 6px;
-  letter-spacing: 0.02em;
-}
-
-.envDesc {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  margin: 0;
+.audience {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--text-primary);
 }

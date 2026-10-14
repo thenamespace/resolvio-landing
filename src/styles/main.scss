@@ -46,7 +46,7 @@
   --text-primary:    #0a0a0a;
   --text-body:       #1a1a1a;
   --text-secondary:  #555555;
-  --text-muted:      #999999;
+  --text-muted:      #737373;
   --text-subtle:     #aaaaaa;
   --text-dim:        #bbbbbb;
   --text-code:       #333333;
@@ -85,7 +85,7 @@
   --text-primary:    #f4f4f5;
   --text-body:       #d4d4d8;
   --text-secondary:  #a1a1aa;
-  --text-muted:      #71717a;
+  --text-muted:      #a1a1aa;
   --text-subtle:     #52525b;
   --text-dim:        #3f3f46;
   --text-code:       #d4d4d8;
@@ -180,3 +180,17 @@ body {
 .hljs-selector-tag,
 .hljs-selector-class,
 .hljs-selector-id { color: var(--hljs-selector); }
+
+:root { --accent: #006b9e; --action-bg: #0074aa; --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace; --border-color: rgba(28, 40, 46, 0.14); }
+[data-theme="dark"] { --accent: #72c7ef; --action-bg: #006b9e; --border-color: #3a3a3e; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+button, a, input, select, textarea, summary { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+code, pre { font-family: var(--font-mono); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+html[data-theme-switching],
+html[data-theme-switching] *,
+html[data-theme-switching] *::before,
+html[data-theme-switching] *::after {
+  transition: none !important;
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import styles from './TableOfContents.module.scss'
 
 interface Props {
@@ -19,7 +19,7 @@ function extractHeadings(html: string): Heading[] {
 }
 
 export function TableOfContents({ html }: Props) {
-  const headings = extractHeadings(html)
+  const headings = useMemo(() => extractHeadings(html), [html])
   const [activeId, setActiveId] = useState<string>('')
 
   useEffect(() => {
@@ -52,6 +52,7 @@ export function TableOfContents({ html }: Props) {
           <li key={h.id}>
             <a
               href={`#${h.id}`}
+              aria-current={activeId === h.id ? 'location' : undefined}
               className={activeId === h.id ? `${styles.link} ${styles.active}` : styles.link}
             >
               {h.text}

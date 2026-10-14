@@ -55,23 +55,13 @@ The Resolvio API resolves subnames with zero configuration — just pass the ful
 
 ```bash
 # Resolve an offchain subname
-curl https://api.resolvio.xyz/ens/v2/profile/alice.namespace.eth
+curl 'https://api.resolvio.xyz/ens/v2/profile/alice.namespace.eth'
 
 # Resolve an onchain subname on an L2
-curl https://api.resolvio.xyz/ens/v2/profile/user.linea.eth
+curl 'https://api.resolvio.xyz/ens/v2/profile/user.linea.eth'
 ```
 
-```json
-{
-  "name": "alice.namespace.eth",
-  "address": "0xAbC123...",
-  "avatar": "https://example.com/avatar.png",
-  "records": {
-    "com.twitter": "aliceeth",
-    "description": "Web3 developer"
-  }
-}
-```
+The response uses the same profile contract as a parent ENS name: arrays of `texts` and `addresses`, plus a `contenthash` object. Missing records have `exists: false`. The example names above are illustrative and may have no records.
 
 > Resolvio automatically handles CCIP-Read (offchain) lookups. You don't need to implement the gateway fetch-and-verify loop in your code.
 

@@ -5,7 +5,8 @@ description: Resolves ENS names to addresses, fetches ENS profile and text recor
 
 # Resolvio ENS Resolution API
 
-**Base URL**: `https://api.resolvio.xyz`  
+**Base URL**: `https://api.resolvio.xyz`
+**Documentation**: https://docs.namespace.ninja/user-guide/resolvio
 **OpenAPI JSON**: `https://api.resolvio.xyz/api-docs.json`
 
 No authentication required.
@@ -18,12 +19,12 @@ No authentication required.
 | --- | --- | --- |
 | ENS name -> one or more chain addresses | `GET /ens/v2/addresses/:name` | Use `chains` or `coins`, not both |
 | Full profile (texts + addresses + contenthash) | `GET /ens/v2/profile/:name` | Prefer this over multiple separate calls |
-| Multiple profiles | `GET /ens/v2/profile/bulk` | Max 20 names per call |
+| Multiple profiles | `GET /ens/v2/profile/bulk` | Default cap: 20 names per call |
 | Text records only | `GET /ens/v2/texts/:name` | Pass `keys=` list |
 | Contenthash only | `GET /ens/v2/contenthash/:name` | Returns `{ exists: false }` when unset |
 | Reverse lookup for one address | `GET /ens/v2/reverse/:address` | Returns `hasReverseRecord` |
 | Verified profile for one address | `GET /ens/v2/reverse/:address/profile` | Stable nullable fields plus the full profile; ideal for leaderboard rows |
-| Reverse lookup for many addresses | `GET /ens/v2/reverse/bulk` | Max 20 addresses per call; do not loop single calls |
+| Reverse lookup for many addresses | `GET /ens/v2/reverse/bulk` | Default cap: 20 addresses per call; do not loop single calls |
 | List supported chains + coinTypes | `GET /ens/v2/chains` | Chain names and coinTypes are equivalent |
 | Cache management | `GET ...?noCache=true`, `DELETE /ens/v2/cache/:name` | Use only when fresh data is needed |
 
@@ -31,11 +32,15 @@ No authentication required.
 
 ## Core rules
 
+- Use `addresses` for profile requests, `chains` or `coins` for address-only requests, and `keys` for text-only requests. There is no `useDefault` API parameter.
+- Bulk reverse responses deduplicate addresses. Match results by normalized address, not array index.
+- Upstream failures can return non-200 responses, including on the reverse-profile endpoint.
+
 - All requested records are returned. Missing records appear as `{ "exists": false }` and are not silently dropped.
 - Always check `exists` before reading `value`.
-- Use bulk endpoints for lists. Max 20 items per bulk request; batch larger sets in chunks of 20.
-- For cache, only use `?noCache=true` or cache clear when fresh data is required.
-- Reverse-profile results are forward-verified by ENSJS. For a valid address with no verified reverse record — including a reverse record that fails forward verification — expect HTTP 200 with `name`, convenience fields, and `profile` set to `null`.
+- Use bulk endpoints for lists. Default cap: 20 items per bulk request; batch larger sets in chunks of 20.
+- Request refreshes only when needed. `noCache=true` may reuse entries within a deployment's refresh cooldown; it does not guarantee an uncached read.
+- Reverse-profile results are forward-verified by ENSJS. For a valid address with no verified reverse record — including a reverse record that fails forward verification, expect HTTP 200 with `name`, convenience fields, and `profile` set to `null`.
 - `avatar`, `displayName`, and `description` are derived only from the requested profile text records. `displayName` maps to the ENS `name` text record. Custom `texts=` selections do not trigger hidden lookups.
 
 ---
@@ -88,7 +93,7 @@ curl "https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=0xd8dA6BF26964aF9D7
 curl "https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045/profile?texts=avatar,name,description"
 ```
 
-### Fresh read after update
+### Request a refresh after an update
 
 ```bash
 curl "https://api.resolvio.xyz/ens/v2/profile/vitalik.eth?noCache=true"

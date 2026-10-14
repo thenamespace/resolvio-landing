@@ -1,32 +1,17 @@
-import { Button } from '../components/ui/Button'
-import sectionGraphic from '../assets/section-graphic.svg'
+import { ArrowRight } from 'lucide-react'
+import { RESOLVIO_DOCS } from '../constants/api'
 import styles from './CallToAction.module.scss'
 
 export const CallToAction = () => (
-  <section className={styles.outer}>
-    <div className={styles.gridOuter}>
-      <div className={styles.grid}>
-
-        {/* Left cell */}
-        <div className={styles.cell}>
-          <div className={styles.inner}>
-            <span className={styles.label}>Start Now</span>
-            <h2 className={styles.heading}>Ready to get started?</h2>
-            <p className={styles.subtitle}>Join developers building the future of Web3 with Resolvio</p>
-            <div className={styles.actions}>
-              <a href="#playground"><Button size="sm">Try Now</Button></a>
-              <a href="#docs"><Button size="sm" variant="secondary">Read the Docs</Button></a>
-            </div>
-          </div>
-        </div>
-
-        {/* Right cell */}
-        <div className={styles.cell}>
-          <div className={styles.graphicWrap}>
-            <img src={sectionGraphic} alt="" className={styles.graphic} />
-          </div>
-        </div>
-
+  <section className={styles.outer} aria-label="Try Resolvio">
+    <div className={styles.inner}>
+      <div>
+        <h2>Ready to resolve ENS names?</h2>
+        <p>Free, no API key required. Resolve any ENS name or address with a single HTTP request.</p>
+      </div>
+      <div className={styles.actions}>
+        <a href="/#playground" className={styles.primary}>Try Playground <ArrowRight size={16} aria-hidden="true" /></a>
+        <a href={RESOLVIO_DOCS} className={styles.secondary}>Read the Docs</a>
       </div>
     </div>
   </section>
