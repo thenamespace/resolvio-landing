@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import { ArrowRight, ArrowUpRight, LoaderCircle } from 'lucide-react'
+import { Disclosure } from '../components/ui/Disclosure'
+import { LookupResponse } from './LookupResponse'
+import type { LookupResult } from './LookupResponse'
 import { CopyButton } from '../components/ui/CopyButton'
 import { RESOLVIO_API, RESOLVIO_REFERENCE } from '../constants/api'
 import { buildRequest, curlCommand, operations } from './playground-request'
@@ -7,13 +11,6 @@ import type { Operation } from './playground-request'
 import styles from './TryItNow.module.scss'
 
 const ADDRESS = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
-interface LookupResponse {
-  body: string
-  status: number
-  elapsed: number
-  url: string
-}
-
 export const TryItNow = () => {
   const [operation, setOperation] = useState<Operation>('profile')
   const [input, setInput] = useState('vitalik.eth')
@@ -21,8 +18,13 @@ export const TryItNow = () => {
   const [addresses, setAddresses] = useState('eth,base')
   const [contenthash, setContenthash] = useState(false)
   const [pending, setPending] = useState(false)
-  const [response, setResponse] = useState<LookupResponse | null>(null)
+  const [response, setResponse] = useState<LookupResult | null>(null)
   const [error, setError] = useState('')
+  const [animateResponse, setAnimateResponse] = useState(false)
+  const savedDirection = useRef({
+    forward: { operation: 'profile' as Operation, input: 'vitalik.eth' },
+    reverse: { operation: 'reverse' as Operation, input: ADDRESS },
+  })
   const controller = useRef<AbortController | null>(null)
   useEffect(() => () => controller.current?.abort(), [])
 
@@ -47,15 +49,28 @@ export const TryItNow = () => {
       cause instanceof Error ? cause.message : 'Check the request fields.'
   }
 
+  const validationField = validationMessage.startsWith(
+    'Enter at least one text key',
+  )
+    ? 'text-keys'
+    : 'lookup-input'
+  const hasValidationError = Boolean(error && validationMessage)
+
   function changeOperation(next: Operation) {
     setOperation(next)
-    setInput(
-      next.includes('reverse')
-        ? ADDRESS
-        : next === 'bulk-profile'
-          ? 'vitalik.eth\nnick.eth'
-          : 'vitalik.eth',
-    )
+    setResponse(null)
+    setError('')
+  }
+
+  function changeDirection(reverse: boolean) {
+    if (reverse === isReverse) return
+    savedDirection.current[isReverse ? 'reverse' : 'forward'] = {
+      operation,
+      input,
+    }
+    const saved = savedDirection.current[reverse ? 'reverse' : 'forward']
+    setOperation(saved.operation)
+    setInput(saved.input)
     setResponse(null)
     setError('')
   }
@@ -65,6 +80,7 @@ export const TryItNow = () => {
     if (pending) return
     if (!requestUrl) {
       setError(validationMessage)
+      document.getElementById(validationField)?.focus()
       return
     }
     controller.current?.abort()
@@ -103,6 +119,63 @@ export const TryItNow = () => {
     }
   }
 
+  const recordFields = (
+    <>
+      {(isProfile || operation === 'texts') && (
+        <>
+          <label htmlFor="text-keys">
+            Text keys <span>{isProfile ? 'optional' : 'required'}</span>
+          </label>
+          <input
+            id="text-keys"
+            aria-invalid={hasValidationError && validationField === 'text-keys'}
+            aria-describedby={
+              validationField === 'text-keys' ? 'request-error' : undefined
+            }
+            value={texts}
+            onChange={(event) => setTexts(event.target.value)}
+            placeholder="avatar,description"
+            spellCheck={false}
+          />
+          {isProfile && (
+            <p className={styles.help}>
+              Leave blank for the standard text records.
+            </p>
+          )}
+        </>
+      )}
+      {(isProfile || operation === 'addresses') && (
+        <>
+          <label htmlFor="chain-names">
+            {isProfile ? 'Addresses' : 'Chains'} <span>optional</span>
+          </label>
+          <input
+            id="chain-names"
+            value={addresses}
+            onChange={(event) => setAddresses(event.target.value)}
+            placeholder="eth,base,btc"
+            spellCheck={false}
+          />
+          <p className={styles.help}>
+            Comma-separated{' '}
+            {isProfile ? 'chain names or coin types' : 'chain names'}. Blank
+            uses the API defaults.
+          </p>
+        </>
+      )}
+      {isProfile && (
+        <label className={styles.checkbox}>
+          <input
+            type="checkbox"
+            checked={contenthash}
+            onChange={(event) => setContenthash(event.target.checked)}
+          />
+          Include content hash
+        </label>
+      )}
+    </>
+  )
+
   return (
     <section
       id="playground"
@@ -110,20 +183,50 @@ export const TryItNow = () => {
       aria-labelledby="playground-heading"
     >
       <div className={styles.toolbar}>
-        <h2 id="playground-heading">Try It Now</h2>
+        <div>
+          <h2 id="playground-heading">Try It Now</h2>
+          <p>Explore ENS resolution. No API key needed.</p>
+        </div>
         <span>api.resolvio.xyz</span>
       </div>
       <div className={styles.workspace}>
         <form
           className={styles.request}
+          data-animate={animateResponse}
           onSubmit={resolve}
+          onPointerDownCapture={() => setAnimateResponse(true)}
+          onKeyDownCapture={() => setAnimateResponse(false)}
           onChange={() => {
             setResponse(null)
             setError('')
           }}
         >
           <fieldset disabled={pending}>
-            <label htmlFor="operation">Lookup type</label>
+            <div
+              className={styles.direction}
+              role="group"
+              aria-label="Resolution direction"
+            >
+              <button
+                type="button"
+                aria-pressed={!isReverse}
+                onClick={() => changeDirection(false)}
+              >
+                <span>Forward</span>
+                <small>Name to records</small>
+              </button>
+              <button
+                type="button"
+                aria-pressed={isReverse}
+                onClick={() => changeDirection(true)}
+              >
+                <span>Reverse</span>
+                <small>Address to name</small>
+              </button>
+            </div>
+            <label htmlFor="operation">
+              {isReverse ? 'Reverse lookup' : 'Forward lookup'}
+            </label>
             <select
               id="operation"
               value={operation}
@@ -131,11 +234,13 @@ export const TryItNow = () => {
                 changeOperation(event.target.value as Operation)
               }
             >
-              {operations.map((entry) => (
-                <option key={entry.id} value={entry.id}>
-                  {entry.label}
-                </option>
-              ))}
+              {operations
+                .filter((entry) => entry.id.includes('reverse') === isReverse)
+                .map((entry) => (
+                  <option key={entry.id} value={entry.id}>
+                    {entry.label}
+                  </option>
+                ))}
             </select>
             <label htmlFor="lookup-input">
               {isReverse
@@ -149,15 +254,33 @@ export const TryItNow = () => {
             {isBulk ? (
               <textarea
                 id="lookup-input"
+                aria-invalid={
+                  hasValidationError && validationField === 'lookup-input'
+                }
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 rows={3}
+                autoCapitalize="none"
+                autoComplete="off"
+                onKeyDown={(event) => {
+                  if (
+                    (event.metaKey || event.ctrlKey) &&
+                    event.key === 'Enter'
+                  ) {
+                    event.preventDefault()
+                    event.currentTarget.form?.requestSubmit()
+                  }
+                }}
                 spellCheck={false}
-                aria-describedby="bulk-help"
+                aria-describedby="bulk-help request-error"
               />
             ) : (
               <input
                 id="lookup-input"
+                aria-invalid={
+                  hasValidationError && validationField === 'lookup-input'
+                }
+                aria-describedby="request-error"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 spellCheck={false}
@@ -188,66 +311,34 @@ export const TryItNow = () => {
                 ))}
               </div>
             )}
-            {(isProfile || operation === 'texts') && (
-              <>
-                <label htmlFor="text-keys">
-                  Text keys <span>{isProfile ? 'optional' : 'required'}</span>
-                </label>
-                <input
-                  id="text-keys"
-                  value={texts}
-                  onChange={(event) => setTexts(event.target.value)}
-                  placeholder="avatar,description"
-                  spellCheck={false}
-                />
-                {isProfile && (
-                  <p className={styles.help}>
-                    Leave blank for the standard text records.
-                  </p>
-                )}
-              </>
-            )}
-            {(isProfile || operation === 'addresses') && (
-              <>
-                <label htmlFor="chain-names">
-                  {isProfile ? 'Addresses' : 'Chains'} <span>optional</span>
-                </label>
-                <input
-                  id="chain-names"
-                  value={addresses}
-                  onChange={(event) => setAddresses(event.target.value)}
-                  placeholder="eth,base,btc"
-                  spellCheck={false}
-                />
-                <p className={styles.help}>
-                  Comma-separated{' '}
-                  {isProfile ? 'chain names or coin types' : 'chain names'}.
-                  Blank uses the API defaults.
-                </p>
-              </>
-            )}
-            {isProfile && (
-              <label className={styles.checkbox}>
-                <input
-                  type="checkbox"
-                  checked={contenthash}
-                  onChange={(event) => setContenthash(event.target.checked)}
-                />
-                Include content hash
-              </label>
+            {isProfile ? (
+              <Disclosure title="Customize records" className={styles.options}>
+                {recordFields}
+              </Disclosure>
+            ) : (
+              recordFields
             )}
             <p id="request-error" className={styles.error} role="alert">
               {error}
             </p>
             <button className={styles.resolve} type="submit">
               {pending ? 'Resolving…' : 'Resolve'}
-              <span aria-hidden="true">→</span>
+              {pending ? (
+                <LoaderCircle
+                  className={styles.spinner}
+                  size={18}
+                  aria-hidden="true"
+                />
+              ) : (
+                <ArrowRight size={18} aria-hidden="true" />
+              )}
             </button>
             <a
               className={styles.reference}
               href={`${RESOLVIO_REFERENCE}/${definition.docs}`}
             >
-              Endpoint documentation ↗
+              Endpoint documentation{' '}
+              <ArrowUpRight size={13} aria-hidden="true" />
             </a>
           </fieldset>
           <div className={styles.command}>
@@ -264,80 +355,18 @@ export const TryItNow = () => {
             </code>
           </div>
         </form>
-        <div className={styles.response} aria-busy={pending}>
-          <div className={styles.responseHeader}>
-            <h3>Response</h3>
-            <div>
-              {response && (
-                <>
-                  <span
-                    className={
-                      response.status >= 400 ? styles.failed : styles.status
-                    }
-                  >
-                    HTTP {response.status}
-                  </span>
-                  <span>{response.elapsed} ms</span>
-                  <CopyButton text={response.body} label="Copy JSON" />
-                </>
-              )}
-            </div>
-          </div>
-          <span className={styles.srOnly} role="status">
-            {pending
-              ? 'Fetching ENS records.'
-              : response
-                ? `Lookup complete. HTTP ${response.status}.`
-                : ''}
-          </span>
-          {response ? (
-            <>
-              <pre
-                className={styles.json}
-                tabIndex={0}
-                aria-label="JSON response"
-              >
-                <code>{response.body}</code>
-              </pre>
-              <p className={styles.responseNote}>
-                {isReverse ? (
-                  <>
-                    A missing primary name has{' '}
-                    <code>hasReverseRecord: false</code>.
-                  </>
-                ) : (
-                  <>
-                    Missing records have <code>exists: false</code>.
-                  </>
-                )}
-              </p>
-            </>
-          ) : (
-            <div className={styles.empty}>
-              <span className={styles.braces} aria-hidden="true">
-                {'{ }'}
-              </span>
-              <h3>
-                {pending
-                  ? 'Looking up ENS records…'
-                  : 'The actual API response.'}
-              </h3>
-              <p>
-                {pending
-                  ? 'Waiting for api.resolvio.xyz.'
-                  : 'Run a lookup to inspect the JSON, then copy the request into your app.'}
-              </p>
-            </div>
-          )}
-          <div className={styles.responseFooter}>
-            <span>GET</span>
-            <code>
-              {response
-                ? new URL(response.url).pathname
-                : `/ens/v2/${definition.path}`}
-            </code>
-          </div>
-        </div>
+        <LookupResponse
+          pending={pending}
+          response={response}
+          error={error}
+          isReverse={isReverse}
+          path={
+            requestUrl
+              ? new URL(requestUrl).pathname
+              : `/ens/v2/${definition.path}`
+          }
+          animate={animateResponse}
+        />
       </div>
     </section>
   )

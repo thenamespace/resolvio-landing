@@ -4,6 +4,7 @@ import {
   RESOLVIO_REPO,
 } from '../constants/api'
 import { CopyButton } from '../components/ui/CopyButton'
+import { Disclosure } from '../components/ui/Disclosure'
 import styles from './DevDocs.module.scss'
 
 const INSTALL = 'npx skills add thenamespace/skills -s resolvio'
@@ -73,14 +74,13 @@ export const DevDocs = () => (
           <a href="/llms.txt">LLM summary ↗</a>
           <a href="/llms-full.txt">Full API reference ↗</a>
         </div>
-        <details className={styles.selfhost}>
-          <summary>Self-host Resolvio</summary>
+        <Disclosure title="Self-host Resolvio" className={styles.selfhost} triggerClassName={styles.selfhostTrigger}>
           <p>
             Self-host the Node.js service with your own Ethereum RPC provider.
             Cache durations and bulk limits are configurable.
           </p>
           <a href={`${RESOLVIO_REPO}#readme`}>Setup instructions ↗</a>
-        </details>
+        </Disclosure>
       </aside>
     </div>
   </section>

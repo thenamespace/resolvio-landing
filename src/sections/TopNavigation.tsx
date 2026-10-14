@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { ChevronDown, Moon, Sun } from 'lucide-react'
 import { useTheme } from '../hooks/useTheme'
 import { RESOLVIO_DOCS, RESOLVIO_REPO } from '../constants/api'
@@ -8,16 +8,26 @@ import styles from './TopNavigation.module.scss'
 
 export const TopNavigation = () => {
   const { theme, toggleTheme } = useTheme()
-  const aiDocs = useRef<HTMLDetailsElement>(null)
+  const aiDocs = useRef<HTMLDivElement>(null)
+  const aiDocsTrigger = useRef<HTMLButtonElement>(null)
+  const aiDocsId = useId()
+  const [docsOpen, setDocsOpen] = useState(false)
+  const [instant, setInstant] = useState(true)
 
   useEffect(() => {
     const closeOnOutsideClick = (event: PointerEvent) => {
-      if (aiDocs.current && event.target instanceof Node && !aiDocs.current.contains(event.target)) {
-        aiDocs.current.open = false
+      if (
+        aiDocs.current &&
+        event.target instanceof Node &&
+        !aiDocs.current.contains(event.target)
+      ) {
+        setInstant(false)
+        setDocsOpen(false)
       }
     }
     document.addEventListener('pointerdown', closeOnOutsideClick)
-    return () => document.removeEventListener('pointerdown', closeOnOutsideClick)
+    return () =>
+      document.removeEventListener('pointerdown', closeOnOutsideClick)
   }, [])
   return (
     <header className={styles.outer}>
@@ -35,30 +45,60 @@ export const TopNavigation = () => {
         </a>
         <div className={styles.links}>
           <a href={RESOLVIO_DOCS}>Docs</a>
-          <details
+          <div
             className={styles.aiDocs}
             ref={aiDocs}
+            data-open={docsOpen}
+            data-instant={instant}
             onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget)) {
-                event.currentTarget.open = false
+                setDocsOpen(false)
               }
             }}
             onKeyDown={(event) => {
-              if (event.key === 'Escape' && event.currentTarget.open) {
-                event.currentTarget.open = false
-                event.currentTarget.querySelector('summary')?.focus()
+              setInstant(true)
+              if (event.key === 'Escape' && docsOpen) {
+                setDocsOpen(false)
+                aiDocsTrigger.current?.focus()
               }
             }}
           >
-            <summary>AI Docs <ChevronDown size={14} aria-hidden="true" /></summary>
-            <div className={styles.aiDocsLinks}>
-              <a href="/#agents" onClick={() => { if (aiDocs.current) aiDocs.current.open = false }}>Install the skill</a>
-              <a href="/skill.md">Skill file <span>Instructions for your agent</span></a>
-              <a href="/llms.txt">LLM summary <span>Endpoints at a glance</span></a>
-              <a href="/llms-full.txt">Full API reference <span>Parameters and response formats</span></a>
+            <button
+              type="button"
+              ref={aiDocsTrigger}
+              className={styles.aiDocsTrigger}
+              aria-expanded={docsOpen}
+              aria-controls={aiDocsId}
+              onClick={(event) => {
+                setInstant(event.detail === 0)
+                setDocsOpen((previous) => !previous)
+              }}
+            >
+              AI Docs <ChevronDown size={14} aria-hidden="true" />
+            </button>
+            <div
+              id={aiDocsId}
+              className={styles.aiDocsLinks}
+              inert={!docsOpen}
+              aria-hidden={!docsOpen}
+            >
+              <a href="/#agents" onClick={() => setDocsOpen(false)}>
+                Install the skill
+              </a>
+              <a href="/skill.md">
+                Skill file <span>Instructions for your agent</span>
+              </a>
+              <a href="/llms.txt">
+                LLM summary <span>Endpoints at a glance</span>
+              </a>
+              <a href="/llms-full.txt">
+                Full API reference <span>Parameters and response formats</span>
+              </a>
             </div>
-          </details>
-          <a href="/#playground" className={styles.playground}>Try Playground</a>
+          </div>
+          <a href="/#playground" className={styles.playground}>
+            Try Playground
+          </a>
           <a href={RESOLVIO_REPO} className={styles.github}>
             GitHub
           </a>

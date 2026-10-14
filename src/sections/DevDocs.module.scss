@@ -117,11 +117,14 @@
   border-top: 1px solid var(--border-color);
   padding-top: 16px;
 }
-.selfhost summary {
-  cursor: pointer;
+.selfhostTrigger {
   padding: 8px 0;
-  color: var(--text-primary);
   font-size: 15px;
+}
+.selfhost a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .selfhost p {
   margin: 12px 0;

@@ -293,11 +293,8 @@
     border-block: 1px solid var(--border-color);
     padding: 8px 0;
   }
-  .mobileContents summary {
-    min-height: 44px;
+  .contentsTrigger {
     padding: 10px 0;
-    cursor: pointer;
-    color: var(--text-primary);
   }
   .mobileContents nav {
     padding-bottom: 12px;

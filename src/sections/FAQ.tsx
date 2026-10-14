@@ -1,3 +1,4 @@
+import { Disclosure } from '../components/ui/Disclosure'
 import styles from './FAQ.module.scss'
 
 const questions = [
@@ -63,10 +64,9 @@ export const FAQ = () => (
     <h2 id="faq-heading">Frequently Asked Questions</h2>
     <div>
       {questions.map(([question, answer]) => (
-        <details key={question}>
-          <summary>{question}</summary>
+        <Disclosure key={question} title={question} className={styles.question} triggerClassName={styles.trigger}>
           <p>{answer}</p>
-        </details>
+        </Disclosure>
       ))}
     </div>
   </section>

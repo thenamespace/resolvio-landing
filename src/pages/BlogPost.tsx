@@ -4,6 +4,7 @@ import { ArticleContent } from '../components/blog/ArticleContent'
 import { getPostBySlug, blogPosts } from '../data/posts'
 import { TableOfContents } from '../components/blog/TableOfContents'
 import { PostCard } from '../components/blog/PostCard'
+import { Disclosure } from '../components/ui/Disclosure'
 import { useSEO } from '../hooks/useSEO'
 import styles from './BlogPost.module.scss'
 
@@ -75,10 +76,9 @@ export function BlogPost() {
           </div>
         </div>
       </header>
-      <details className={styles.mobileContents}>
-        <summary>On this page</summary>
+      <Disclosure title="On this page" className={styles.mobileContents} triggerClassName={styles.contentsTrigger}>
         <TableOfContents html={post.html} />
-      </details>
+      </Disclosure>
       <div>
         <div className={styles.bodyInner}>
           <article className={styles.article} itemScope itemType="https://schema.org/BlogPosting">

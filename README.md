@@ -21,6 +21,12 @@ npm run build
 
 The build type-checks the app, checks that agent references are synchronized, and prerenders landing, blog, and legal routes into `dist/client`. Use `npm run preview` to inspect the result.
 
+## Playground interactions
+
+Choose Forward for ENS names or Reverse for Ethereum addresses, then select an endpoint. Each direction keeps its input while you switch. Profile filters are under Customize records; required text keys stay visible. Enter submits a single lookup, and Ctrl/Cmd+Enter submits a bulk lookup.
+
+Disclosures, menus, copy feedback, and response arrivals use short CSS transitions. Keyboard actions and reduced-motion preferences skip motion. During browser checks, verify both directions, rapid disclosure toggles, hidden-field tab order, copy feedback, API errors, mobile layouts, and both themes. For prerendered article checks with Vite preview, use a trailing slash so the server returns the article HTML.
+
 ## Documentation
 
 Human documentation links point to [Namespace docs](https://docs.namespace.ninja/user-guide/resolvio). The OpenAPI JSON remains a machine-readable resource, not the primary human documentation link.

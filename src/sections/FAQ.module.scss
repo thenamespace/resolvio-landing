@@ -13,14 +13,12 @@
   letter-spacing: -0.025em;
   color: var(--text-primary);
 }
-.outer details {
+.question {
   border-top: 1px solid var(--border-color);
 }
-.outer summary {
+.trigger {
   padding: 20px 0;
   font-size: 16px;
-  cursor: pointer;
-  color: var(--text-primary);
 }
 .outer p {
   padding: 0 0 24px;

@@ -30,9 +30,6 @@
   font-size: 14px;
   text-decoration: none;
 }
-.links a:hover {
-  color: var(--accent);
-}
 .links button {
   display: grid;
   place-items: center;
@@ -43,9 +40,6 @@
   color: var(--text-secondary);
   background: transparent;
   cursor: pointer;
-}
-.links button:hover {
-  background: var(--hover-overlay);
 }
 .skip {
   position: absolute;
@@ -80,26 +74,31 @@
 
 .aiDocs {
   position: relative;
+  --menu-duration: 140ms;
 }
-.aiDocs summary {
+.aiDocs[data-open='true'] {
+  --menu-duration: 180ms;
+}
+.links .aiDocsTrigger {
   display: flex;
   align-items: center;
   gap: 6px;
+  width: auto;
+  height: auto;
   min-height: 44px;
+  font: inherit;
   font-size: 14px;
   color: var(--text-secondary);
   cursor: pointer;
-  list-style: none;
   white-space: nowrap;
 }
-.aiDocs summary::-webkit-details-marker {
-  display: none;
+.aiDocsTrigger svg {
+  transition: transform var(--menu-duration) cubic-bezier(0.32, 0.72, 0, 1);
 }
-.aiDocs summary:hover,
-.aiDocs[open] summary {
+.aiDocs[data-open='true'] .aiDocsTrigger {
   color: var(--accent);
 }
-.aiDocs[open] summary svg {
+.aiDocs[data-open='true'] .aiDocsTrigger svg {
   transform: rotate(180deg);
 }
 .aiDocsLinks {
@@ -112,6 +111,21 @@
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: var(--surface);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+  transform-origin: top right;
+  transform: translateY(-4px) scale(0.97);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform var(--menu-duration) cubic-bezier(0.32, 0.72, 0, 1),
+    opacity var(--menu-duration) cubic-bezier(0.32, 0.72, 0, 1),
+    visibility 0s var(--menu-duration);
+}
+.aiDocs[data-open='true'] .aiDocsLinks {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
 }
 .aiDocsLinks a {
   flex-direction: column;
@@ -122,13 +136,34 @@
   border-radius: 4px;
   color: var(--text-primary);
 }
-.aiDocsLinks a:hover {
-  background: var(--hover-overlay);
-}
 .aiDocsLinks span {
   font-size: 12px;
   color: var(--text-secondary);
 }
 @media (max-width: 600px) {
-  .aiDocs summary { font-size: 13px; }
+  .links .aiDocsTrigger {
+    font-size: 13px;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .links a:hover,
+  .links .aiDocsTrigger:hover {
+    color: var(--accent);
+  }
+  .links button:hover,
+  .aiDocsLinks a:hover {
+    background: var(--hover-overlay);
+  }
+}
+.aiDocs[data-instant='true'] {
+  .aiDocsLinks,
+  .aiDocsTrigger svg {
+    transition: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aiDocsLinks,
+  .aiDocsTrigger svg {
+    transition: none;
+  }
 }
