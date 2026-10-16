@@ -77,14 +77,16 @@ Typical keys: `avatar`, `name`, `description`, `url`, `com.twitter`, `com.github
 
 ---
 
-### Cache control and fresh reads
+### Requesting a refresh
 
 ```bash
-# Fresh read
+# Request a refresh
 curl "https://api.resolvio.xyz/ens/v2/profile/vitalik.eth?noCache=true"
 
 # Clear cache for one name
 curl -X DELETE "https://api.resolvio.xyz/ens/v2/cache/vitalik.eth?type=all"
 ```
 
-Use cache bypass or cache clear when users just updated records and need immediate consistency.
+A deployment may reuse entries within its refresh cooldown or ignore repeated clears. Neither operation guarantees immediate consistency. See [caching behavior](api.md#caching-and-freshness).
+
+Documentation: https://docs.namespace.ninja/user-guide/resolvio

@@ -2,8 +2,8 @@ import { PackageOpen, FileStack, Bot, Database } from 'lucide-react'
 import styles from './StatsBar.module.scss'
 
 const stats = [
-  { icon: <PackageOpen size={18} />, value: 'No Dependencies',  label: 'Lightweight by design'     },
-  { icon: <Database size={18} />,    value: 'Built-in Caching', label: 'Per-name, configurable TTL' },
+  { icon: <PackageOpen size={18} />, value: 'Self-Hostable',  label: 'Bring your own RPC'     },
+  { icon: <Database size={18} />,    value: 'Built-in Caching', label: 'Configurable cache durations' },
   { icon: <FileStack size={18} />,    value: 'Bulk Resolution',  label: 'Forward and reverse'        },
   { icon: <Bot size={18} />,         value: 'Agent Ready',      label: 'OpenAPI docs + Skill.md'    },
 ]

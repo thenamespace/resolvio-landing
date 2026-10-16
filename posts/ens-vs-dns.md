@@ -32,7 +32,7 @@ There is no central registrar. Anyone can register a <code>.eth</code> name by i
 - <strong>Ownership model</strong>: DNS names are leased annually. ENS names are owned as NFTs with yearly renewal prices. Subnames can optionally never expiry. The owner is the NFT holder.
 - <strong>Update mechanism</strong>: DNS updates propagate via TTL-based caching (minutes to 48h). ENS updates are onchain transactions, final once confirmed.
 - <strong>Censorship resistance</strong>: DNS can be seized, suspended, or blocked at the registrar, registry, or ISP level. ENS names cannot be unilaterally revoked while the owner holds the NFT.
-- <strong>Resolution speed</strong>: DNS resolution is microseconds (cached). Raw ENS resolution requires Ethereum RPC calls (~100–500ms). With a caching layer like Resolvio, this drops to &lt;50ms.
+- <strong>Resolution</strong>: ENS reads can require RPC and offchain gateway calls. Caching reduces repeated lookups, but latency depends on the deployment and resolver.
 - <strong>Cost</strong>: DNS registration is $10–20/year. ENS registration involves gas fees and a registration fee (currently ~$5/year for 5+ character names).
 - <strong>Programmability</strong>: DNS is read-only from the application layer. ENS resolvers are smart contracts — resolution logic can be fully customized.
 
@@ -54,8 +54,8 @@ Resolvio resolves both <code>.eth</code> names and DNS names that have been regi
 
 ```bash
 # .eth name
-curl https://api.resolvio.xyz/ens/v2/resolve/vitalik.eth
+curl 'https://api.resolvio.xyz/ens/v2/profile/vitalik.eth'
 
 # DNS name with ENS resolver
-curl https://api.resolvio.xyz/ens/v2/resolve/nick.xyz
+curl 'https://api.resolvio.xyz/ens/v2/profile/nick.xyz'
 ```

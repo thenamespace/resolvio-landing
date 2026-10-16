@@ -13,15 +13,15 @@ As AI agents increasingly operate in Web3 contexts — managing wallets, executi
 
 Suppose your AI agent receives a user message: "Send 0.1 ETH to vitalik.eth." The agent needs to resolve <code>vitalik.eth</code> to an actual Ethereum address before it can construct a transaction. Or the agent is summarizing onchain activity and wants to display <code>vitalik.eth</code> instead of <code>0xd8dA...</code> in its response.
 
-Without resolution infrastructure, your agent either has to ship a full Web3 library in its runtime (impractical for most LLM deployment environments) or rely on the user to always provide raw addresses. Neither is a good experience.
+Without resolution infrastructure, your agent either has to use a Web3 library and RPC provider in its runtime or rely on the user to always provide raw addresses. Neither is a good experience.
 
 ## ENS as a Machine-Readable Identity Layer
 
 ENS names are ideal for AI agent use because:
 
-- They're unambiguous — a name either resolves or it doesn't
+- A lookup reports whether the requested records exist; callers must also handle lookup errors
 - They carry rich metadata (avatar, social handles, description) that agents can use for context
-- They're stable — a user's ENS name persists even as they rotate wallets
+- A name can stay the same when its owner updates the address records; ownership and records can also change
 - The resolution API is plain HTTP/JSON — no special runtime or library needed
 
 ## Tool Definition for Claude
@@ -47,22 +47,32 @@ const tools = [
 ]
 
 async function handleToolCall(toolName: string, input: { name: string }) {
-  if (toolName === 'resolve_ens_name') {
-    const res = await fetch(`https://api.resolvio.xyz/ens/v2/profile/${input.name}`)
-    return await res.json()
+  if (toolName !== 'resolve_ens_name') throw new Error('Unknown tool')
+  if (typeof input.name !== 'string' || !input.name.trim()) {
+    throw new Error('An ENS name is required')
   }
+  const res = await fetch(`https://api.resolvio.xyz/ens/v2/profile/${encodeURIComponent(input.name.trim())}`)
+  if (!res.ok) throw new Error(`Resolvio returned ${res.status}`)
+  return await res.json()
 }
 ```
+
+The tool definition and handler plug into your agent’s tool loop. See [Claude’s tool-use documentation](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview) for returning tool results.
+
+The profile response contains arrays of `texts` and `addresses`. Match by text `key` or address `coin`, and check `exists` before reading `value`.
 
 ## Tool Definition for OpenAI Function Calling
 
 ```typescript
-const functions = [
+const tools = [
   {
+    type: 'function',
     name: 'resolve_ens_name',
+    strict: true,
     description: 'Resolve an ENS name (.eth) to an Ethereum address and profile information.',
     parameters: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         name: { type: 'string', description: 'ENS name to resolve, e.g. vitalik.eth' },
       },
@@ -72,32 +82,50 @@ const functions = [
 ]
 ```
 
+Pass this definition as `tools` to the [OpenAI Responses API](https://developers.openai.com/api/docs/guides/function-calling). Your application executes the returned function call with the handler above and sends its result back to the model. These definitions are the ENS tool portion of an agent, not a complete agent loop.
+
 ## Reverse Resolution for Agent Summaries
 
 When your agent reads onchain data (transactions, token transfers, governance votes), it encounters raw addresses. Use reverse resolution to make summaries human-readable:
 
 ```typescript
-// Before: "0xd8dA6BF... sent 100 USDC to 0xAb5801..."
-// After:  "vitalik.eth sent 100 USDC to balajis.eth"
+interface ReverseRecord {
+  address: string
+  hasReverseRecord: boolean
+  name?: string
+}
 
 async function enrichAddresses(addresses: string[]): Promise<Record<string, string>> {
-  const res = await fetch(
-    `https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=${addresses.join(',')}`
-  )
-  const data = await res.json()
-  return Object.fromEntries(
-    data.map((item: { address: string; displayName: string }) => [item.address, item.displayName])
-  )
+  const unique = [...new Set(addresses.map(address => address.toLowerCase()))]
+  const names = new Map<string, string>()
+  for (let offset = 0; offset < unique.length; offset += 20) {
+    const query = new URLSearchParams({ addresses: unique.slice(offset, offset + 20).join(',') })
+    const res = await fetch(`https://api.resolvio.xyz/ens/v2/reverse/bulk?${query}`)
+    if (!res.ok) throw new Error(`Resolvio returned ${res.status}`)
+    const result: { addresses: ReverseRecord[] } = await res.json()
+    for (const record of result.addresses) {
+      if (record.hasReverseRecord && record.name) names.set(record.address.toLowerCase(), record.name)
+    }
+  }
+  return Object.fromEntries(addresses.map(address => [address, names.get(address.toLowerCase()) ?? address]))
 }
 ```
 
-## MCP and AI Plugin Support
+## Skills and API Reference
 
-Resolvio publishes first-class support files for AI systems:
+Resolvio publishes support files for AI systems:
 
-- <strong>MCP server manifest</strong> at <code>/.well-known/mcp.json</code> — for Model Context Protocol clients
-- <strong>AI plugin manifest</strong> at <code>/.well-known/ai-plugin.json</code> — for OpenAI plugin-style discovery
-- <strong>Plain-text LLM description</strong> at <code>/llms.txt</code> — a concise description any language model can parse
-- <strong>Tool definitions in Markdown</strong> at <code>/Skill.md</code> — copy-paste ready function definitions
+- [Resolvio skill](/skill.md) for endpoint selection and integration guidance
+- [Plain-text LLM description](/llms.txt) for a concise API summary
+- [Full API reference](/llms-full.txt) for response shapes, parameters, and cache behavior
+- [OpenAPI schema](https://api.resolvio.xyz/api-docs.json) for tooling
 
-> Any agent that can make GET requests can call the Resolvio API. No authentication, no SDK, no configuration — just HTTP.
+Install the skill with:
+
+```bash
+npx skills add thenamespace/skills -s resolvio
+```
+
+Any agent that can make GET requests can call the public Resolvio API without an API key. A static manifest is not an MCP server. For human-readable guides, use [Namespace documentation](https://docs.namespace.ninja/user-guide/resolvio).
+
+Before acting on a resolved address, handle missing records and lookup failures. Cached results can be stale; a cache-refresh request is not an immediate-consistency guarantee.

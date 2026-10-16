@@ -1,16 +1,16 @@
 import styles from './Capabilities.module.scss'
 
 const CAPABILITIES = [
-  { operation: 'Full profile',            desc: 'Texts, addresses, and contenthash resolved in a single RPC call',                                                       status: 'Live' },
+  { operation: 'Full profile',            desc: 'Texts, addresses, and contenthash returned in one HTTP request',                                                       status: 'Live' },
   { operation: 'Text records',            desc: 'Resolve arbitrary key-value records: avatar, email, socials, and any custom key',                                        status: 'Live' },
-  { operation: 'Address records',         desc: 'Resolve cryptocurrency addresses for 100+ chains per ENSIP-9',                                                           status: 'Live' },
+  { operation: 'Address records',         desc: 'Resolve multi-chain address records using chain names or coin types',                                                           status: 'Live' },
   { operation: 'Contenthash',             desc: 'Resolve IPFS, IPNS, Arweave, and Swarm content pointers',                                                                status: 'Live' },
   { operation: 'Reverse resolution',      desc: 'Resolve an Ethereum address back to its primary ENS name',                                                               status: 'Live' },
   { operation: 'Reverse profile',         desc: 'Resolve an address to its verified ENS profile with avatar, display name, and description',                                status: 'Live' },
   { operation: 'Bulk forward resolution', desc: 'Resolve multiple ENS names concurrently in a single API call',                                                           status: 'Live' },
   { operation: 'Bulk reverse resolution', desc: 'Resolve multiple addresses to ENS names in a single batched RPC call',                                                   status: 'Live' },
-  { operation: 'Supported chains',        desc: 'List all supported chains with names and coinType values',                                                                status: 'Live' },
-  { operation: 'Cache control',           desc: 'Per-name cache invalidation via DELETE. Force fresh resolution with noCache to bypass the cache on any request.',        status: 'Live' },
+  { operation: 'Supported chains',        desc: 'List supported chains with names and coin values',                                                                status: 'Live' },
+  { operation: 'Cache control',           desc: 'Per-name cache invalidation via DELETE. Use noCache=true on resolution requests to bypass the cache.',        status: 'Live' },
 ]
 
 export const Capabilities = () => (

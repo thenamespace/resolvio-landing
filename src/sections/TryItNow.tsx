@@ -7,6 +7,7 @@ import { RecordPickerModal, type PickerItem } from '../components/ui/RecordPicke
 import styles from './TryItNow.module.scss'
 import { cx } from '../utils/cx'
 import { RESOLVIO_API } from '../constants/api'
+import { buildRequest, curlCommand, type Operation } from './playground-request'
 
 type Tab = 'forward' | 'reverse'
 type ForwardMode = 'single' | 'bulk'
@@ -65,15 +66,17 @@ interface BulkReverseResult {
 
 const RecordBadge = ({ label, value }: { label: string; value: string }) => {
   const [copied, setCopied] = useState(false)
+  const [copyFailed, setCopyFailed] = useState(false)
   const copy = () => {
     navigator.clipboard.writeText(value).then(() => {
+      setCopyFailed(false)
       setCopied(true)
       setTimeout(() => setCopied(false), 1200)
-    })
+    }).catch(() => setCopyFailed(true))
   }
   return (
-    <button className={styles.recordBadge} onClick={copy} title={value}>
-      <span className={styles.recordBadgeLabel}>{label}</span>
+    <button className={styles.recordBadge} onClick={copy} title={copyFailed ? 'Could not copy. Select and copy the value manually.' : value}>
+      <span className={styles.recordBadgeLabel}>{copyFailed ? 'Copy failed' : label}</span>
       <span className={styles.recordBadgeValue}>{value}</span>
       <span className={styles.recordBadgeCopy}>
         {copied ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" width={11} height={11}><path d="M5 13l4 4L19 7"/></svg> : <Copy size={11} />}
@@ -120,8 +123,7 @@ export const TryItNow = () => {
   const [chainsModalOpen, setChainsModalOpen] = useState(false)
   const [textsModalOpen, setTextsModalOpen]   = useState(false)
 
-  // Track last resolved name to avoid duplicate requests
-  const lastResolvedName = useRef<string | null>(null)
+  const requestPending = useRef(false)
 
   // Derived: chain items for modal (populated after fetch)
   const chainPickerItems: PickerItem[] = chains.map(c => ({
@@ -133,13 +135,16 @@ export const TryItNow = () => {
     if (chainsFetched.current) return
     chainsFetched.current = true
     fetch(`${RESOLVIO_API}/ens/v2/chains`)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.json()
+      })
       .then((data: Chain[]) => {
         setChains(data)
         setSelectedChains(new Set(['eth', 'btc', 'base']))
       })
       .catch(() => {
-        // Fallback to hardcoded defaults
+        setError('Could not load the chain list. The picker shows a limited built-in list.')
         const fallback: Chain[] = [
           { coin: 60,         name: 'eth',   label: 'Ethereum' },
           { coin: 2147492101, name: 'base',  label: 'Base'     },
@@ -158,79 +163,61 @@ export const TryItNow = () => {
   const onChainsChange = (next: string[]) => setSelectedChains(new Set(next))
 
   const parseAddresses = (raw: string) =>
-    raw.split('\n').map(l => l.trim()).filter(Boolean)
+    raw.split(/[\n,]/).map(l => l.trim()).filter(Boolean)
 
-  // Build the effective query params — empty when useDefault is on
-  const buildParams = () => {
-    if (useDefault) return []
-    const parts: string[] = []
-    if (inclTexts && selectedTexts.length)
-      parts.push(`texts=${selectedTexts.join(',')}`)
-    if (inclAddresses && selectedChains.size)
-      parts.push(`addresses=${[...selectedChains].join(',')}`)
-    if (!inclContent)
-      parts.push(`contenthash=false`)
-    return parts
-  }
+  const requestUrl = (operation: Operation, value: string) => buildRequest(RESOLVIO_API, {
+    operation,
+    input: value,
+    texts: !useDefault && inclTexts ? selectedTexts.join(',') : '',
+    addresses: !useDefault && inclAddresses ? [...selectedChains].join(',') : '',
+    contenthash: useDefault || inclContent,
+  })
 
-  const resolveForward = async (name?: string) => {
-    const q = (name ?? input).trim()
-    if (!q) return
-    setInput(q)
-    if (!isValidDomain(q)) {
-      setError('Invalid name — expected format: name.tld (e.g. vitalik.eth)')
-      setForwardResult(null)
-      setRawJson('')
+  const resolve = async (operation: Operation, value: string) => {
+    if (requestPending.current) return
+    setForwardResult(null)
+    setBulkForwardResult(null)
+    setReverseResult(null)
+    setBulkResult(null)
+    setRawJson('')
+    setError(null)
+    setResponseMs(null)
+    let url: string
+    try {
+      url = requestUrl(operation, value)
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Invalid request')
       return
     }
-    if (lastResolvedName.current === q && forwardResult !== null) return
+    requestPending.current = true
     setResolving(true)
-    setForwardResult(null)
-    setError(null)
-    setResponseMs(null)
-
-    const qs = buildParams().join('&')
-    const t0 = performance.now()
+    const started = performance.now()
     try {
-      const res  = await fetch(`${RESOLVIO_API}/ens/v2/profile/${q}${qs ? '?' + qs : ''}`)
-      const data = await res.json()
-      setResponseMs(Math.round(performance.now() - t0))
-      if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
-      setForwardResult(data)
-      setRawJson(JSON.stringify(data, null, 2))
-      lastResolvedName.current = q
-    } catch (e) {
-      setResponseMs(Math.round(performance.now() - t0))
-      setError(e instanceof Error ? e.message : 'Request failed')
+      const response = await fetch(url)
+      const body = await response.text()
+      setRawJson(body)
+      if (!response.ok) throw new Error(`Request failed (HTTP ${response.status}).`)
+      const result = JSON.parse(body)
+      setRawJson(JSON.stringify(result, null, 2))
+      if (operation === 'profile') setForwardResult(result)
+      else if (operation === 'bulk-profile') setBulkForwardResult(result)
+      else if (operation === 'reverse') setReverseResult(result)
+      else setBulkResult(result)
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Request failed')
     } finally {
+      setResponseMs(Math.round(performance.now() - started))
+      requestPending.current = false
       setResolving(false)
     }
   }
 
-  const resolveBulkForward = async () => {
-    if (bulkNames.size === 0) return
-    setResolving(true)
-    setBulkForwardResult(null)
-    setError(null)
-    setRawJson('')
-    setResponseMs(null)
-
-    const qs = buildParams().join('&')
-    const t0 = performance.now()
-    try {
-      const res  = await fetch(`${RESOLVIO_API}/ens/v2/profile/bulk?names=${[...bulkNames].join(',')}${qs ? '&' + qs : ''}`)
-      const data = await res.json()
-      setResponseMs(Math.round(performance.now() - t0))
-      if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
-      setBulkForwardResult(data)
-      setRawJson(JSON.stringify(data, null, 2))
-    } catch (e) {
-      setResponseMs(Math.round(performance.now() - t0))
-      setError(e instanceof Error ? e.message : 'Request failed')
-    } finally {
-      setResolving(false)
-    }
+  const resolveForward = (name = input) => {
+    setInput(name.trim())
+    return resolve('profile', name)
   }
+
+  const resolveBulkForward = () => resolve('bulk-profile', [...bulkNames].join('\n'))
 
   const toggleBulkName = (name: string) => {
     setBulkNames(prev => {
@@ -241,81 +228,31 @@ export const TryItNow = () => {
     })
   }
 
-  const resolveReverse = async (prefill?: string) => {
-    const addrs = parseAddresses(prefill ?? reverseInput)
-    if (!addrs.length) return
+  const resolveReverse = (prefill?: string) => {
+    const value = prefill ?? reverseInput
     if (prefill) setReverseInput(prefill)
-    setResolving(true)
-    setReverseResult(null)
-    setBulkResult(null)
-    setError(null)
-    setResponseMs(null)
-
-    const t0 = performance.now()
-    try {
-      if (addrs.length === 1) {
-        const res  = await fetch(`${RESOLVIO_API}/ens/v2/reverse/${addrs[0]}`)
-        const data = await res.json()
-        setResponseMs(Math.round(performance.now() - t0))
-        if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
-        setReverseResult(data)
-        setRawJson(JSON.stringify(data, null, 2))
-      } else {
-        const res  = await fetch(`${RESOLVIO_API}/ens/v2/reverse/bulk?addresses=${addrs.join(',')}`)
-        const data = await res.json()
-        setResponseMs(Math.round(performance.now() - t0))
-        if (!res.ok) throw new Error(data.message ?? `HTTP ${res.status}`)
-        setBulkResult(data)
-        setRawJson(JSON.stringify(data, null, 2))
-      }
-    } catch (e) {
-      setResponseMs(Math.round(performance.now() - t0))
-      setError(e instanceof Error ? e.message : 'Request failed')
-    } finally {
-      setResolving(false)
-    }
+    return resolve(parseAddresses(value).length > 1 ? 'bulk-reverse' : 'reverse', value)
   }
 
   const hasResult = forwardResult !== null || reverseResult !== null || bulkResult !== null || bulkForwardResult !== null
-
-  const isValidDomain = (name: string) => {
-    const dotIdx = name.lastIndexOf('.')
-    if (dotIdx < 1) return false
-    const tld  = name.slice(dotIdx + 1)
-    const body = name.slice(0, dotIdx)
-    return body.length >= 1 && body.length <= 255 && tld.length >= 1 && tld.length <= 5
-  }
-
-  // curl command for the request preview
-  const trimmedInput = input.trim()
   const curlCmd = (() => {
-    if (tab === 'reverse') {
-      const addrs = parseAddresses(reverseInput)
-      if (addrs.length > 1)
-        return `curl "${RESOLVIO_API}/ens/v2/reverse/bulk?addresses=${addrs.map(encodeURIComponent).join(',')}"`
-      return `curl "${RESOLVIO_API}/ens/v2/reverse/${encodeURIComponent(addrs[0] || '<address>')}"`
+    const operation = tab === 'reverse'
+      ? (parseAddresses(reverseInput).length > 1 ? 'bulk-reverse' : 'reverse')
+      : (forwardMode === 'bulk' ? 'bulk-profile' : 'profile')
+    const value = tab === 'reverse' ? reverseInput : forwardMode === 'bulk' ? [...bulkNames].join('\n') : input
+    try {
+      return curlCommand(requestUrl(operation, value))
+    } catch {
+      // The preview is empty until the input passes the same validation as submission.
+      return null
     }
-    if (tab === 'forward' && forwardMode === 'bulk') {
-      if (bulkNames.size === 0) return null
-      const qs = buildParams().map(p => {
-        const [k, v] = p.split('=')
-        return `${k}=${encodeURIComponent(v)}`
-      }).join('&')
-      return `curl "${RESOLVIO_API}/ens/v2/profile/bulk?names=${[...bulkNames].map(encodeURIComponent).join(',')}${qs ? '&' + qs : ''}"`
-    }
-    if (!trimmedInput) return null
-    const qs = buildParams().map(p => {
-      const [k, v] = p.split('=')
-      return `${k}=${encodeURIComponent(v)}`
-    }).join('&')
-    return `curl "${RESOLVIO_API}/ens/v2/profile/${encodeURIComponent(trimmedInput)}${qs ? '?' + qs : ''}"`
   })()
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
-    })
+    }).catch(() => setError('Could not copy. Select the text and copy it manually.'))
   }
 
   return (
@@ -325,7 +262,7 @@ export const TryItNow = () => {
         <span className={styles.label}>Playground</span>
         <h2 className={styles.heading}>Try It Now</h2>
         <p className={styles.subtitle}>
-          Test ENS resolution with real-time results. Enter any .eth name and see the magic happen.
+          Test ENS profiles and reverse lookups using the public API.
         </p>
       </div>
 
@@ -337,12 +274,14 @@ export const TryItNow = () => {
           <div className={styles.inner}>
             <div className={styles.tabs}>
               <button
+                disabled={resolving}
                 className={cx(styles.tab, tab === 'forward' && styles.tabActive)}
-                onClick={() => { setTab('forward'); setForwardResult(null); setReverseResult(null); setBulkResult(null); setBulkForwardResult(null); setInput(''); setError(null); setRawJson(''); lastResolvedName.current = null }}
+                onClick={() => { setTab('forward'); setForwardResult(null); setReverseResult(null); setBulkResult(null); setBulkForwardResult(null); setError(null); setRawJson('') }}
               >
                 <ArrowRight size={14} />{' '}Forward Resolution
               </button>
               <button
+                disabled={resolving}
                 className={cx(styles.tab, tab === 'reverse' && styles.tabActive)}
                 onClick={() => { setTab('reverse'); setForwardResult(null); setReverseResult(null); setBulkResult(null); setBulkForwardResult(null); setError(null); setRawJson('') }}
               >
@@ -362,6 +301,8 @@ export const TryItNow = () => {
                 {/* Single: text input */}
                 {forwardMode === 'single' && (
                   <input
+                    disabled={resolving}
+                    aria-label="ENS name"
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
@@ -375,6 +316,8 @@ export const TryItNow = () => {
                 {forwardMode === 'bulk' && (
                   <>
                     <input
+                    disabled={resolving}
+                    aria-label="Add ENS name to batch"
                       type="text"
                       value={bulkInput}
                       onChange={(e) => setBulkInput(e.target.value)}
@@ -392,7 +335,7 @@ export const TryItNow = () => {
                         {[...bulkNames].map(n => (
                           <span key={n} className={styles.bulkNameTag}>
                             {n}
-                            <button onClick={() => toggleBulkName(n)}>×</button>
+                            <button disabled={resolving} onClick={() => toggleBulkName(n)}>×</button>
                           </span>
                         ))}
                       </div>
@@ -406,8 +349,8 @@ export const TryItNow = () => {
                 <div className={styles.chips}>
                   {FORWARD_EXAMPLES.map((ex) => (
                     forwardMode === 'bulk'
-                      ? <button key={ex} className={cx(styles.chip, bulkNames.has(ex) && styles.chipActive)} onClick={() => toggleBulkName(ex)}>{ex}</button>
-                      : <button key={ex} className={styles.chip} onClick={() => resolveForward(ex)}>{ex}</button>
+                      ? <button disabled={resolving} key={ex} className={cx(styles.chip, bulkNames.has(ex) && styles.chipActive)} onClick={() => toggleBulkName(ex)}>{ex}</button>
+                      : <button disabled={resolving} key={ex} className={styles.chip} onClick={() => resolveForward(ex)}>{ex}</button>
                   ))}
                 </div>
 
@@ -425,6 +368,9 @@ export const TryItNow = () => {
                       </div>
                     </div>
                     <button
+                      disabled={resolving}
+                      aria-label="Bulk forward resolve"
+                      aria-pressed={forwardMode === 'bulk'}
                       onClick={() => {
                         if (forwardMode === 'bulk') {
                           setForwardMode('single')
@@ -432,7 +378,6 @@ export const TryItNow = () => {
                           setBulkInput('')
                           setBulkForwardResult(null)
                           setRawJson('')
-                          lastResolvedName.current = null
                         } else {
                           setForwardMode('bulk')
                           setForwardResult(null)
@@ -453,11 +398,14 @@ export const TryItNow = () => {
                         <Info size={13} className={styles.infoIcon} />
                         <div className={styles.tooltip}>
                           <p>Returns the server default: 12 text keys (avatar, description, com.twitter, …), 8 chains (eth, base, btc, sol, op, arb1, matic, celo), and contenthash.</p>
-                          <p>Disable to specify exactly which records you want.</p>
+                          <p>Disable to choose filters. Empty address or text filters use API defaults.</p>
                         </div>
                       </div>
                     </div>
                     <button
+                      disabled={resolving}
+                      aria-label="Use default records"
+                      aria-pressed={useDefault}
                       onClick={() => setUseDefault(!useDefault)}
                       className={cx(styles.checkbox, useDefault && styles.checkboxChecked)}
                     >
@@ -472,19 +420,22 @@ export const TryItNow = () => {
                     <div className={styles.recordSection}>
                       <div className={styles.recordRow}>
                         <button
+                          disabled={resolving}
+                          aria-label="Address filter"
+                          aria-pressed={inclAddresses}
                           onClick={() => !useDefault && setInclAddresses(!inclAddresses)}
                           className={cx(styles.checkbox, inclAddresses && !useDefault && styles.checkboxChecked)}
                         >
                           {inclAddresses && !useDefault && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>}
                         </button>
                         <div className={styles.recordRowText}>
-                          <p className={styles.checkboxLabel}>Addresses</p>
+                          <p className={styles.checkboxLabel}>Address filter</p>
                           <p className={styles.checkboxSub}>
-                            {inclAddresses && !useDefault ? `${selectedChains.size} chain${selectedChains.size !== 1 ? 's' : ''}` : 'disabled'}
+                            {inclAddresses && !useDefault && selectedChains.size ? `${selectedChains.size} chain${selectedChains.size !== 1 ? 's' : ''}` : 'API default'}
                           </p>
                         </div>
                         {inclAddresses && !useDefault && (
-                          <button className={styles.editBtn} onClick={() => setChainsModalOpen(true)}>Edit</button>
+                          <button disabled={resolving} className={styles.editBtn} onClick={() => setChainsModalOpen(true)}>Edit</button>
                         )}
                       </div>
                     </div>
@@ -493,19 +444,22 @@ export const TryItNow = () => {
                     <div className={styles.recordSection}>
                       <div className={styles.recordRow}>
                         <button
+                          disabled={resolving}
+                          aria-label="Text filter"
+                          aria-pressed={inclTexts}
                           onClick={() => !useDefault && setInclTexts(!inclTexts)}
                           className={cx(styles.checkbox, inclTexts && !useDefault && styles.checkboxChecked)}
                         >
                           {inclTexts && !useDefault && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>}
                         </button>
                         <div className={styles.recordRowText}>
-                          <p className={styles.checkboxLabel}>Text Records</p>
+                          <p className={styles.checkboxLabel}>Text filter</p>
                           <p className={styles.checkboxSub}>
-                            {inclTexts && !useDefault ? `${selectedTexts.length} key${selectedTexts.length !== 1 ? 's' : ''}` : 'disabled'}
+                            {inclTexts && !useDefault && selectedTexts.length ? `${selectedTexts.length} key${selectedTexts.length !== 1 ? 's' : ''}` : 'API default'}
                           </p>
                         </div>
                         {inclTexts && !useDefault && (
-                          <button className={styles.editBtn} onClick={() => setTextsModalOpen(true)}>Edit</button>
+                          <button disabled={resolving} className={styles.editBtn} onClick={() => setTextsModalOpen(true)}>Edit</button>
                         )}
                       </div>
                     </div>
@@ -513,14 +467,17 @@ export const TryItNow = () => {
                     {/* Content Hash */}
                     <div className={styles.recordRow}>
                       <button
-                        onClick={() => !useDefault && setInclContent(!inclContent)}
+                        disabled={resolving}
+                        aria-label="Content hash"
+                          aria-pressed={inclContent}
+                          onClick={() => !useDefault && setInclContent(!inclContent)}
                         className={cx(styles.checkbox, inclContent && !useDefault && styles.checkboxChecked)}
                       >
                         {inclContent && !useDefault && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>}
                       </button>
                       <div className={styles.recordRowText}>
                         <p className={styles.checkboxLabel}>Content Hash</p>
-                        <p className={styles.checkboxSub}>{inclContent && !useDefault ? 'enabled' : 'disabled'}</p>
+                        <p className={styles.checkboxSub}>{useDefault || inclContent ? 'enabled' : 'disabled'}</p>
                       </div>
                     </div>
 
@@ -563,6 +520,9 @@ export const TryItNow = () => {
                   One address per line, single or up to 20 addresses for bulk
                 </p>
                 <textarea
+                  disabled={resolving}
+                  aria-label="Ethereum addresses"
+                  onKeyDown={(event) => { if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) { event.preventDefault(); void resolveReverse() } }}
                   value={reverseInput}
                   onChange={(e) => setReverseInput(e.target.value)}
                   placeholder={'0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045\n0x225f137127d9067788314bc7fcc1f36746a3c3B5'}
@@ -571,10 +531,10 @@ export const TryItNow = () => {
                 />
                 <p className={styles.examplesLabel}>or try these examples</p>
                 <div className={styles.chips}>
-                  <button className={styles.chip} onClick={() => resolveReverse(REVERSE_EXAMPLES_SINGLE)}>
+                  <button disabled={resolving} className={styles.chip} onClick={() => resolveReverse(REVERSE_EXAMPLES_SINGLE)}>
                     Single address
                   </button>
-                  <button className={styles.chip} onClick={() => resolveReverse(REVERSE_EXAMPLES_BULK.join('\n'))}>
+                  <button disabled={resolving} className={styles.chip} onClick={() => resolveReverse(REVERSE_EXAMPLES_BULK.join('\n'))}>
                     Bulk (2 addresses)
                   </button>
                 </div>
@@ -646,7 +606,7 @@ export const TryItNow = () => {
                 </div>
               )}
               {error && (
-                <div className={styles.errorState}>
+                <div className={styles.errorState} role="alert">
                   <p className={styles.errorMsg}>{error}</p>
                 </div>
               )}
@@ -768,7 +728,7 @@ export const TryItNow = () => {
           <div className={styles.inner}>
             <div className={styles.jsonToggleRow}>
               <span className={styles.jsonToggleLabel}><code>{'{ }'}</code> JSON response</span>
-              <button onClick={() => setShowJson(!showJson)} className={cx(styles.toggle, showJson && styles.toggleOn)}>
+              <button aria-label="Show JSON response" aria-pressed={showJson} onClick={() => setShowJson(!showJson)} className={cx(styles.toggle, showJson && styles.toggleOn)}>
                 <span className={styles.toggleThumb} />
               </button>
             </div>
