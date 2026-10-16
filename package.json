@@ -5,10 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build --outDir dist/client && vite build --ssr src/entry-server.tsx --outDir dist/server && node scripts/prerender.mjs",
+    "build": "npm run docs:check && tsc -b && vite build --outDir dist/client && vite build --ssr src/entry-server.tsx --outDir dist/server && node scripts/prerender.mjs",
     "serve": "npm run build && vite preview --outDir dist/client",
     "preview": "vite preview --outDir dist/client",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "docs:sync": "node scripts/sync-agent-docs.mjs",
+    "docs:check": "node scripts/sync-agent-docs.mjs --check",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@fontsource/work-sans": "^5.2.8",

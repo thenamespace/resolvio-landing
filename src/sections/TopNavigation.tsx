@@ -5,7 +5,7 @@ import { Button } from '../components/ui/Button'
 import logo from '../assets/logo.svg'
 import logoWhite from '../assets/logo-w.svg'
 import { ChevronDown, FileText, Puzzle, FileJson, Sun, Moon } from 'lucide-react'
-import { useTheme } from '../contexts/ThemeContext'
+import { useTheme } from '../hooks/useTheme'
 
 interface Props {
   className?: string
@@ -36,9 +36,9 @@ const AI_ITEMS = [
   },
   {
     icon: <Puzzle size={14} />,
-    label: 'MCP server manifest',
-    desc: 'Model Context Protocol discovery file',
-    href: 'https://resolvio.xyz/.well-known/mcp.json',
+    label: 'Agent skill',
+    desc: 'Installable Resolvio instructions for agents',
+    href: '/skill.md',
     external: true,
   },
   {
@@ -52,6 +52,7 @@ const AI_ITEMS = [
 
 export const TopNavigation = ({ className, innerClassName }: Props) => {
   const [aiOpen, setAiOpen] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const { theme, toggleTheme } = useTheme()
 
@@ -80,8 +81,13 @@ export const TopNavigation = ({ className, innerClassName }: Props) => {
               <a href="/#faq" className={styles.navLink}>FAQ</a>
               <a href="/blog" className={styles.navLink}>Blog</a>
 
-              <div className={styles.dropdown} ref={dropdownRef}>
+              <div className={styles.dropdown} ref={dropdownRef} onKeyDown={(event) => {
+                if (event.key === 'Escape') { setAiOpen(false); triggerRef.current?.focus() }
+              }}>
                 <button
+                  ref={triggerRef}
+                  aria-expanded={aiOpen}
+                  aria-controls="ai-resources"
                   className={cx(styles.navLink, styles.dropdownTrigger, aiOpen && styles.dropdownTriggerActive)}
                   onClick={() => setAiOpen(v => !v)}
                 >
@@ -89,7 +95,7 @@ export const TopNavigation = ({ className, innerClassName }: Props) => {
                   <ChevronDown size={13} className={cx(styles.chevron, aiOpen && styles.chevronOpen)} />
                 </button>
                 {aiOpen && (
-                  <div className={styles.dropdownMenu}>
+                  <div id="ai-resources" className={styles.dropdownMenu}>
                     {AI_ITEMS.map(item => (
                       <a
                         key={item.label}

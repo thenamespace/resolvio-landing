@@ -1,7 +1,7 @@
 # Resolvio API — LLM Reference
 
 Base URL: `https://api.resolvio.xyz`  
-Swagger: `https://api.resolvio.xyz/api-docs`
+Documentation: https://docs.namespace.ninja/user-guide/resolvio
 
 ---
 

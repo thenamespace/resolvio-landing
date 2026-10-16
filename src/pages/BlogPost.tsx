@@ -122,7 +122,7 @@ export function BlogPost() {
           </p>
           <div className={styles.ctaActions}>
             <a href="/#playground" className={styles.ctaPrimary}>Try Playground</a>
-            <a href="https://api.resolvio.xyz/api-docs" target="_blank" rel="noreferrer" className={styles.ctaSecondary}>
+            <a href="https://docs.namespace.ninja/user-guide/resolvio" target="_blank" rel="noreferrer" className={styles.ctaSecondary}>
               API Docs →
             </a>
           </div>

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useLayoutEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { githubGist } from 'react-syntax-highlighter/dist/esm/styles/hljs'
@@ -52,11 +52,11 @@ const GROUPS: FAQGroup[] = [
       },
       {
         q: 'Can I self-host Resolvio?',
-        a: 'Yes. Resolvio is a lightweight Node.js server with no external dependencies — clone the repo, set your RPC endpoint, and run it. The hosted API at api.resolvio.xyz is optional convenience infrastructure. You are never forced to use it.',
+        a: 'Yes. Resolvio is a Node.js service that uses your Ethereum RPC endpoint — clone the repo, set your RPC endpoint, and run it. The hosted API at api.resolvio.xyz is optional convenience infrastructure. You are never forced to use it.',
       },
       {
         q: 'Do I need a wallet or an API key to use Resolvio?',
-        a: 'No wallet and no API key are required to get started. Public resolution is available immediately with no authentication. An API key is only needed if you want higher rate limits or usage analytics on the hosted REST API.',
+        a: 'No wallet and no API key are required to get started. Public resolution is available immediately with no authentication. The documented public API does not require an API key.',
       },
       {
         q: 'How does Resolvio relate to Namespace and its products?',
@@ -80,7 +80,7 @@ const GROUPS: FAQGroup[] = [
         a: (
           <>
             <p>Yes, but indirectly. Resolvio works with ENS, and ENS supports DNS-linked names via its DNS Registrar. If a traditional domain has been imported or tokenized with ENS and has a resolver set, Resolvio can resolve it.</p>
-            <p>For example, if <code>alice.com</code> has been claimed in ENS via the DNS Registrar, <code>resolve('alice.com')</code> will work. A standard DNS domain that has not been claimed in ENS will return <code>NOT_FOUND</code>.</p>
+            <p>For example, if <code>alice.com</code> has been claimed in ENS via the DNS Registrar, <code>GET /ens/v2/profile/alice.com</code> can return its ENS records. Resolvio does not provide general DNS lookups.</p>
           </>
         ),
       },
@@ -91,11 +91,11 @@ const GROUPS: FAQGroup[] = [
     items: [
       {
         q: 'Do I need an API key?',
-        a: 'No API key is required. You can start making requests immediately. An API key gives you higher rate limits and usage analytics for production apps with high resolution volume.',
+        a: 'No API key is required. You can start making requests immediately. The documented public API does not define API-key tiers or usage analytics.',
       },
       {
         q: 'Are there rate limits?',
-        a: 'Rate limits apply to the hosted REST API for unauthenticated usage. If you are building a production app with high resolution volume, an API key gives you higher rate limits and usage analytics. See the docs for details.',
+        a: 'The documented default bulk limit is 20 names or addresses per request. Hosted request-rate limits are not published; contact Namespace about your workload.',
       },
       {
         q: 'How does multi-chain resolution work?',
@@ -122,13 +122,13 @@ GET https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chains=eth,btc,sol`}</
       },
       {
         q: 'How does caching work?',
-        a: 'Resolution results are cached server-side with a TTL derived from the on-chain ttl() value set on the resolver. You can bypass the cache with the noCache query parameter if you need a fresh result.',
+        a: 'Resolution results are cached server-side with configurable forward and reverse cache durations. You can bypass the cache with the noCache=true query parameter if you need a fresh result.',
       },
       {
         q: 'How does bulk reverse resolution work?',
         a: (
           <>
-            <p>Pass a comma-separated list of addresses to the bulk reverse endpoint. Resolvio batches the lookups into a single multicall RPC request and returns results in the same order.</p>
+            <p>Pass a comma-separated list of addresses to the bulk reverse endpoint. Resolvio batches the lookups into a single multicall RPC request and returns an addresses array. Results may be deduplicated; match them by address rather than input position. The default bulk limit is 20.</p>
             <Code lang="bash">GET https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=0xd8dA…,0x225f…</Code>
           </>
         ),
@@ -147,6 +147,15 @@ const AccordionItem = ({
   onToggle: () => void
 }) => {
   const bodyRef = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const body = bodyRef.current
+    if (!body) return
+    const updateHeight = () => { body.style.maxHeight = isOpen ? `${body.scrollHeight}px` : '0px' }
+    updateHeight()
+    const observer = new ResizeObserver(updateHeight)
+    if (body.firstElementChild) observer.observe(body.firstElementChild)
+    return () => observer.disconnect()
+  }, [isOpen])
 
   return (
     <div className={cx(styles.item, isOpen && styles.itemOpen)}>
@@ -157,8 +166,8 @@ const AccordionItem = ({
       <div
         ref={bodyRef}
         className={styles.answerWrap}
-        style={{ maxHeight: isOpen ? bodyRef.current?.scrollHeight : 0 }}
         role="region"
+        inert={!isOpen}
       >
         <div className={styles.answer}>{item.a}</div>
       </div>

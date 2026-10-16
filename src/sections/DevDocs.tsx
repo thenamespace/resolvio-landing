@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Copy, Terminal, Rocket, BookOpen, Bot, FileJson, Puzzle, FileText, User, Server } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import styles from './DevDocs.module.scss'
-import { RESOLVIO_API } from '../constants/api'
+import { RESOLVIO_API, RESOLVIO_DOCS } from '../constants/api'
 
 const QUICK_STEPS = [
   {
@@ -30,8 +30,8 @@ const ENDPOINTS = [
   { label: 'Reverse resolve',          method: 'GET', path: '/ens/v2/reverse/:address' },
   { label: 'Reverse resolve to profile', method: 'GET', path: '/ens/v2/reverse/:address/profile' },
   { label: 'Bulk reverse resolution',  method: 'GET', path: '/ens/v2/reverse/bulk?addresses=0x…,0x…' },
-  { label: 'Text records',             method: 'GET', path: '/ens/v2/texts/:name?texts=avatar,com.twitter' },
-  { label: 'Address records',          method: 'GET', path: '/ens/v2/addresses/:name?addresses=eth,base' },
+  { label: 'Text records',             method: 'GET', path: '/ens/v2/texts/:name?keys=avatar,com.twitter' },
+  { label: 'Address records',          method: 'GET', path: '/ens/v2/addresses/:name?chains=eth,base' },
   { label: 'Content hash',             method: 'GET', path: '/ens/v2/contenthash/:name' },
 ]
 
@@ -56,9 +56,9 @@ const AGENT_RESOURCES = [
   },
   {
     icon: <Puzzle size={14} />,
-    label: 'MCP server manifest',
-    desc: 'Model Context Protocol discovery file for MCP-compatible agents',
-    url: 'https://resolvio.xyz/.well-known/mcp.json',
+    label: 'Agent skill',
+    desc: 'Resolvio instructions and API references for coding agents',
+    url: 'https://resolvio.xyz/skill.md',
   },
   {
     icon: <FileJson size={14} />,
@@ -68,8 +68,8 @@ const AGENT_RESOURCES = [
   },
 ]
 
-// Skill.md fetched at runtime so the copy always reflects the live file
-const SKILL_URL = '/Skill.md'
+// Fetch the skill at runtime so copying uses the served version.
+const SKILL_URL = '/skill.md'
 
 const SELF_HOST_STEPS = [
   {
@@ -112,41 +112,65 @@ export const DevDocs = () => {
   const [copiedResource, setCopiedResource] = useState<number | null>(null)
   const [skillContent, setSkillContent] = useState<string | null>(null)
   const [copiedSkill, setCopiedSkill] = useState(false)
+  const [skillError, setSkillError] = useState<string | null>(null)
+  const [copyError, setCopyError] = useState<string | null>(null)
+
+  const copy = async (text: string, onCopied: () => void) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopyError(null)
+      onCopied()
+    } catch {
+      setCopyError('Could not copy. Select the text and copy it manually.')
+    }
+  }
 
   const copyMain = () => {
-    navigator.clipboard.writeText(CURL_COMMAND)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
+    void copy(CURL_COMMAND, () => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    })
   }
 
   const copyEndpoint = (idx: number, path: string) => {
-    navigator.clipboard.writeText(path)
-    setCopiedIdx(idx)
-    setTimeout(() => setCopiedIdx(null), 1500)
+    void copy(path, () => {
+      setCopiedIdx(idx)
+      setTimeout(() => setCopiedIdx(null), 1500)
+    })
   }
 
   const copyResource = (idx: number, url: string) => {
-    navigator.clipboard.writeText(url)
-    setCopiedResource(idx)
-    setTimeout(() => setCopiedResource(null), 1500)
+    void copy(url, () => {
+      setCopiedResource(idx)
+      setTimeout(() => setCopiedResource(null), 1500)
+    })
   }
 
   const handleAgentTab = () => {
     setTab('agents')
     if (!skillContent) {
-      fetch(SKILL_URL).then(r => r.text()).then(setSkillContent)
+      setSkillError(null)
+      fetch(SKILL_URL)
+        .then(response => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`)
+          return response.text()
+        })
+        .then(setSkillContent)
+        .catch(() => setSkillError('Could not load the skill. Reopen For Agents to retry, or use the download link.'))
     }
   }
 
   const copySkill = () => {
     if (!skillContent) return
-    navigator.clipboard.writeText(skillContent)
-    setCopiedSkill(true)
-    setTimeout(() => setCopiedSkill(false), 1500)
+    void copy(skillContent, () => {
+      setCopiedSkill(true)
+      setTimeout(() => setCopiedSkill(false), 1500)
+    })
   }
 
   return (
     <section id="docs" className={styles.outer}>
+      {copyError && <p role="alert">{copyError}</p>}
       {/* Header */}
       <div className={styles.header}>
         <span className={styles.label}>Docs</span>
@@ -220,7 +244,7 @@ export const DevDocs = () => {
                 <div className={styles.sectionHead}>
                   <div className={styles.iconCircle}><BookOpen size={15} /></div>
                   <h3 className={styles.sectionTitle}>API Endpoints</h3>
-                  <a href={`${RESOLVIO_API}/api-docs`} target="_blank" rel="noreferrer">
+                  <a href={RESOLVIO_DOCS} target="_blank" rel="noreferrer">
                     <Button size="sm" className={styles.docsBtn}>View Full API Documentation</Button>
                   </a>
                 </div>
@@ -259,7 +283,7 @@ export const DevDocs = () => {
                   <h3 className={styles.sectionTitle}>Discovery Resources</h3>
                 </div>
                 <p className={styles.agentIntro}>
-                  Use any of these URLs with your agents. The plugin manifest & OpenAPI spec can be used directly by most agent frameworks to auto-configure tool calls.
+                  Give your agent the skill or plain-text references. Use the OpenAPI JSON when your tooling supports importing an API specification.
                 </p>
                 <div className={styles.resourceList}>
                   {AGENT_RESOURCES.map((r, i) => (
@@ -287,13 +311,13 @@ export const DevDocs = () => {
               <div className={styles.inner}>
                 <div className={styles.sectionHead}>
                   <div className={styles.iconCircle}><Bot size={15} /></div>
-                  <h3 className={styles.sectionTitle}>Tool Definitions — Skill.md</h3>
+                  <h3 className={styles.sectionTitle}>Agent skill</h3>
                   <a href={SKILL_URL} download className={styles.docsBtn}>
-                    <Button size="sm">Download Skill.md</Button>
+                    <Button size="sm">Download skill.md</Button>
                   </a>
                 </div>
                 <p className={styles.agentIntro}>
-                  Ready-made tool definitions for Anthropic and OpenAI function-calling formats. Copy and paste directly into your agent system prompt or tool registry.
+                  Install with npx skills add thenamespace/skills --skill resolvio, or copy the instructions below into your agent context.
                 </p>
                 <div className={styles.skillBlock}>
                   <div className={styles.terminalBar}>
@@ -307,7 +331,7 @@ export const DevDocs = () => {
                   <div className={styles.skillBody}>
                     {skillContent
                       ? <pre><code>{skillContent}</code></pre>
-                      : <span className={styles.skillLoading}>Loading…</span>
+                      : <span className={styles.skillLoading} role={skillError ? 'alert' : 'status'}>{skillError ?? 'Loading…'}</span>
                     }
                   </div>
                 </div>

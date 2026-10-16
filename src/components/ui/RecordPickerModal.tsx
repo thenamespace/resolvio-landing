@@ -29,8 +29,11 @@ export const RecordPickerModal = ({ isOpen, onClose, title, items, selected, onC
 
   useEffect(() => {
     if (isOpen) {
-      setSearch('')
-      setTimeout(() => inputRef.current?.focus(), 50)
+      const timer = setTimeout(() => {
+        setSearch('')
+        inputRef.current?.focus()
+      }, 50)
+      return () => clearTimeout(timer)
     }
   }, [isOpen])
 
@@ -98,7 +101,7 @@ export const RecordPickerModal = ({ isOpen, onClose, title, items, selected, onC
 
   return (
     <div className={styles.backdrop} ref={backdropRef} onClick={e => { if (e.target === backdropRef.current) onClose() }}>
-      <div className={styles.modal}>
+      <div className={styles.modal} role="dialog" aria-modal="true" aria-label={title}>
         {/* Header */}
         <div className={styles.header}>
           <p className={styles.headerTitle}>{title}</p>
@@ -106,7 +109,7 @@ export const RecordPickerModal = ({ isOpen, onClose, title, items, selected, onC
             <span className={styles.count}>{selected.length} selected</span>
             <button className={styles.actionBtn} onClick={selectAll}>All</button>
             <button className={styles.actionBtn} onClick={clearAll}>Clear</button>
-            <button className={styles.closeBtn} onClick={onClose}><X size={16} /></button>
+            <button aria-label="Close record picker" className={styles.closeBtn} onClick={onClose}><X size={16} /></button>
           </div>
         </div>
 

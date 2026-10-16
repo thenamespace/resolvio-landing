@@ -20,9 +20,9 @@ The <code>name()</code> function on that reverse record returns the user's claim
 To have a primary ENS name, a wallet owner must explicitly set it. In the ENS app (<code>app.ens.domains</code>):
 
 1. Connect the wallet whose address you want to map
-2. Navigate to "My Account" → "Primary Name"
-3. Select the ENS name you own and want as your primary
-4. Confirm the transaction (this writes to the .addr.reverse record)
+2. Open the primary name settings
+3. Select an ENS name that resolves to your address
+4. Confirm the transaction to set the reverse record
 
 For smart contracts, the reverse record can be set programmatically via the <code>ReverseRegistrar</code> contract — useful for protocols that want their contract addresses to display a human-readable name.
 
@@ -30,34 +30,38 @@ For smart contracts, the reverse record can be set programmatically via the <cod
 
 ```bash
 # Single address reverse resolution
-curl https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+curl 'https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
 ```
 
 ```json
 {
   "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
   "name": "vitalik.eth",
-  "hasReverseRecord": true,
+  "hasReverseRecord": true
 }
 ```
 
-When an address has no primary ENS name set, <code>name</code> is <code>null</code> and <code>displayName</code> is a truncated version of the address (e.g. <code>0xd8dA...6045</code>).
+When no verified primary name is found, `hasReverseRecord` is false and `name` is omitted. The single reverse endpoint does not return `displayName` or an avatar.
+
+To fetch profile data too, use `/ens/v2/reverse/:address/profile`. It adds `avatar`, `displayName`, `description`, and a nested `profile`. The display name comes from the `name` text record. If no verified name exists, those fields and `name` are null.
 
 ## Bulk Reverse Resolution
 
 For lists of addresses — transaction feeds, leaderboards, voter lists — use the bulk endpoint:
 
 ```bash
-curl "https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=0xd8dA...,0xAb58...,0x225f..."
+curl "https://api.resolvio.xyz/ens/v2/reverse/bulk?addresses=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045,0x225f137127d9067788314bc7fcc1f36746a3c3B5"
 ```
 
-All addresses are resolved in a single request using onchain multicall batching. Results are returned in input order.
+The response is an object containing an `addresses` array of reverse records. The default limit is 20 addresses. Inputs are deduplicated case-insensitively, so match results by address rather than position.
 
 ## Display Best Practices
 
-- Always show the <code>displayName</code> field — it gracefully falls back to a truncated address when no ENS name is set
-- Show the avatar if available — it significantly improves perceived identity
-- Cache reverse resolution results on the client for the session; ENS primary names rarely change
+- Show the verified `name` when present and format the original address as a fallback. If you use the reverse-profile endpoint, its `displayName` may also be null.
+- Show the avatar if available from the reverse-profile endpoint.
+- Account for server-side caching before adding a client cache. Reverse lookups default to a thirty-minute server cache, configurable by the operator.
 - For payments, always confirm the resolved address before sending — never send funds based on a displayed name without re-verifying the forward resolution
 
-> Security note: always verify forward resolution before using a name for payment. The Resolvio API performs this check automatically — if forward and reverse don't match, the name field is null.
+> Resolvio forward-verifies primary names. When verification fails, the single reverse endpoint omits `name`. Verification does not guarantee freshness: cached data can be stale, and `noCache=true` requests may be subject to a refresh cooldown.
+
+See the [reverse lookup reference](https://docs.namespace.ninja/api-reference/resolvio/reverse-resolve-single).

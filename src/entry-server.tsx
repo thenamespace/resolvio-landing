@@ -19,8 +19,8 @@ export function render(url: string) {
 export function getPageMeta(url: string): { title: string; description: string; canonical: string } {
   if (url === '/') {
     return {
-      title: 'Resolvio - Resolve Web3 Identities',
-      description: 'Resolvio provides a complete identity resolution service through a single API. Built for every chain, wallet, app, and AI agent.',
+      title: 'Resolvio | ENS records over HTTP',
+      description: 'Resolve ENS profiles, wallet addresses, and text records with a public HTTP API by Namespace.',
       canonical: 'https://resolvio.xyz/',
     }
   }
