@@ -1,124 +1,36 @@
 # Resolvio
 
-> Resolvio is a high-performance Web3 name resolution API. It resolves ENS names to addresses, text records, content hashes, and reverse-resolves Ethereum addresses back to ENS names, all in a single REST call.
+Resolve ENS profiles, cryptocurrency addresses, text records, and content hashes over HTTP. Reverse-resolve Ethereum addresses to verified ENS primary names. No API key is required for public reads.
 
-Resolvio is part of the Namespace ENS infrastructure suite. It is the unified resolution layer for names, addresses, and identities across Web3.
+Base URL: https://api.resolvio.xyz
+Documentation: https://docs.namespace.ninja/user-guide/resolvio
+API reference: https://docs.namespace.ninja/api-reference/resolvio/get-ens-profile
+Full machine-readable reference: https://resolvio.xyz/llms-full.txt
+Agent skill: https://resolvio.xyz/skill.md
+OpenAPI JSON: https://api.resolvio.xyz/api-docs.json
 
-## Base URL
+## Choose an endpoint
 
-https://api.resolvio.xyz
+- Profile: `GET /ens/v2/profile/:name?texts=avatar&addresses=eth&contenthash=false`
+- Address records: `GET /ens/v2/addresses/:name?chains=eth,base`
+- Text records: `GET /ens/v2/texts/:name?keys=avatar,description`
+- Content hash: `GET /ens/v2/contenthash/:name`
+- Reverse lookup: `GET /ens/v2/reverse/:address`
+- Reverse profile: `GET /ens/v2/reverse/:address/profile`
+- Bulk profiles: `GET /ens/v2/profile/bulk?names=vitalik.eth,nick.eth`
+- Bulk reverse: `GET /ens/v2/reverse/bulk?addresses=...`
+- Supported chains: `GET /ens/v2/chains`
 
-## Authentication
+## Parse responses
 
-No API key required. All endpoints are publicly accessible.
+Profile `texts` and `addresses` are arrays. Text records contain `key`, `exists`, and optional `value`. Address records contain `coin`, optional `chain`, `exists`, and optional `value`. Contenthash is `{ exists, value? }`, not a string. Match by key or coin type, and check `exists` before reading values.
 
-## Capabilities
+Bulk profiles return an array. Bulk reverse returns an object with an `addresses` array. Single reverse results have `hasReverseRecord` and an optional `name`. Reverse profile results instead use explicit null fields when there is no verified primary name.
 
-- Resolve full profile (addresses + texts + contenthash) for any ENS name
-- Resolve individual text records (avatar, email, description, socials, and custom keys)
-- Resolve cryptocurrency addresses for 100+ chains (ENSIP-9)
-- Resolve IPFS, IPNS, Arweave, and Swarm content hashes
-- Reverse resolve an Ethereum address to its primary ENS name
-- Reverse resolve an address to its verified ENS profile with avatar, display name, and description
-- Bulk forward resolution:resolve multiple ENS names in a single call
-- Bulk reverse resolution:resolve multiple Ethereum addresses in a single call
-- List all supported chains with names and coinType values
-- Cache control:per-name invalidation and forced fresh resolution
+## Parameters and defaults
 
-## Key Endpoints
+Use `addresses` for profiles, `chains` or `coins` for the addresses endpoint, and `keys` for the texts endpoint. There is no `useDefault` API parameter. Omitted profile selections use server defaults; empty lists do not disable record groups. Set `contenthash` explicitly.
 
-### Resolve full profile
-GET /ens/v2/profile/{name}
+The default bulk cap is 20. Default cache durations are 300 seconds forward and 1800 seconds reverse, configured by the operator. They do not come from an onchain TTL. `noCache=true` requests a refresh but may reuse recent entries where a refresh cooldown is enabled. Do not treat it as a guarantee of an uncached read.
 
-Returns addresses, text records, and contenthash for an ENS name.
-
-Query parameters:
-- `texts`:comma-separated text keys to fetch (e.g. `avatar,email,description`)
-- `chains`:comma-separated chain slugs to fetch addresses for (e.g. `eth,btc,base`)
-- `useDefault`:set to `true` to use sensible defaults for texts and chains
-- `noCache`:set to `true` to bypass cache and force fresh resolution
-
-Example:
-```
-GET https://api.resolvio.xyz/ens/v2/profile/vitalik.eth?useDefault=true
-```
-
-### Resolve text records only
-GET /ens/v2/texts/{name}
-
-### Resolve addresses only
-GET /ens/v2/addresses/{name}
-
-### Resolve content hash only
-GET /ens/v2/contenthash/{name}
-
-### Reverse resolve (address → name)
-GET /ens/v2/reverse/{address}
-
-Returns the primary ENS name for an Ethereum address.
-
-Example:
-```
-GET https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
-```
-
-### Reverse resolve to profile (address → verified ENS profile)
-GET /ens/v2/reverse/{address}/profile
-
-Reverse-resolves an address to its verified ENS primary name, then returns the full profile plus convenience fields (avatar, displayName, description). Always returns 200 for valid addresses. Same query params as /profile/{name}.
-
-Example:
-```
-GET https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045/profile?texts=avatar,name,description
-```
-
-### Bulk forward resolution
-GET /ens/v2/profile/bulk?names={name1},{name2},...
-
-Resolves multiple ENS names in a single request. Returns an array of profile results.
-
-Example:
-```
-GET https://api.resolvio.xyz/ens/v2/profile/bulk?names=vitalik.eth,nick.eth
-```
-
-### Bulk reverse resolution
-GET /ens/v2/reverse/bulk?addresses={addr1},{addr2},...
-
-Resolves multiple Ethereum addresses to ENS names in a single request.
-
-### List supported chains
-GET /ens/v2/chains
-
-Returns all supported blockchain networks with their names and ENSIP-9 coinType values.
-
-### Invalidate cache
-DELETE /ens/v2/cache/{name}
-
-Invalidates the cached resolution for a specific ENS name.
-
-## Response format
-
-All endpoints return JSON. Profile responses include:
-```json
-{
-  "name": "vitalik.eth",
-  "addresses": {
-    "eth": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
-  },
-  "texts": {
-    "avatar": "https://...",
-    "email": "...",
-    "description": "..."
-  },
-  "contenthash": "ipfs://..."
-}
-```
-
-## Full API Reference
-
-Full LLM reference (all endpoints, parameters, error codes): https://resolvio.xyz/llms-full.txt
-OpenAPI spec: https://api.resolvio.xyz/api-docs.json
-Interactive docs: https://api.resolvio.xyz/api-docs
-Agent skill definitions (Claude + OpenAI formats): https://resolvio.xyz/Skill.md
-MCP server manifest: https://resolvio.xyz/.well-known/mcp.json
+For complete parameters, missing-record behavior, and errors, read the full reference above.

@@ -3,7 +3,7 @@ import ensMark from '../assets/ens-mark-Blue.svg'
 import logo from '../assets/logo.svg'
 import logoWhite from '../assets/logo-w.svg'
 import styles from './Footer.module.scss'
-import { useTheme } from '../contexts/ThemeContext'
+import { useTheme } from '../hooks/useTheme'
 
 const PRODUCT_LINKS = [
   { label: 'Resolvio Playground',     href: '#playground' },
@@ -17,7 +17,7 @@ const PRODUCT_LINKS = [
 
 const RESOURCE_LINKS = [
   { label: 'Blog',           href: '/blog'                                      },
-  { label: 'Resolvio Docs',  href: 'https://api.resolvio.xyz/api-docs'         },
+  { label: 'Resolvio Docs',  href: 'https://docs.namespace.ninja/user-guide/resolvio'         },
   { label: 'Resolvio Repo',  href: 'https://github.com/thenamespace/resolvio'  },
   { label: 'Subname Docs',   href: 'https://docs.namespace.ninja'              },
 ]

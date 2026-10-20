@@ -8,7 +8,7 @@
       "headers": [
         {
           "key": "Link",
-          "value": "<https://api.resolvio.xyz/api-docs.json>; rel=\"service-desc\", <https://api.resolvio.xyz/api-docs>; rel=\"service-doc\", </.well-known/mcp.json>; rel=\"describedby\""
+          "value": "<https://api.resolvio.xyz/api-docs.json>; rel=\"service-desc\", <https://docs.namespace.ninja/user-guide/resolvio>; rel=\"service-doc\""
         }
       ]
     },
@@ -23,11 +23,26 @@
     }
   ],
   "redirects": [
-    { "source": "/Skill.md", "destination": "/skill.md", "permanent": true },
-    { "source": "/SKILL.MD", "destination": "/skill.md", "permanent": true },
-    { "source": "/SKILL.md", "destination": "/skill.md", "permanent": true }
+    {
+      "source": "/Skill.md",
+      "destination": "/skill.md",
+      "permanent": true
+    },
+    {
+      "source": "/SKILL.MD",
+      "destination": "/skill.md",
+      "permanent": true
+    },
+    {
+      "source": "/SKILL.md",
+      "destination": "/skill.md",
+      "permanent": true
+    }
   ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }

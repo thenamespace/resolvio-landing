@@ -1,359 +1,135 @@
-# Resolvio API Reference
+# Resolvio API reference
 
-**Base URL**: `https://api.resolvio.xyz`  
-**Swagger UI**: `https://api.resolvio.xyz/api-docs`  
-**OpenAPI JSON**: `https://api.resolvio.xyz/api-docs.json`
+Base URL: https://api.resolvio.xyz
+Documentation: https://docs.namespace.ninja/user-guide/resolvio
+Endpoint reference: https://docs.namespace.ninja/api-reference/resolvio/get-ens-profile
+OpenAPI JSON: https://api.resolvio.xyz/api-docs.json
 
----
+Public reads require no API key. Resolvio resolves ENS names, ENS-linked DNS names, and onchain or offchain ENS subnames. It is not a general DNS resolver.
 
-## Forward Resolution
+## Response conventions
 
-### GET /ens/v2/profile/:name
+Texts and addresses are arrays, not objects indexed by key or chain. Match texts by `key` and addresses by `coin` or `chain`. Check `exists` before using `value`; missing records omit `value`. Contenthash is an object with `exists` and an optional `value`, not a string.
 
-Full ENS profile in a single RPC call. Default response includes 12 text keys, 8 chains, and contenthash.
-
-**Path param**: `name` — ENS name (e.g. `vitalik.eth`)
-
-**Query params**:
-
-| Param         | Type    | Description                                                         |
-| ------------- | ------- | ------------------------------------------------------------------- |
-| `texts`       | string  | Comma-separated text record keys. Omit for defaults.                |
-| `addresses`   | string  | Comma-separated chain names or coinType numbers. Omit for defaults. |
-| `contenthash` | boolean | Include contenthash (default: `true`)                               |
-| `noCache`     | boolean | Bypass in-memory cache                                              |
-
-**Response**:
-
-```json
-{
-  "name": "vitalik.eth",
-  "resolver": "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63",
-  "texts": [
-    { "key": "avatar", "value": "https://...", "exists": true },
-    { "key": "com.twitter", "exists": false }
-  ],
-  "addresses": [
-    {
-      "coin": 60,
-      "chain": "eth",
-      "value": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
-      "exists": true
-    },
-    { "coin": 0, "chain": "btc", "exists": false }
-  ],
-  "contenthash": { "value": "ipfs://bafy...", "exists": true }
-}
-```
-
-> `exists: false` records are always included. When `exists` is `false`, `value` is absent.
-
----
-
-### GET /ens/v2/profile/bulk
-
-Resolve profiles for multiple ENS names in parallel. Same query params as `/profile/:name`, applied uniformly to all names.
-
-**Query params**:
-
-| Param         | Type    | Required | Description                        |
-| ------------- | ------- | -------- | ---------------------------------- |
-| `names`       | string  | ✓        | Comma-separated ENS names. Max 20. |
-| `texts`       | string  |          | Same as single profile             |
-| `addresses`   | string  |          | Same as single profile             |
-| `contenthash` | boolean |          | Same as single profile             |
-| `noCache`     | boolean |          | Bypass cache                       |
-
-**Response**: array of profile objects (same shape as single profile).
-
----
-
-### GET /ens/v2/texts/:name
-
-Fetch specific text records for an ENS name.
-
-**Path param**: `name`
-
-**Query params**:
-
-| Param     | Type    | Required | Description                      |
-| --------- | ------- | -------- | -------------------------------- |
-| `keys`    | string  | ✓        | Comma-separated text record keys |
-| `noCache` | boolean |          | Bypass cache                     |
-
-**Response**:
+Example profile response recorded from the public API on 2026-10-13 for `?texts=avatar&addresses=eth&contenthash=false`. Records may change:
 
 ```json
 {
   "name": "vitalik.eth",
   "texts": [
-    { "key": "avatar", "value": "https://...", "exists": true },
-    { "key": "com.twitter", "exists": false }
-  ]
-}
-```
-
-**Common text keys**:
-
-| Key            | Description         |
-| -------------- | ------------------- |
-| `avatar`       | Profile picture URL |
-| `name`         | Display name        |
-| `description`  | Bio                 |
-| `url`          | Website             |
-| `email`        | Email address       |
-| `location`     | Location            |
-| `com.twitter`  | Twitter/X handle    |
-| `com.github`   | GitHub username     |
-| `com.discord`  | Discord handle      |
-| `org.telegram` | Telegram username   |
-| `com.youtube`  | YouTube channel     |
-
----
-
-### GET /ens/v2/addresses/:name
-
-Fetch cryptocurrency addresses for an ENS name. Use `chains` **or** `coins`, not both.
-
-**Path param**: `name`
-
-**Query params**:
-
-| Param     | Type    | Description                                             |
-| --------- | ------- | ------------------------------------------------------- |
-| `chains`  | string  | Comma-separated chain names (e.g. `eth,base,btc`)       |
-| `coins`   | string  | Comma-separated coinType numbers (e.g. `60,2147492101`) |
-| `noCache` | boolean | Bypass cache                                            |
-
-**Response**:
-
-```json
-{
-  "name": "vitalik.eth",
+    { "key": "avatar", "value": "https://euc.li/vitalik.eth", "exists": true }
+  ],
   "addresses": [
-    {
-      "coin": 60,
-      "chain": "eth",
-      "value": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
-      "exists": true
-    },
-    { "coin": 0, "chain": "btc", "exists": false }
-  ]
+    { "coin": 60, "chain": "eth", "value": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045", "exists": true }
+  ],
+  "contenthash": { "exists": false },
+  "resolver": "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63"
 }
 ```
 
-**Common chains**:
+A missing text record has the shape `{ "key": "requested-key", "exists": false }`. A missing address has `coin`, optional `chain`, and `exists: false`.
 
-| Chain name | CoinType     | Network      |
-| ---------- | ------------ | ------------ |
-| `eth`      | `60`         | Ethereum     |
-| `btc`      | `0`          | Bitcoin      |
-| `sol`      | `501`        | Solana       |
-| `base`     | `2147492101` | Base         |
-| `op`       | `2147483658` | Optimism     |
-| `arb1`     | `2147525809` | Arbitrum One |
-| `matic`    | `2147483785` | Polygon      |
+## GET /ens/v2/profile/:name
 
----
+Returns `{ name, texts, addresses, contenthash, resolver? }`.
 
-### GET /ens/v2/contenthash/:name
+| Parameter | Meaning |
+| --- | --- |
+| `texts` | Comma-separated text keys. Empty or omitted uses the standard 12 keys. |
+| `addresses` | Comma-separated chain names or coin types. Use this parameter for profile requests. |
+| `contenthash` | Whether to include the content hash. Default in current source: `true`. Set explicitly when you need a particular behavior. |
+| `noCache` | Request a cache refresh, subject to the deployment's refresh cooldown. |
 
-Resolve the content hash for an ENS name.
+With no record-selection parameters, the profile uses 12 text keys and 8 chains: `eth,base,arb1,op,matic,celo,btc,sol`. With explicit selection parameters but no `addresses`, addresses default to ETH. An empty text or address list does not exclude that group. `useDefault` is not an API parameter; `chains` belongs to the addresses endpoint.
 
-**Path param**: `name`
-
-**Query params**: `noCache` (boolean, optional)
-
-**Response**:
-
-```json
-{ "value": "ipfs://bafy...", "exists": true }
+```bash
+curl 'https://api.resolvio.xyz/ens/v2/profile/vitalik.eth?texts=avatar&addresses=eth&contenthash=false'
 ```
 
-or
+## GET /ens/v2/profile/bulk
 
-```json
-{ "exists": false }
+Required query: `names`, a comma-separated list. Accepts the same selection parameters as a single profile. Returns a top-level array of profile objects. The default limit is 20 names, configurable by the operator. One failed lookup can fail the entire request; it is not a per-name error envelope.
+
+```bash
+curl 'https://api.resolvio.xyz/ens/v2/profile/bulk?names=vitalik.eth,nick.eth&texts=avatar&addresses=eth&contenthash=false'
 ```
 
----
+## GET /ens/v2/addresses/:name
 
-### GET /ens/v2/chains
+Use `chains` for comma-separated chain names, or `coins` for numeric coin types. Do not combine them. Omit both for ETH. Supports `noCache`.
 
-Returns all supported chains with their name and coinType.
+Returns `{ name, addresses: [{ coin, chain?, exists, value? }] }`.
 
-**Response**:
-
-```json
-[
-  { "name": "eth", "coin": 60 },
-  { "name": "btc", "coin": 0 },
-  ...
-]
+```bash
+curl 'https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chains=eth,base,btc'
 ```
 
-Use `name` in `?chains=` params and `coin` in `?coins=` params — they refer to the same chain.
+## GET /ens/v2/texts/:name
 
----
+Supply at least one text key in `keys`. There is no default key list on this endpoint. Supports `noCache`.
 
-### DELETE /ens/v2/cache/:name
+Returns `{ name, texts: [{ key, exists, value? }] }`.
 
-Clear cached records for an ENS name. Returns `204 No Content`.
-
-**Path param**: `name`
-
-**Query params**:
-
-| Param  | Type   | Description                                                       |
-| ------ | ------ | ----------------------------------------------------------------- |
-| `type` | string | `texts` \| `addresses` \| `contenthash` \| `all` (default: `all`) |
-
----
-
-## Reverse Resolution
-
-### GET /ens/v2/reverse/:address
-
-Resolve a single Ethereum address to its primary ENS name.
-
-**Path param**: `address` — checksummed or lowercase Ethereum address
-
-**Query params**: `noCache` (boolean, optional)
-
-**Response (name found)**:
-
-```json
-{
-  "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
-  "hasReverseRecord": true,
-  "name": "vitalik.eth"
-}
+```bash
+curl 'https://api.resolvio.xyz/ens/v2/texts/vitalik.eth?keys=avatar,description,com.twitter'
 ```
 
-**Response (no name set)**:
+## GET /ens/v2/contenthash/:name
 
-```json
-{
-  "address": "0x225f137127d9067788314bc7fcc1f36746a3c3B5",
-  "hasReverseRecord": false
-}
+Supports `noCache`. Returns `{ value, exists: true }` or `{ exists: false }`. The value contains the protocol prefix, such as `ipfs://`.
+
+## GET /ens/v2/chains
+
+Returns an array of supported chain descriptors with `name`, `coin`, and `label`. Use `name` with `chains` on the addresses endpoint, or with `addresses` on a profile request. Use `coin` with `coins` on the addresses endpoint. Fetch this list rather than inventing aliases.
+
+## GET /ens/v2/reverse/:address
+
+Accepts an Ethereum address and optional `noCache`. Returns `{ address, hasReverseRecord, name? }`. A primary name is forward-verified. When there is no verified name, `hasReverseRecord` is false and `name` is omitted.
+
+```bash
+curl 'https://api.resolvio.xyz/ens/v2/reverse/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
 ```
 
----
+## GET /ens/v2/reverse/bulk
 
-### GET /ens/v2/reverse/:address/profile
+Required query: `addresses`, a comma-separated list of Ethereum addresses. Supports `noCache`. Default limit: 20 addresses. Returns `{ addresses: [{ address, hasReverseRecord, name? }] }`.
 
-Reverse-resolve an address to its verified ENS primary name, then return the full profile plus convenience fields (`avatar`, `displayName`, `description`). Always returns HTTP 200 for valid addresses.
+Input addresses are deduplicated case-insensitively. Match results by the normalized address, not the original array index. No avatar or display-name fields are returned by this endpoint.
 
-**Path param**: `address` — Ethereum address
+## GET /ens/v2/reverse/:address/profile
 
-**Query params** (same as `/profile/:name`):
+Reverse-resolves an Ethereum address to a verified primary name, then fetches the profile. Accepts `texts`, `addresses`, `contenthash`, and `noCache` as on the profile endpoint.
 
-| Param         | Type    | Description                                                         |
-| ------------- | ------- | ------------------------------------------------------------------- |
-| `texts`       | string  | Comma-separated text record keys. Omit for defaults.                |
-| `addresses`   | string  | Comma-separated chain names or coinType numbers. Omit for defaults. |
-| `contenthash` | boolean | Include contenthash (default: `true`)                               |
-| `noCache`     | boolean | Bypass cache for both reverse and forward lookups                   |
+Returns `{ address, hasReverseRecord, name, avatar, displayName, description, profile }`. The nested profile uses the same arrays as a forward profile. `displayName` comes from the `name` text record; include it in a custom `texts` selection. Convenience fields are null when their records are unavailable.
 
-**Response (verified reverse record exists)**:
+When no verified reverse name exists, returns HTTP 200 with `hasReverseRecord: false` and `name`, `avatar`, `displayName`, `description`, and `profile` all null. Validation and upstream errors can still return non-200 responses.
 
-```json
-{
-  "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
-  "hasReverseRecord": true,
-  "name": "vitalik.eth",
-  "avatar": "https://...",
-  "displayName": "Vitalik",
-  "description": "Ethereum founder",
-  "profile": {
-    "name": "vitalik.eth",
-    "resolver": "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63",
-    "texts": [
-      { "key": "avatar", "value": "https://...", "exists": true },
-      { "key": "name", "value": "Vitalik", "exists": true }
-    ],
-    "addresses": [
-      { "coin": 60, "chain": "eth", "value": "0xd8dA...", "exists": true }
-    ],
-    "contenthash": { "exists": false }
-  }
-}
-```
+## DELETE /ens/v2/cache/:name
 
-**Response (no verified reverse record)**:
+Requests invalidation of cached records for a name. Optional `type`: `texts`, `addresses`, `contenthash`, or `all`. Default: `all`. Returns HTTP 204 with no body. Current source may invalidate additional record groups for `contenthash`.
 
-```json
-{
-  "address": "0x225f137127d9067788314bc7fcc1f36746a3c3B5",
-  "hasReverseRecord": false,
-  "name": null,
-  "avatar": null,
-  "displayName": null,
-  "description": null,
-  "profile": null
-}
-```
+Use deliberately after a record update, not before routine reads. Deployments with the refresh cooldown may ignore repeated clears during that interval, still returning 204.
 
-When `hasReverseRecord` is `false`, the forward resolver is not called and all profile fields are `null`. This includes reverse records that fail forward verification. `displayName` is populated from the ENS `name` text record; include `name` in a custom `texts=` selection when you need it.
+## Caching and freshness
 
----
+Caches are held in application memory. Durations come from server configuration, not an ENS resolver's `ttl()` value.
 
-### GET /ens/v2/reverse/bulk
+| Setting | Source default |
+| --- | --- |
+| `FORWARD_RESOLVE_CACHE_EXPIRY` | 300 seconds |
+| `REVERSE_RESOLVE_CACHE_EXPIRY` | 1800 seconds |
+| `MAX_BULK_PROFILE_REQUEST` | 20 names |
+| `MAX_BULK_REVERSE_REQUEST` | 20 addresses |
+| `MIN_CACHE_REFRESH_INTERVAL` | 5 seconds in current main |
 
-Resolve multiple Ethereum addresses to their primary ENS names in a single batched RPC call.
+Operators can override these values. The refresh cooldown was added to source on 2026-10-12; deployed instances may run different versions. Where enabled, `noCache=true` can reuse entries younger than the cooldown. It does not guarantee an uncached lookup or immediate consistency after a write. Do not assume payment-time freshness from this flag alone.
 
-**Query params**:
+## Errors and limits
 
-| Param       | Type    | Required | Description                                                              |
-| ----------- | ------- | -------- | ------------------------------------------------------------------------ |
-| `addresses` | string  | ✓        | Comma-separated Ethereum addresses. Max 20. Duplicates are deduplicated. |
-| `noCache`   | boolean |          | Bypass cache                                                             |
+Check the HTTP status before consuming a result. HTTP 400 can indicate invalid inputs, unsupported chains, or a bulk request above the configured limit. A missing record is a successful empty result, not automatically a 404. Upstream failures can produce server errors.
 
-**Response**:
+No numeric hosted request-rate quota is published here. Source-level cooldowns are not request rate limits. If the hosted gateway returns HTTP 429, respect `Retry-After` when present and back off. Do not assume an API-key upgrade or unlimited throughput.
 
-```json
-{
-  "addresses": [
-    {
-      "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
-      "hasReverseRecord": true,
-      "name": "vitalik.eth"
-    },
-    {
-      "address": "0x225f137127d9067788314bc7fcc1f36746a3c3B5",
-      "hasReverseRecord": false
-    }
-  ]
-}
-```
+## Self-hosting
 
----
-
-## Error Responses
-
-| Status | Meaning                                                                                          |
-| ------ | ------------------------------------------------------------------------------------------------ |
-| `400`  | Invalid ENS name, invalid Ethereum address, unsupported chain, or too many items in bulk request |
-| `204`  | Success for DELETE (cache clear)                                                                 |
-
----
-
-## Cache Behaviour
-
-| Type               | Default TTL | Bypass          |
-| ------------------ | ----------- | --------------- |
-| Forward resolution | 5 minutes   | `?noCache=true` |
-| Reverse resolution | 30 minutes  | `?noCache=true` |
-
-Cache is in-memory and resets on service restart. Items are cached individually — a cache hit on one key does not block fetching a miss on another.
-
----
-
-## Limits
-
-| Limit                                  | Value                   |
-| -------------------------------------- | ----------------------- |
-| Max names per bulk profile request     | 20                      |
-| Max addresses per bulk reverse request | 20                      |
-| Rate limiting                          | None currently enforced |
+Follow the current setup instructions at https://github.com/thenamespace/resolvio#readme. Configure an Ethereum RPC provider and the cache or bulk limits you need.

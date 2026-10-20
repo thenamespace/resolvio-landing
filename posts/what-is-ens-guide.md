@@ -61,54 +61,16 @@ Traditionally, resolving ENS required importing ethers.js or viem and connecting
 
 ```bash
 # Resolve vitalik.eth to an Ethereum address
-curl https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chains=eth,base,btc,solana
+curl 'https://api.resolvio.xyz/ens/v2/addresses/vitalik.eth?chains=eth,base,btc,sol'
 
 # Get the full profile (address, avatar, socials, etc.)
-curl https://api.resolvio.xyz/ens/v2/profile/vitalik.eth
+curl 'https://api.resolvio.xyz/ens/v2/profile/vitalik.eth'
 ```
 
-```json
-{
-  "name": "vitalik.eth",
-  "texts": [
-    {
-      "key": "avatar",
-      "value": "https://euc.li/vitalik.eth",
-      "exists": true
-    },
-    {
-      "key": "email",
-      "exists": false
-    },
-    {
-      "key": "description",
-      "value": "mi pinxe lo crino tcati",
-      "exists": true
-    },
-  ],
-  "addresses": [
-    {
-      "coin": 60,
-      "chain": "eth",
-      "value": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
-      "exists": true
-    },
-    {
-      "coin": 2147492101,
-      "chain": "base",
-      "exists": false
-    }
-  ],
-  "contenthash": {
-    "value": "ipfs://bafybeiaql2jo3fu5b7c4lmpoi5drh5sam7yt652shwdgwbky4o7uw33u2u",
-    "exists": true
-  },
-  "resolver": "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63"
-}
-```
+The profile returns `texts` and `addresses` arrays plus a `contenthash` object. Check each record's `exists` field before reading `value`. See the [response schema](https://docs.namespace.ninja/api-reference/resolvio/get-ens-profile).
 
 ## Getting Started
 
-The Resolvio API is free, requires no API key, and supports ENS forward resolution, reverse resolution, bulk lookups, and multi-chain address queries. It's the fastest way to add ENS resolution to any app, script, or AI agent.
+The Resolvio API is free, requires no API key, and supports ENS forward resolution, reverse resolution, bulk lookups, and multi-chain address queries. Call it from an HTTP client in your app, script, or agent.
 
-> Try it now: curl https://api.resolvio.xyz/ens/v2/profile/YOUR-NAME.eth and see the full record set returned in milliseconds.
+> Try it now: curl https://api.resolvio.xyz/ens/v2/profile/YOUR-NAME.eth to inspect the returned records.

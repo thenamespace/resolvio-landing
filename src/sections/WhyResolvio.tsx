@@ -5,23 +5,23 @@ import styles from './WhyResolvio.module.scss'
 const FEATURES = [
   {
     icon: <Zap size={18} />,
-    title: 'Lightning Fast',
-    desc: 'Sub-100ms response times with intelligent caching and optimized resolution paths.',
+    title: 'Built-in Caching',
+    desc: 'Reuse cached results with configurable forward and reverse cache durations.',
   },
   {
     icon: <Shield size={18} />,
-    title: 'Rock Solid',
-    desc: '99.9% uptime guarantee with automatic failover and redundant infrastructure.',
+    title: 'Open Source',
+    desc: 'Use the public API or self-host Resolvio with your own Ethereum RPC endpoint.',
   },
   {
     icon: <Globe size={18} />,
     title: 'Multi-Chain',
-    desc: 'Support for ENS, DNS, and other naming systems across multiple blockchain networks.',
+    desc: 'Read multi-chain address records stored in ENS, including ENS-enabled DNS names.',
   },
   {
     icon: <Code2 size={18} />,
     title: 'Developer First',
-    desc: 'RESTful API with comprehensive documentation, SDKs, and code examples.',
+    desc: 'HTTP endpoints with an OpenAPI specification, guides, and integration examples.',
   },
   {
     icon: <Layers size={18} />,
@@ -40,7 +40,7 @@ export const WhyResolvio = () => (
     <div className={styles.header}>
       <span className={styles.label}>Benefits</span>
       <h2 className={styles.heading}>Why Resolvio?</h2>
-      <p className={styles.subtitle}>The most complete Web3 name resolution service.</p>
+      <p className={styles.subtitle}>ENS records for apps, wallets, and agents.</p>
     </div>
 
     <div className={styles.gridOuter}>

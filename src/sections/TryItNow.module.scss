@@ -333,6 +333,20 @@
   display: flex;
   align-items: center;
   gap: 6px;
+
+  @media (max-width: $mobile) {
+    position: relative;
+
+    .infoWrap {
+      position: static;
+    }
+
+    .tooltip {
+      left: 0;
+      top: calc(100% + 8px);
+      width: min(240px, calc(100vw - 96px));
+    }
+  }
 }
 
 // ─── Record controls wrapper — dims when useDefault ───────────────────────────
