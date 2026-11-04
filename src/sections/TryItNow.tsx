@@ -26,7 +26,7 @@ const FORWARD_EXAMPLES: { name: string; type: NameType }[] = [
   { name: 'thecap.base.eth', type: 'ccip' },
   { name: 'happy.rsk.eth',   type: 'ccip' },
 ]
-const NAME_TYPE_LABEL: Record<NameType, string> = { v1: 'v1', v2: 'v2', ccip: 'CCIP' }
+const NAME_TYPE_LABEL: Record<NameType, string> = { v1: 'ENSv1', v2: 'ENSv2', ccip: 'CCIP' }
 const NAME_TYPE_TITLE: Record<NameType, string> = {
   v1: 'ENSv1 name',
   v2: 'ENSv2 name',
