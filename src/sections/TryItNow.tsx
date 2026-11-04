@@ -12,7 +12,26 @@ import { buildRequest, curlCommand, type Operation } from './playground-request'
 type Tab = 'forward' | 'reverse'
 type ForwardMode = 'single' | 'bulk'
 
-const FORWARD_EXAMPLES = ['vitalik.eth', 'jesse.xyz', 'artii.eth', 'cap.eth', 'kris.cash', 'thecap.base.eth', 'happy.rsk.eth']
+// Grouped by how each name resolves (verified on mainnet):
+// ENSv1: set in the v1 ENS registry with an onchain resolver
+// ENSv2: not in the v1 registry, resolved through the ENSv2 resolver
+// CCIP-Read: resolver reverts with OffchainLookup (ENSIP-10 / EIP-3668)
+type NameType = 'v1' | 'v2' | 'ccip'
+const FORWARD_EXAMPLES: { name: string; type: NameType }[] = [
+  { name: 'vitalik.eth',     type: 'v1' },
+  { name: 'artii.eth',       type: 'v1' },
+  { name: 'jesse.xyz',       type: 'v1' },
+  { name: 'cap.eth',         type: 'v2' },
+  { name: 'arthy0.eth',      type: 'v2' },
+  { name: 'thecap.base.eth', type: 'ccip' },
+  { name: 'happy.rsk.eth',   type: 'ccip' },
+]
+const NAME_TYPE_LABEL: Record<NameType, string> = { v1: 'ENSv1', v2: 'ENSv2', ccip: 'CCIP' }
+const NAME_TYPE_TITLE: Record<NameType, string> = {
+  v1: 'ENSv1 name',
+  v2: 'ENSv2 name',
+  ccip: 'Resolved offchain via CCIP-Read',
+}
 const REVERSE_EXAMPLES_SINGLE = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
 const REVERSE_EXAMPLES_BULK = [
   '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
@@ -347,11 +366,12 @@ export const TryItNow = () => {
                   {forwardMode === 'bulk' ? 'or click to add examples' : 'or try these examples'}
                 </p>
                 <div className={styles.chips}>
-                  {FORWARD_EXAMPLES.map((ex) => (
-                    forwardMode === 'bulk'
-                      ? <button disabled={resolving} key={ex} className={cx(styles.chip, bulkNames.has(ex) && styles.chipActive)} onClick={() => toggleBulkName(ex)}>{ex}</button>
-                      : <button disabled={resolving} key={ex} className={styles.chip} onClick={() => resolveForward(ex)}>{ex}</button>
-                  ))}
+                  {FORWARD_EXAMPLES.map(({ name: ex, type }) => {
+                    const badge = <span className={cx(styles.typeBadge, styles[`typeBadge_${type}`])} title={NAME_TYPE_TITLE[type]}>{NAME_TYPE_LABEL[type]}</span>
+                    return forwardMode === 'bulk'
+                      ? <button disabled={resolving} key={ex} className={cx(styles.chip, bulkNames.has(ex) && styles.chipActive)} onClick={() => toggleBulkName(ex)}>{ex}{badge}</button>
+                      : <button disabled={resolving} key={ex} className={styles.chip} onClick={() => resolveForward(ex)}>{ex}{badge}</button>
+                  })}
                 </div>
 
                 <div className={styles.checkboxGroup}>

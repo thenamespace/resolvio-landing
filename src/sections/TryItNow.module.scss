@@ -228,7 +228,10 @@
 }
 
 .chip {
-  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 12px;
   font-size: 0.8125rem;
   font-family: inherit;
   border: 1px solid $border;
@@ -249,6 +252,31 @@
     transform: translateY(0);
     box-shadow: none;
   }
+}
+
+// ─── Name type badges (v1 / v2 / CCIP) ────────────────────────────────────────
+.typeBadge {
+  padding: 1px 6px;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+}
+
+.typeBadge_v1 {
+  background: rgba(100, 116, 139, 0.15);
+  color: #64748b;
+}
+
+.typeBadge_v2 {
+  background: rgba(0, 128, 188, 0.14);
+  color: $primary;
+}
+
+.typeBadge_ccip {
+  background: rgba(124, 58, 237, 0.14);
+  color: #8b5cf6;
 }
 
 // ─── Checkbox group ───────────────────────────────────────────────────────────
